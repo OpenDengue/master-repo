@@ -194,7 +194,8 @@ ggplot( aes(x=year, y=adm_0_name, group=temporal_res_nm))+
         panel.grid = element_blank(),
         panel.border = element_blank())
 ```
-## Spatial resolution
+## Spatial resolution 
+
 ```{r}
 # first check if any country-year has data for more than one spatial resolution
 data %>%
