@@ -1,0 +1,202 @@
+---
+title: "OpenDengue data coverage"
+author: "Joe Clarke & Ahyoung Lim"
+date: "Last update on `r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+    github_document: default
+    html_document:
+        theme: flatly
+        number_sections: true
+        toc: true
+        toc_float: true
+       
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding,
+  output_dir = ".", output_format = "all") })
+---
+
+# Background
+
+This document contains the relevant R code and output for producing country specific summaries of :
+1. Current case data data coverage in OpenDengue that has been extracted + processed + merged, while all may not yet be available on the rep, some may be in the process of being uplaoded from shared dropbox. 
+2. This data prioritises admin level 1 spatial resolution and the highest temporal resolution available. There may be more data to come at higher spatial resolution.
+3. This data forms part of the "primary" dataset for each country, which contains : Temporal resolution, spatial resolution, an aggregate of all dengue cases  (varying definitions of dengue and case severity). This does not include disaggregation by age, sex, disease classification, mortality or serotype. This will follow in a release of the "secondary" dataset for each country.
+
+## Objectives 
+
+The purpose of this is twofold:
+1. to be able to identify gaps in data coverage such that we can use opportunistic sources to attempt to fill them. 
+2. to link to a three updated heat maps showing coverage by time, space and data source. These will be archived to show progress in OpenDengue. 
+
+```{r setup, include=FALSE}
+require("knitr"); require("here"); require("pacman")
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_knit$set(root.dir = here())
+pacman::p_load("dplyr", "lubridate",  "tidyr", "tidyverse",  "knitr", "stringi", "zoo", "EpiWeek", "data.table")
+```
+
+# Data preprocessing
+
+```{r include = FALSE}
+db1 <- read.csv("data/moh_pahosubnational_tycho_merge.csv")
+db2 <- read.csv("data/paho_merge.csv")
+colnames(db1)
+
+db1 <- db1 %>% 
+  select(-X) %>%
+  mutate(source_cat = ifelse(source_cat %in% c("paho"), "paho-sub", source_cat))
+
+names(db1)
+names(db2)
+
+data <- rbind(db1, db2)
+plyr::count(data$source_cat)
+rm(db1, db2)
+
+#write.csv(data, "data/master_data.csv", row.names=F)
+```
+
+Create columns for categorising each row according to it's spatial resolution & temporal resolution.
+
+Convert all case counts from PAHO portal to weekly. While they are currently cumulative with the calendar_end_date increasing weekly, we will be developing models to spread this data across weekly counts before release. In the portal itself, all denge cases are only listed cumulatively in single week increments, while incident "suspected" cases are listed weekly. 
+
+```{r}
+# ** This stage is taking too long due to data size so better be moved to earlier parts **
+data <- read.csv("data/master_data.csv")
+names(data)
+
+data <- data %>%
+  mutate(calendar_start_date = ymd(calendar_start_date), 
+         calendar_end_date = ymd(calendar_end_date), 
+         year = year(calendar_end_date), 
+         diff = as.duration(interval(calendar_start_date, calendar_end_date))%/% as.duration(days(1)))%>%
+  mutate(spatial_res = ifelse(adm_1_name %in% NA & adm_2_name %in% NA,  "0", 
+                              ifelse(adm_2_name %in% NA, "1", "2")))%>%
+  mutate(temporal_res = ifelse(diff <8, 2, #weekly
+                          ifelse(diff > 7 & diff < 31, 1, #monthly
+                                                       0)))%>% #yearly
+  #mutate(temporal_res = ifelse(grepl("all_PAHO", data$source_id, ignore.case = FALSE)== TRUE, "2", temporal_res))%>%
+  select(adm_0_name:adm_2_code, spatial_res, temporal_res, year, diff,  calendar_start_date:source_cat)
+
+plyr::count(data$diff)
+plyr::count(data$spatial_res)
+plyr::count(data$temporal_res)
+
+# **** need to check temporal resolution for some of paho subnational data ****
+data <- data %>%
+  filter(!diff == 83)
+  
+```
+Convert calendar dates back to epi weeks, to help with tallying the number of weeks at each temporal and spatial resolution.
+```{r}
+# Overwrite EW as month of the calendar_end_date if the temporal resolution is monthly
+data <- data %>%
+  mutate(EW = lubridate::week(calendar_end_date))%>%
+  mutate(EW = ifelse(temporal_res %in% c("1"), month(calendar_end_date), 
+                ifelse(temporal_res %in% c("0"), NA, EW)))
+
+```
+
+
+```{r}
+plyr::count(data$adm_0_name)
+
+lookup <- c("Antigua And Barbuda" = "Antigua and Barbuda",
+         "Dominican republic" = "Dominican Republic",
+         "Saint Kitts And Nevis" = "Saint Kitts and Nevis",
+         "Saint Vincent And the Grenadines" = "Saint Vincent and the Grenadines",
+         "Saint Vincent And The Grenadines" = "Saint Vincent and the Grenadines",
+         "Trinidad And Tobago" = "Trinidad and Tobago", 
+         "Turks And Caicos Islands" = "Turks and Caicos Islands", 
+         "United States Of America" = "United States of America" 
+         )
+
+
+data <- data %>%
+  mutate(adm_0_name = recode(adm_0_name, !!!lookup))
+
+plyr::count(data$adm_0_name)
+```
+
+# Summary statistics of data coverage
+
+Produce summary statistics of temporal resolution by each year. temporal resolution is grouped into weekly, monthly, annually.  
+The maximum temporal resolution reached for that year is prioritised for colour coding the heatmap. 
+The opacity/gradient of the colour is determined by the proportion of the year at which that temporal resolution is available. 
+```{r}
+
+data_temporal <- data %>% 
+  group_by(adm_0_name, year, temporal_res, spatial_res)%>%
+  tally() 
+
+#select the best temporal resolution 
+data_temporal <- data_temporal %>%
+  filter(spatial_res %in% c("0"))%>%
+  arrange(adm_0_name, year, desc(temporal_res))%>%  
+  group_by(adm_0_name, year) %>% slice_head(n=1)
+
+# denominator for weekly = 53, for monthly = 12
+data_temporal <- data_temporal %>%
+  mutate(n2 = ifelse(n > 53, 53, n))%>% 
+  mutate(prop = ifelse(temporal_res %in%  c("1"), n2/12, 
+                       ifelse(temporal_res %in% c("0"), n2/1, n2/53)))%>%
+  mutate(temporal_res = ifelse(temporal_res %in% c(2), "Weekly", 
+                                      ifelse(temporal_res %in% c(1), "Monthly", "Yearly")))
+```
+
+Produce summary statistics of spatial resolution by each year. Spatial resolution is grouped into admin 0, 1 & 2.. 
+The maximum spatial resolution reached for that year is prioritised for colour coding the heatmap.
+The gradient of colour that applies to temporal resolution does not yet apply to spatial resolution. This is because while we plan to gradient it according to the proportion of the country that is available at that that resolution, we do not yet have all of the admin2 code kmatching complete in order to do so. 
+
+```{r}
+data_spatial <- data %>% 
+  #filter(spatial_res %in% c('A0'))%>%
+  group_by(year, spatial_res)%>%
+  tally()%>%
+  #===number of temporal resolutions available
+  #group_by(year) %>% 
+  #mutate(n2 = n())%>% 
+  #select the best temporal resolution 
+  arrange(year, desc(spatial_res))%>%   print (n=30)%>%
+  group_by(year) %>% slice_head(n=1)%>%
+  #tidyr::spread(., temporal_res, n) 
+  #mutate(yearly = ifelse(is.na(monthly)==FALSE & is.na(yearly)==FALSE, NA, yearly))%>%
+  #tidyr::gather(., temporal_res, n, monthly:yearly) %>% print(n=72) %>% 
+  filter(!n %in% NA)
+
+  
+```
+
+# Visualisations
+
+Produce heatmaps for country by temporal resolution and then spatial resoluton. note that this will only be a single row for this country on it's own, though when all country datasets are processed a fuller map will be developed.
+
+## Data coverage by temporal resolution 
+
+```{r, fig.width = 18, fig.height = 18}
+ggplot(data_temporal, aes(x=year, y=adm_0_name, group=temporal_res))+
+  geom_tile(aes(alpha = prop, fill=temporal_res), 
+            color = "white",  lwd = 0.5, linetype = 1)+
+  scale_y_discrete(limits=rev)+
+  scale_x_continuous(breaks = seq(1960,2020, by=10))+
+  scale_fill_manual(name = "Best temporal resolution available", 
+                    values = c("#1F78B4","#B2DF8A","#FB9A99"))+
+  scale_alpha(guide = 'none')+
+  ggtitle("For adm0")+
+  xlab("Year")+ylab("Country")+
+  theme(plot.title = element_text(size=28), 
+        axis.title = element_text(size=28), 
+        axis.text = element_text(size=24), 
+        legend.title = element_text(size=20),
+        legend.text = element_text(size=18))
+
+```
+
+## Data coverage by spatial resolution 
+
+```{r}
+#ggplot(data_spatial, aes(x=year, y=country))+
+#  geom_tile(aes(fill=spatial_res), color = "white",  lwd = 1.5, linetype = 1)+
+#  scale_fill_manual(values = c("#1F78B4","#B2DF8A","#FB9A99"))
+```
+
