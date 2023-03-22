@@ -61,17 +61,17 @@ Create columns for categorising each row according to it's spatial resolution & 
 Convert all case counts from PAHO portal to weekly. While they are currently cumulative with the calendar_end_date increasing weekly, we will be developing models to spread this data across weekly counts before release. In the portal itself, all denge cases are only listed cumulatively in single week increments, while incident "suspected" cases are listed weekly. 
 
 ```{r}
-# ** This stage is taking too long due to data size so better be moved to earlier parts **
 data <- read.csv("data/master_data.csv")
-names(data)
+head(data)
+plyr::count(data$source_cat)
 
 data <- data %>%
   mutate(calendar_start_date = ymd(calendar_start_date), 
          calendar_end_date = ymd(calendar_end_date), 
          year = year(calendar_end_date), 
          diff = as.duration(interval(calendar_start_date, calendar_end_date))%/% as.duration(days(1)))%>%
-  mutate(spatial_res = ifelse(adm_1_name %in% NA & adm_2_name %in% NA,  "0", 
-                              ifelse(adm_2_name %in% NA, "1", "2")))%>%
+  mutate(spatial_res = ifelse(adm_1_name %in% NA & adm_2_name %in% NA,  0, 
+                       ifelse(adm_2_name %in% NA, 1, 2)))%>%
   mutate(temporal_res = ifelse(diff <8, 2, #weekly
                           ifelse(diff > 7 & diff < 31, 1, #monthly
                                                        0)))%>% #yearly
@@ -81,6 +81,10 @@ data <- data %>%
 plyr::count(data$diff)
 plyr::count(data$spatial_res)
 plyr::count(data$temporal_res)
+
+data %>% 
+  select(temporal_res, spatial_res, source_cat)%>% 
+  group_by(temporal_res, spatial_res, source_cat)%>% tally()
 
 # **** need to check temporal resolution for some of paho subnational data ****
 data <- data %>%
@@ -92,8 +96,8 @@ Convert calendar dates back to epi weeks, to help with tallying the number of we
 # Overwrite EW as month of the calendar_end_date if the temporal resolution is monthly
 data <- data %>%
   mutate(EW = lubridate::week(calendar_end_date))%>%
-  mutate(EW = ifelse(temporal_res %in% c("1"), month(calendar_end_date), 
-                ifelse(temporal_res %in% c("0"), NA, EW)))
+  mutate(EW = ifelse(temporal_res==1, month(calendar_end_date), 
+                ifelse(temporal_res==0, NA, EW)))
 
 ```
 
@@ -116,6 +120,9 @@ data <- data %>%
   mutate(adm_0_name = recode(adm_0_name, !!!lookup))
 
 plyr::count(data$adm_0_name)
+
+#write.csv(subset(data, adm_0_name %in% c("Bolivia")), "data/bolivia.csv", row.names=F)
+
 ```
 
 # Summary statistics of data coverage
@@ -124,24 +131,63 @@ Produce summary statistics of temporal resolution by each year. temporal resolut
 The maximum temporal resolution reached for that year is prioritised for colour coding the heatmap. 
 The opacity/gradient of the colour is determined by the proportion of the year at which that temporal resolution is available. 
 ```{r}
-
-data_temporal <- data %>% 
+#select the best temporal resolution when spatial resolution == adm0 
+names(data)
+data_temporal_adm0 <- data %>%
   group_by(adm_0_name, year, temporal_res, spatial_res)%>%
-  tally() 
-
-#select the best temporal resolution 
-data_temporal <- data_temporal %>%
-  filter(spatial_res %in% c("0"))%>%
+  tally()%>%
+  filter(spatial_res == 0)%>%
   arrange(adm_0_name, year, desc(temporal_res))%>%  
   group_by(adm_0_name, year) %>% slice_head(n=1)
 
 # denominator for weekly = 53, for monthly = 12
-data_temporal <- data_temporal %>%
+data_temporal_adm0 <- data_temporal_adm0 %>%
   mutate(n2 = ifelse(n > 53, 53, n))%>% 
-  mutate(prop = ifelse(temporal_res %in%  c("1"), n2/12, 
-                       ifelse(temporal_res %in% c("0"), n2/1, n2/53)))%>%
-  mutate(temporal_res = ifelse(temporal_res %in% c(2), "Weekly", 
-                                      ifelse(temporal_res %in% c(1), "Monthly", "Yearly")))
+  mutate(prop = ifelse(temporal_res==1, n2/12, 
+                       ifelse(temporal_res==0, n2/1, n2/53)))%>%
+  mutate(temporal_res_nm = ifelse(temporal_res ==2, "Weekly", 
+                               ifelse(temporal_res==1, "Monthly", "Yearly")))
+```
+
+
+```{r}
+# 'n' refers to the number of data rows per country, year, time units (EW). For example, when a data row contains [Argentina - 2015 - weekly data - EW 15 - adm2 ] and n = 20, it means they are data for the week 15 of 2015 and for 20 different adm2 areas in Argentina. We do this to determine whether the abundance of data for each country is due to true high data coverage or a false impression caused by a large number of spatial units.
+nb_spatial_unit <- data %>% 
+  group_by(adm_0_name, year, temporal_res, EW, spatial_res)%>%
+  tally() 
+
+# number of spatial units reported vary depending on the country and year. We calculated the maximum number of spatial units reported country and to use it as a denominator.  
+nb_spatial_unit_adm1 <- nb_spatial_unit %>%
+  filter(!is.na(EW))%>%
+  group_by(adm_0_name, temporal_res, spatial_res)%>%
+  summarise(nb_sp_units = max(n))%>%
+  filter(spatial_res==1)
+
+nb_spatial_unit_adm2 <- nb_spatial_unit %>%
+  filter(!is.na(EW))%>%
+  group_by(adm_0_name, temporal_res, spatial_res)%>%
+  summarise(nb_sp_units = max(n))%>%
+  filter(spatial_res==2)
+```
+
+
+```{r}
+# ** work on progress 
+#select the best temporal resolution when spatial resolution == adm1
+data_temporal_adm1 <- data %>%
+  group_by(adm_0_name, year, temporal_res, spatial_res, EW)%>%
+  tally()%>%
+  filter(spatial_res == 1)%>%
+  arrange(adm_0_name, year, desc(temporal_res))%>%  
+  group_by(adm_0_name, year) %>% slice_head(n=1)
+
+# denominator for weekly = 53, for monthly = 12
+data_temporal_adm1 <- data_temporal_adm1 %>%
+  mutate(n2 = ifelse(n > 53, 53, n))%>% 
+  mutate(prop = ifelse(temporal_res==1, n2/12, 
+                       ifelse(temporal_res==0, n2/1, n2/53)))%>%
+  mutate(temporal_res_nm = ifelse(temporal_res ==2, "Weekly", 
+                               ifelse(temporal_res==1, "Monthly", "Yearly")))
 ```
 
 Produce summary statistics of spatial resolution by each year. Spatial resolution is grouped into admin 0, 1 & 2.. 
@@ -174,23 +220,61 @@ Produce heatmaps for country by temporal resolution and then spatial resoluton. 
 ## Data coverage by temporal resolution 
 
 ```{r, fig.width = 18, fig.height = 18}
-ggplot(data_temporal, aes(x=year, y=adm_0_name, group=temporal_res))+
-  geom_tile(aes(alpha = prop, fill=temporal_res), 
-            color = "white",  lwd = 0.5, linetype = 1)+
-  scale_y_discrete(limits=rev)+
-  scale_x_continuous(breaks = seq(1960,2020, by=10))+
-  scale_fill_manual(name = "Best temporal resolution available", 
+
+ggplot(data_temporal_adm0, aes(x=year, y=adm_0_name, group=temporal_res_nm))+
+  geom_tile(aes(alpha = prop, fill=temporal_res_nm), 
+            color = "white",  lwd = 0.25, linetype = 1)+
+  scale_y_discrete(limits=rev, expand=c(0,0))+
+  scale_x_continuous(limits = c(1988, 2022), 
+                     breaks = seq(1990,2020, by=5), 
+                     expand=c(0,0))+
+  scale_fill_manual(name = "Temporal resolution", 
                     values = c("#1F78B4","#B2DF8A","#FB9A99"))+
   scale_alpha(guide = 'none')+
-  ggtitle("For adm0")+
+  coord_fixed()+
+  theme_grey()+
+  ggtitle("Best temporal resolution available for adm0")+
   xlab("Year")+ylab("Country")+
   theme(plot.title = element_text(size=28), 
         axis.title = element_text(size=28), 
-        axis.text = element_text(size=24), 
+        axis.text = element_text(size=18), 
+        axis.ticks = element_line(size=1),
         legend.title = element_text(size=20),
-        legend.text = element_text(size=18))
+        legend.text = element_text(size=18), 
+        plot.margin = margin(t=-50, b=-50, l=20, r=20), 
+        plot.background=element_blank(),
+        panel.border=element_blank())
 
 ```
+
+## Data coverage by spatial resolution 
+```{r, fig.width = 18, fig.height = 18}
+data %>%
+  filter(!spatial_res==2)%>%
+  group_by(adm_0_name, year)%>%
+  tally()%>%
+  ggplot(aes(x=year, y=adm_0_name))+
+  geom_tile(aes(fill=n), lwd = 0.25, linetype = 1)+
+  scale_y_discrete(limits=rev, expand=c(0,0))+
+  scale_x_continuous(limits = c(1988, 2022), 
+                     breaks = seq(1990,2020, by=5), 
+                     expand=c(0,0))+
+  scale_fill_distiller(palette = "YlGnBu", direction = 1, na.value="#D9D9D9", name="Row count")+
+  coord_fixed()+
+  theme_grey()+
+  xlab("Year")+ylab("Country")+
+  theme(plot.title = element_text(size=28), 
+        axis.title = element_text(size=28), 
+        axis.text = element_text(size=18), 
+        axis.ticks = element_line(size=1),
+        legend.title = element_text(size=20),
+        legend.text = element_text(size=18), 
+        plot.margin = margin(t=-50, b=-50, l=20, r=20), 
+        plot.background=element_blank(),
+        panel.border=element_blank())
+```
+
+
 
 ## Data coverage by spatial resolution 
 
