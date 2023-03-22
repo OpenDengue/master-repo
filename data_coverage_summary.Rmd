@@ -125,7 +125,7 @@ lookup <- c("Antigua And Barbuda" = "Antigua and Barbuda",
 data <- data %>%
   mutate(adm_0_name = recode(adm_0_name, !!!lookup))
 
-plyr::count(data$adm_0_name)
+#plyr::count(data$adm_0_name)
 
 #write.csv(subset(data, adm_0_name %in% c("Bolivia")), "data/bolivia.csv", row.names=F)
 
@@ -194,8 +194,8 @@ ggplot( aes(x=year, y=adm_0_name, group=temporal_res_nm))+
         panel.grid = element_blank(),
         panel.border = element_blank())
 ```
-## Spatial resolution 
 
+## Spatial resolution
 ```{r}
 # first check if any country-year has data for more than one spatial resolution
 data %>%
@@ -377,9 +377,6 @@ source_spat2 <- source_spat %>%
   mutate(spatial_res_nm = factor(spatial_res_nm, levels=c("Admin 2", "Admin 1", "Admin 0")))%>%
   mutate(text = ifelse(is.na(n), "0", "1"))%>%
   mutate(labels = ifelse(text %in% c("1"), paste0(sprintf("%.1f", prop), "%") , ""))
-
-  
-str(source_temp)  
 
 ```
 
