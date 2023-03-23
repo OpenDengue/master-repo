@@ -1,7 +1,7 @@
 OpenDengue data coverage
 ================
 Joe Clarke & Ahyoung Lim
-Last update on March 22, 2023
+Last update on March 23, 2023
 
 # Background
 
@@ -40,7 +40,7 @@ cumulatively in single week increments, while incident “suspected” cases
 are listed weekly.
 
 ``` r
-data <- read.csv("data/master_data.csv")
+#data <- read.csv("data/master_data.csv")
 head(data)
 ```
 
@@ -79,10 +79,75 @@ plyr::count(data$source_cat)
 
     ##              x    freq
     ## 1          moh 2471899
-    ## 2    paho_adm0   13107
-    ## 3 paho_imputed     262
+    ## 2    paho_adm0   14831
+    ## 3 paho_imputed     285
     ## 4     paho_sub   36237
     ## 5        tycho    6929
+
+``` r
+plyr::count(data$adm_0_name)
+```
+
+    ##                                    x    freq
+    ## 1                           Anguilla     151
+    ## 2                Antigua and Barbuda     195
+    ## 3                Antigua And Barbuda      41
+    ## 4                          Argentina    7295
+    ## 5                              Aruba     188
+    ## 6                            Bahamas     165
+    ## 7                           Barbados     483
+    ## 8                             Belize     436
+    ## 9                            Bermuda     362
+    ## 10                           Bolivia    4525
+    ## 11 Bonaire, Saint Eustatius and Saba     152
+    ## 12                            Brazil 2442513
+    ## 13                            Canada     471
+    ## 14                    Cayman Islands     172
+    ## 15                             Chile     226
+    ## 16                          Colombia    2652
+    ## 17                        Costa Rica    1944
+    ## 18                              Cuba     223
+    ## 19                           Curacao     306
+    ## 20                          Dominica     120
+    ## 21                Dominican republic    8472
+    ## 22                Dominican Republic     508
+    ## 23                           Ecuador    4027
+    ## 24                       El Salvador    2082
+    ## 25                     French Guiana     162
+    ## 26                           Grenada     133
+    ## 27                        Guadeloupe     141
+    ## 28                         Guatemala     578
+    ## 29                            Guyana      71
+    ## 30                             Haiti     176
+    ## 31                          Honduras     486
+    ## 32                           Jamaica     456
+    ## 33                        Martinique     173
+    ## 34                            Mexico   14010
+    ## 35                        Montserrat     226
+    ## 36                         Nicaragua   19826
+    ## 37                            Panama    5121
+    ## 38                          Paraguay     407
+    ## 39                              Peru    4254
+    ## 40                       Puerto Rico     485
+    ## 41                  Saint Barthelemy     243
+    ## 42             Saint Kitts and Nevis     217
+    ## 43             Saint Kitts And Nevis      43
+    ## 44                       Saint Lucia     313
+    ## 45                      Saint Martin     177
+    ## 46  Saint Vincent and the Grenadines     172
+    ## 47  Saint Vincent And The Grenadines      32
+    ## 48                      Sint Maarten      94
+    ## 49                          Suriname     285
+    ## 50               Trinidad and Tobago      79
+    ## 51               Trinidad And Tobago      34
+    ## 52          Turks and Caicos Islands     170
+    ## 53          Turks And Caicos Islands      23
+    ## 54          United States of America     464
+    ## 55          United States Of America     317
+    ## 56                           Uruguay     395
+    ## 57                         Venezuela    2100
+    ## 58               Virgin Islands (UK)     140
+    ## 59               Virgin Islands (US)     469
 
 ``` r
 data <- data %>%
@@ -102,7 +167,7 @@ plyr::count(data$diff)
 ```
 
     ##      x    freq
-    ## 1    6 1930849
+    ## 1    6 1932596
     ## 2   27   49337
     ## 3   28     166
     ## 4   29  194785
@@ -121,7 +186,7 @@ plyr::count(data$spatial_res)
 ```
 
     ##   x    freq
-    ## 1 0   15073
+    ## 1 0   16820
     ## 2 1   63442
     ## 3 2 2449919
 
@@ -132,7 +197,7 @@ plyr::count(data$temporal_res)
     ##    x    freq
     ## 1  0    3246
     ## 2  1  585826
-    ## 3  2 1930849
+    ## 3  2 1932596
     ## 4 NA    8513
 
 ``` r
@@ -151,8 +216,8 @@ data %>%
     ##  4            1           1 tycho           5283
     ##  5            1           2 moh           580543
     ##  6            2           0 moh              364
-    ##  7            2           0 paho_adm0      13107
-    ##  8            2           0 paho_imputed     262
+    ##  7            2           0 paho_adm0      14831
+    ##  8            2           0 paho_imputed     285
     ##  9            2           1 moh            22895
     ## 10            2           1 paho_sub       34786
     ## 11            2           1 tycho             23
@@ -181,59 +246,66 @@ data <- data %>%
 plyr::count(data$adm_0_name)
 ```
 
-    ##                                   x    freq
-    ## 1                          Anguilla     151
-    ## 2               Antigua and Barbuda     195
-    ## 3               Antigua And Barbuda      41
-    ## 4                         Argentina    7295
-    ## 5                             Aruba     188
-    ## 6                           Bahamas     165
-    ## 7                          Barbados     483
-    ## 8                            Belize     436
-    ## 9                           Bermuda     362
-    ## 10                          Bolivia    4525
-    ## 11                           Brazil 2434000
-    ## 12                           Canada     471
-    ## 13                   Cayman Islands     172
-    ## 14                            Chile     226
-    ## 15                         Colombia    2652
-    ## 16                       Costa Rica    1736
-    ## 17                             Cuba     223
-    ## 18                         Dominica     120
-    ## 19               Dominican republic    8472
-    ## 20               Dominican Republic     508
-    ## 21                          Ecuador    4027
-    ## 22                      El Salvador    2082
-    ## 23                    French Guiana     162
-    ## 24                          Grenada     133
-    ## 25                       Guadeloupe     141
-    ## 26                        Guatemala     578
-    ## 27                           Guyana      71
-    ## 28                            Haiti     176
-    ## 29                         Honduras     486
-    ## 30                          Jamaica     456
-    ## 31                       Martinique     173
-    ## 32                           Mexico   14010
-    ## 33                       Montserrat     226
-    ## 34                        Nicaragua   19826
-    ## 35                           Panama    5121
-    ## 36                         Paraguay     407
-    ## 37                             Peru    4254
-    ## 38                      Puerto Rico     485
-    ## 39            Saint Kitts and Nevis     217
-    ## 40            Saint Kitts And Nevis      43
-    ## 41                      Saint Lucia     313
-    ## 42                     Saint Martin       4
-    ## 43 Saint Vincent and the Grenadines     172
-    ## 44 Saint Vincent And The Grenadines      32
-    ## 45                         Suriname     285
-    ## 46              Trinidad and Tobago      79
-    ## 47              Trinidad And Tobago      34
-    ## 48         Turks And Caicos Islands      23
-    ## 49         United States of America     464
-    ## 50         United States Of America     317
-    ## 51                          Uruguay     395
-    ## 52                        Venezuela    2100
+    ##                                    x    freq
+    ## 1                           Anguilla     151
+    ## 2                Antigua and Barbuda     195
+    ## 3                Antigua And Barbuda      41
+    ## 4                          Argentina    7295
+    ## 5                              Aruba     188
+    ## 6                            Bahamas     165
+    ## 7                           Barbados     483
+    ## 8                             Belize     436
+    ## 9                            Bermuda     362
+    ## 10                           Bolivia    4525
+    ## 11 Bonaire, Saint Eustatius and Saba     152
+    ## 12                            Brazil 2434000
+    ## 13                            Canada     471
+    ## 14                    Cayman Islands     172
+    ## 15                             Chile     226
+    ## 16                          Colombia    2652
+    ## 17                        Costa Rica    1736
+    ## 18                              Cuba     223
+    ## 19                           Curacao     306
+    ## 20                          Dominica     120
+    ## 21                Dominican republic    8472
+    ## 22                Dominican Republic     508
+    ## 23                           Ecuador    4027
+    ## 24                       El Salvador    2082
+    ## 25                     French Guiana     162
+    ## 26                           Grenada     133
+    ## 27                        Guadeloupe     141
+    ## 28                         Guatemala     578
+    ## 29                            Guyana      71
+    ## 30                             Haiti     176
+    ## 31                          Honduras     486
+    ## 32                           Jamaica     456
+    ## 33                        Martinique     173
+    ## 34                            Mexico   14010
+    ## 35                        Montserrat     226
+    ## 36                         Nicaragua   19826
+    ## 37                            Panama    5121
+    ## 38                          Paraguay     407
+    ## 39                              Peru    4254
+    ## 40                       Puerto Rico     485
+    ## 41                  Saint Barthelemy     243
+    ## 42             Saint Kitts and Nevis     217
+    ## 43             Saint Kitts And Nevis      43
+    ## 44                       Saint Lucia     313
+    ## 45                      Saint Martin     177
+    ## 46  Saint Vincent and the Grenadines     172
+    ## 47  Saint Vincent And The Grenadines      32
+    ## 48                      Sint Maarten      94
+    ## 49                          Suriname     285
+    ## 50               Trinidad and Tobago      79
+    ## 51               Trinidad And Tobago      34
+    ## 52          Turks and Caicos Islands     170
+    ## 53          Turks And Caicos Islands      23
+    ## 54          United States of America     464
+    ## 55          United States Of America     317
+    ## 56                           Uruguay     395
+    ## 57                         Venezuela    2100
+    ## 58               Virgin Islands (UK)     140
+    ## 59               Virgin Islands (US)     469
 
 ``` r
 lookup <- c("Antigua And Barbuda" = "Antigua and Barbuda",
@@ -250,8 +322,64 @@ lookup <- c("Antigua And Barbuda" = "Antigua and Barbuda",
 data <- data %>%
   mutate(adm_0_name = recode(adm_0_name, !!!lookup))
 
-#plyr::count(data$adm_0_name)
+plyr::count(data$adm_0_name) #52 countries
+```
 
+    ##                                    x    freq
+    ## 1                           Anguilla     151
+    ## 2                Antigua and Barbuda     236
+    ## 3                          Argentina    7295
+    ## 4                              Aruba     188
+    ## 5                            Bahamas     165
+    ## 6                           Barbados     483
+    ## 7                             Belize     436
+    ## 8                            Bermuda     362
+    ## 9                            Bolivia    4525
+    ## 10 Bonaire, Saint Eustatius and Saba     152
+    ## 11                            Brazil 2434000
+    ## 12                            Canada     471
+    ## 13                    Cayman Islands     172
+    ## 14                             Chile     226
+    ## 15                          Colombia    2652
+    ## 16                        Costa Rica    1736
+    ## 17                              Cuba     223
+    ## 18                           Curacao     306
+    ## 19                          Dominica     120
+    ## 20                Dominican Republic    8980
+    ## 21                           Ecuador    4027
+    ## 22                       El Salvador    2082
+    ## 23                     French Guiana     162
+    ## 24                           Grenada     133
+    ## 25                        Guadeloupe     141
+    ## 26                         Guatemala     578
+    ## 27                            Guyana      71
+    ## 28                             Haiti     176
+    ## 29                          Honduras     486
+    ## 30                           Jamaica     456
+    ## 31                        Martinique     173
+    ## 32                            Mexico   14010
+    ## 33                        Montserrat     226
+    ## 34                         Nicaragua   19826
+    ## 35                            Panama    5121
+    ## 36                          Paraguay     407
+    ## 37                              Peru    4254
+    ## 38                       Puerto Rico     485
+    ## 39                  Saint Barthelemy     243
+    ## 40             Saint Kitts and Nevis     260
+    ## 41                       Saint Lucia     313
+    ## 42                      Saint Martin     177
+    ## 43  Saint Vincent and the Grenadines     204
+    ## 44                      Sint Maarten      94
+    ## 45                          Suriname     285
+    ## 46               Trinidad and Tobago     113
+    ## 47          Turks and Caicos Islands     193
+    ## 48          United States of America     781
+    ## 49                           Uruguay     395
+    ## 50                         Venezuela    2100
+    ## 51               Virgin Islands (UK)     140
+    ## 52               Virgin Islands (US)     469
+
+``` r
 #write.csv(subset(data, adm_0_name %in% c("Bolivia")), "data/bolivia.csv", row.names=F)
 ```
 
@@ -279,8 +407,8 @@ data %>%
   arrange(desc(total)) #Data for Nicaragua (2004-2005) include different temporal resolutions 
 ```
 
-    ## # A tibble: 1,733 × 6
-    ## # Groups:   adm_0_name, year [1,733]
+    ## # A tibble: 1,797 × 6
+    ## # Groups:   adm_0_name, year [1,797]
     ##    adm_0_name  year Monthly Weekly Yearly total
     ##    <chr>      <int>   <dbl>  <dbl>  <dbl> <dbl>
     ##  1 Nicaragua   2004       1      1      1     3
@@ -293,7 +421,7 @@ data %>%
     ##  8 Anguilla    1985      NA     NA      1    NA
     ##  9 Anguilla    1986      NA     NA      1    NA
     ## 10 Anguilla    1987      NA     NA      1    NA
-    ## # … with 1,723 more rows
+    ## # … with 1,787 more rows
 
 No color gradient applied to each cell. It is possible, for example, to
 only have data for one month of a certain year available.
@@ -314,7 +442,8 @@ temp_boolean <- data %>%
 temp_boolean %>%
   filter(!year < 1990)%>%
   mutate(year = as.character(year))%>%
-ggplot( aes(x=year, y=adm_0_name, group=temporal_res_nm))+
+  
+ggplot( aes(x=year, y=adm_0_name))+
   geom_tile(aes(fill=temporal_res_nm), 
             color = "white",  lwd = 0.25, linetype = 1)+
   scale_y_discrete(limits=rev, expand=c(0,0))+
@@ -357,8 +486,8 @@ data %>%
   arrange(desc(total)) #Data for Brazil (2001-2005) include different spatial resolutions 
 ```
 
-    ## # A tibble: 1,733 × 6
-    ## # Groups:   adm_0_name, year [1,733]
+    ## # A tibble: 1,797 × 6
+    ## # Groups:   adm_0_name, year [1,797]
     ##    adm_0_name  year  adm0  adm1  adm2 total
     ##    <chr>      <int> <dbl> <dbl> <dbl> <dbl>
     ##  1 Brazil      2001     1     1     1     3
@@ -371,7 +500,7 @@ data %>%
     ##  8 Anguilla    1982     1    NA    NA    NA
     ##  9 Anguilla    1983     1    NA    NA    NA
     ## 10 Anguilla    1984     1    NA    NA    NA
-    ## # … with 1,723 more rows
+    ## # … with 1,787 more rows
 
 No color gradient applied to each cell. It is possible, for example, to
 only have data for one adm2 area of a certain country available.
@@ -411,7 +540,7 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
         axis.ticks = element_line(size=1),
         legend.title = element_text(size=20),
         legend.text = element_text(size=18), 
-        plot.margin = margin(t=-50, b=-50, l=20, r=20), 
+        plot.margin = margin(t=20, b=20, l=20, r=20), 
         plot.background=element_blank(),
         panel.border=element_blank())
 ```
@@ -424,7 +553,7 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
 # first check if any country-year has data for more than one data source
 data %>%
   group_by(adm_0_name, year, source_cat)%>%
-  tally()%>%
+  tally()%>% 
   mutate(n2 = ifelse(is.na(n)==FALSE, 1, NA))%>% select(-n)%>% 
   spread(., source_cat, n2)%>%
   mutate(paho_tot = ifelse(sum(c_across(paho_adm0:paho_imputed), na.rm=T)>0, 1, NA))%>% 
@@ -433,8 +562,8 @@ data %>%
   arrange(desc(total)) 
 ```
 
-    ## # A tibble: 1,733 × 7
-    ## # Groups:   adm_0_name, year [1,733]
+    ## # A tibble: 1,797 × 7
+    ## # Groups:   adm_0_name, year [1,797]
     ##    adm_0_name  year   moh paho_sub tycho paho_tot total
     ##    <chr>      <int> <dbl>    <dbl> <dbl>    <dbl> <dbl>
     ##  1 Argentina   2019     1       NA    NA        1     2
@@ -447,7 +576,7 @@ data %>%
     ##  8 Bolivia     2008     1       NA     1       NA     2
     ##  9 Bolivia     2009     1       NA     1       NA     2
     ## 10 Bolivia     2014    NA        1    NA        1     2
-    ## # … with 1,723 more rows
+    ## # … with 1,787 more rows
 
 ``` r
 source_boolean <- data %>%
@@ -457,15 +586,16 @@ source_boolean <- data %>%
   arrange(adm_0_name, year, desc(n))%>%  
   group_by(adm_0_name, year) %>% slice_head(n=1)%>%  ungroup()%>%
   complete(adm_0_name, year) 
-plyr::count(source_boolean$source_cat)
+
+plyr::count(source_boolean$source_cat) # here 'NA' created because of the use of 'complete' function
 ```
 
     ##          x freq
     ## 1      moh   70
-    ## 2     paho  344
+    ## 2     paho  408
     ## 3 paho_sub   39
     ## 4    tycho 1280
-    ## 5     <NA> 1211
+    ## 5     <NA> 1531
 
 In the case of multiple data sources available for the same
 country-year, the data source with the most data rows is chosen and
@@ -494,7 +624,7 @@ ggplot( aes(x=year, y=adm_0_name, group=source_cat))+
         axis.ticks = element_line(size=1),
         legend.title = element_text(size=20),
         legend.text = element_text(size=18), 
-        plot.margin = margin(t=-50, b=-50, l=20, r=20), 
+        plot.margin = margin(t=20, b=20, l=20, r=20), 
         plot.background=element_blank(),
         panel.border=element_blank())
 ```

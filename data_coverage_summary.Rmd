@@ -67,9 +67,10 @@ Create columns for categorising each row according to it's spatial resolution & 
 Convert all case counts from PAHO portal to weekly. While they are currently cumulative with the calendar_end_date increasing weekly, we will be developing models to spread this data across weekly counts before release. In the portal itself, all denge cases are only listed cumulatively in single week increments, while incident "suspected" cases are listed weekly. 
 
 ```{r}
-data <- read.csv("data/master_data.csv")
+#data <- read.csv("data/master_data.csv")
 head(data)
 plyr::count(data$source_cat)
+plyr::count(data$adm_0_name)
 
 data <- data %>%
   mutate(calendar_start_date = ymd(calendar_start_date), 
@@ -125,10 +126,9 @@ lookup <- c("Antigua And Barbuda" = "Antigua and Barbuda",
 data <- data %>%
   mutate(adm_0_name = recode(adm_0_name, !!!lookup))
 
-#plyr::count(data$adm_0_name)
+plyr::count(data$adm_0_name) #52 countries
 
 #write.csv(subset(data, adm_0_name %in% c("Bolivia")), "data/bolivia.csv", row.names=F)
-
 ```
 
 # Summary statistics of data coverage
@@ -169,7 +169,8 @@ temp_boolean <- data %>%
 temp_boolean %>%
   filter(!year < 1990)%>%
   mutate(year = as.character(year))%>%
-ggplot( aes(x=year, y=adm_0_name, group=temporal_res_nm))+
+  
+ggplot( aes(x=year, y=adm_0_name))+
   geom_tile(aes(fill=temporal_res_nm), 
             color = "white",  lwd = 0.25, linetype = 1)+
   scale_y_discrete(limits=rev, expand=c(0,0))+
@@ -246,7 +247,7 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
         axis.ticks = element_line(size=1),
         legend.title = element_text(size=20),
         legend.text = element_text(size=18), 
-        plot.margin = margin(t=-50, b=-50, l=20, r=20), 
+        plot.margin = margin(t=20, b=20, l=20, r=20), 
         plot.background=element_blank(),
         panel.border=element_blank())
 ```
@@ -256,7 +257,7 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
 # first check if any country-year has data for more than one data source
 data %>%
   group_by(adm_0_name, year, source_cat)%>%
-  tally()%>%
+  tally()%>% 
   mutate(n2 = ifelse(is.na(n)==FALSE, 1, NA))%>% select(-n)%>% 
   spread(., source_cat, n2)%>%
   mutate(paho_tot = ifelse(sum(c_across(paho_adm0:paho_imputed), na.rm=T)>0, 1, NA))%>% 
@@ -264,6 +265,7 @@ data %>%
   mutate(total = sum(c_across(moh:paho_tot), na.rm = T)) %>%
   arrange(desc(total)) 
 ```
+
 ```{r}
 source_boolean <- data %>%
   mutate(source_cat = ifelse(source_cat %in% c("paho_adm0", "paho_imputed"), "paho", source_cat))%>%
@@ -272,7 +274,8 @@ source_boolean <- data %>%
   arrange(adm_0_name, year, desc(n))%>%  
   group_by(adm_0_name, year) %>% slice_head(n=1)%>%  ungroup()%>%
   complete(adm_0_name, year) 
-plyr::count(source_boolean$source_cat)
+
+plyr::count(source_boolean$source_cat) # here 'NA' created because of the use of 'complete' function
 ```
 In the case of multiple data sources available for the same country-year, the data source with the most data rows is chosen and shown on the figure below. 
 ```{r, fig.width = 18, fig.height = 18}
@@ -298,7 +301,7 @@ ggplot( aes(x=year, y=adm_0_name, group=source_cat))+
         axis.ticks = element_line(size=1),
         legend.title = element_text(size=20),
         legend.text = element_text(size=18), 
-        plot.margin = margin(t=-50, b=-50, l=20, r=20), 
+        plot.margin = margin(t=20, b=20, l=20, r=20), 
         plot.background=element_blank(),
         panel.border=element_blank())
 ```
