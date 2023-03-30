@@ -1,7 +1,7 @@
 OpenDengue data coverage
 ================
 Joe Clarke & Ahyoung Lim
-Last update on March 23, 2023
+Last update on March 30, 2023
 
 # Background
 
@@ -40,7 +40,7 @@ cumulatively in single week increments, while incident “suspected” cases
 are listed weekly.
 
 ``` r
-#data <- read.csv("data/master_data.csv")
+data <- read.csv("data/master_data.csv")
 head(data)
 ```
 
@@ -308,6 +308,7 @@ plyr::count(data$adm_0_name)
     ## 59               Virgin Islands (US)     469
 
 ``` r
+# Make country names consistent
 lookup <- c("Antigua And Barbuda" = "Antigua and Barbuda",
          "Dominican republic" = "Dominican Republic",
          "Saint Kitts And Nevis" = "Saint Kitts and Nevis",
@@ -380,8 +381,134 @@ plyr::count(data$adm_0_name) #52 countries
     ## 52               Virgin Islands (US)     469
 
 ``` r
-#write.csv(subset(data, adm_0_name %in% c("Bolivia")), "data/bolivia.csv", row.names=F)
+# ordering country by longitude (?)
+lookup_order <- read.csv("data/heatmap_order.csv")
+names(lookup_order)
 ```
+
+    ## [1] "adm_0_name"    "desired_order"
+
+``` r
+#data_ctr <- data %>% select(adm_0_name) %>% distinct()
+#data_ctr <- merge(data_ctr, lookup_order, by=c("adm_0_name"), all.x=T, all.y=T)
+
+plyr::count(data$adm_0_name) #alphabetic order 
+```
+
+    ##                                    x    freq
+    ## 1                           Anguilla     151
+    ## 2                Antigua and Barbuda     236
+    ## 3                          Argentina    7295
+    ## 4                              Aruba     188
+    ## 5                            Bahamas     165
+    ## 6                           Barbados     483
+    ## 7                             Belize     436
+    ## 8                            Bermuda     362
+    ## 9                            Bolivia    4525
+    ## 10 Bonaire, Saint Eustatius and Saba     152
+    ## 11                            Brazil 2434000
+    ## 12                            Canada     471
+    ## 13                    Cayman Islands     172
+    ## 14                             Chile     226
+    ## 15                          Colombia    2652
+    ## 16                        Costa Rica    1736
+    ## 17                              Cuba     223
+    ## 18                           Curacao     306
+    ## 19                          Dominica     120
+    ## 20                Dominican Republic    8980
+    ## 21                           Ecuador    4027
+    ## 22                       El Salvador    2082
+    ## 23                     French Guiana     162
+    ## 24                           Grenada     133
+    ## 25                        Guadeloupe     141
+    ## 26                         Guatemala     578
+    ## 27                            Guyana      71
+    ## 28                             Haiti     176
+    ## 29                          Honduras     486
+    ## 30                           Jamaica     456
+    ## 31                        Martinique     173
+    ## 32                            Mexico   14010
+    ## 33                        Montserrat     226
+    ## 34                         Nicaragua   19826
+    ## 35                            Panama    5121
+    ## 36                          Paraguay     407
+    ## 37                              Peru    4254
+    ## 38                       Puerto Rico     485
+    ## 39                  Saint Barthelemy     243
+    ## 40             Saint Kitts and Nevis     260
+    ## 41                       Saint Lucia     313
+    ## 42                      Saint Martin     177
+    ## 43  Saint Vincent and the Grenadines     204
+    ## 44                      Sint Maarten      94
+    ## 45                          Suriname     285
+    ## 46               Trinidad and Tobago     113
+    ## 47          Turks and Caicos Islands     193
+    ## 48          United States of America     781
+    ## 49                           Uruguay     395
+    ## 50                         Venezuela    2100
+    ## 51               Virgin Islands (UK)     140
+    ## 52               Virgin Islands (US)     469
+
+``` r
+data$adm_0_name <- factor(data$adm_0_name, 
+                          levels = unique(lookup_order$adm_0_name[order(lookup_order$desired_order)]))
+
+plyr::count(data$adm_0_name) #desired order
+```
+
+    ##                                    x    freq
+    ## 1                             Canada     471
+    ## 2           United States of America     781
+    ## 3                             Belize     436
+    ## 4                         Costa Rica    1736
+    ## 5                        El Salvador    2082
+    ## 6                          Guatemala     578
+    ## 7                           Honduras     486
+    ## 8                             Mexico   14010
+    ## 9                          Nicaragua   19826
+    ## 10                            Panama    5121
+    ## 11                           Bolivia    4525
+    ## 12                          Colombia    2652
+    ## 13                           Ecuador    4027
+    ## 14                              Peru    4254
+    ## 15                         Venezuela    2100
+    ## 16                         Argentina    7295
+    ## 17                            Brazil 2434000
+    ## 18                             Chile     226
+    ## 19                          Paraguay     407
+    ## 20                           Uruguay     395
+    ## 21                              Cuba     223
+    ## 22                Dominican Republic    8980
+    ## 23                       Puerto Rico     485
+    ## 24                          Anguilla     151
+    ## 25               Antigua and Barbuda     236
+    ## 26                             Aruba     188
+    ## 27                           Bahamas     165
+    ## 28                          Barbados     483
+    ## 29                           Bermuda     362
+    ## 30 Bonaire, Saint Eustatius and Saba     152
+    ## 31                    Cayman Islands     172
+    ## 32                           Curacao     306
+    ## 33                          Dominica     120
+    ## 34                     French Guiana     162
+    ## 35                           Grenada     133
+    ## 36                        Guadeloupe     141
+    ## 37                            Guyana      71
+    ## 38                             Haiti     176
+    ## 39                           Jamaica     456
+    ## 40                        Martinique     173
+    ## 41                        Montserrat     226
+    ## 42                  Saint Barthelemy     243
+    ## 43             Saint Kitts and Nevis     260
+    ## 44                       Saint Lucia     313
+    ## 45                      Saint Martin     177
+    ## 46  Saint Vincent and the Grenadines     204
+    ## 47                      Sint Maarten      94
+    ## 48                          Suriname     285
+    ## 49               Trinidad and Tobago     113
+    ## 50          Turks and Caicos Islands     193
+    ## 51               Virgin Islands (UK)     140
+    ## 52               Virgin Islands (US)     469
 
 # Summary statistics of data coverage
 
@@ -410,17 +537,17 @@ data %>%
     ## # A tibble: 1,797 × 6
     ## # Groups:   adm_0_name, year [1,797]
     ##    adm_0_name  year Monthly Weekly Yearly total
-    ##    <chr>      <int>   <dbl>  <dbl>  <dbl> <dbl>
+    ##    <fct>      <int>   <dbl>  <dbl>  <dbl> <dbl>
     ##  1 Nicaragua   2004       1      1      1     3
     ##  2 Nicaragua   2005       1      1      1     3
-    ##  3 Anguilla    1980      NA     NA      1    NA
-    ##  4 Anguilla    1981      NA     NA      1    NA
-    ##  5 Anguilla    1982      NA     NA      1    NA
-    ##  6 Anguilla    1983      NA     NA      1    NA
-    ##  7 Anguilla    1984      NA     NA      1    NA
-    ##  8 Anguilla    1985      NA     NA      1    NA
-    ##  9 Anguilla    1986      NA     NA      1    NA
-    ## 10 Anguilla    1987      NA     NA      1    NA
+    ##  3 Canada      2009      NA     NA      1    NA
+    ##  4 Canada      2012      NA     NA      1    NA
+    ##  5 Canada      2014      NA      1     NA    NA
+    ##  6 Canada      2015      NA      1     NA    NA
+    ##  7 Canada      2016      NA      1     NA    NA
+    ##  8 Canada      2017      NA      1     NA    NA
+    ##  9 Canada      2018      NA      1     NA    NA
+    ## 10 Canada      2019      NA      1     NA    NA
     ## # … with 1,787 more rows
 
 No color gradient applied to each cell. It is possible, for example, to
@@ -436,7 +563,63 @@ temp_boolean <- data %>%
   mutate(temporal_res_nm = ifelse(temporal_res==2, "Weekly", 
                             ifelse(temporal_res==1, "Monthly", "Yearly")))%>%
   mutate(temporal_res_nm = factor(temporal_res_nm, levels=c("Weekly", "Monthly", "Yearly")))
+
+plyr::count(temp_boolean$adm_0_name)
 ```
+
+    ##                                    x freq
+    ## 1                             Canada   64
+    ## 2           United States of America   64
+    ## 3                             Belize   64
+    ## 4                         Costa Rica   64
+    ## 5                        El Salvador   64
+    ## 6                          Guatemala   64
+    ## 7                           Honduras   64
+    ## 8                             Mexico   64
+    ## 9                          Nicaragua   64
+    ## 10                            Panama   64
+    ## 11                           Bolivia   64
+    ## 12                          Colombia   64
+    ## 13                           Ecuador   64
+    ## 14                              Peru   64
+    ## 15                         Venezuela   64
+    ## 16                         Argentina   64
+    ## 17                            Brazil   64
+    ## 18                             Chile   64
+    ## 19                          Paraguay   64
+    ## 20                           Uruguay   64
+    ## 21                              Cuba   64
+    ## 22                Dominican Republic   64
+    ## 23                       Puerto Rico   64
+    ## 24                          Anguilla   64
+    ## 25               Antigua and Barbuda   64
+    ## 26                             Aruba   64
+    ## 27                           Bahamas   64
+    ## 28                          Barbados   64
+    ## 29                           Bermuda   64
+    ## 30 Bonaire, Saint Eustatius and Saba   64
+    ## 31                    Cayman Islands   64
+    ## 32                           Curacao   64
+    ## 33                          Dominica   64
+    ## 34                     French Guiana   64
+    ## 35                           Grenada   64
+    ## 36                        Guadeloupe   64
+    ## 37                            Guyana   64
+    ## 38                             Haiti   64
+    ## 39                           Jamaica   64
+    ## 40                        Martinique   64
+    ## 41                        Montserrat   64
+    ## 42                  Saint Barthelemy   64
+    ## 43             Saint Kitts and Nevis   64
+    ## 44                       Saint Lucia   64
+    ## 45                      Saint Martin   64
+    ## 46  Saint Vincent and the Grenadines   64
+    ## 47                      Sint Maarten   64
+    ## 48                          Suriname   64
+    ## 49               Trinidad and Tobago   64
+    ## 50          Turks and Caicos Islands   64
+    ## 51               Virgin Islands (UK)   64
+    ## 52               Virgin Islands (US)   64
 
 ``` r
 temp_boolean %>%
@@ -445,13 +628,14 @@ temp_boolean %>%
   
 ggplot( aes(x=year, y=adm_0_name))+
   geom_tile(aes(fill=temporal_res_nm), 
-            color = "white",  lwd = 0.25, linetype = 1)+
+            color = "white", lwd = 0.25, linetype = 1)+
   scale_y_discrete(limits=rev, expand=c(0,0))+
   scale_x_discrete(expand=c(0,0),
                    breaks=seq(1990, 2020, by=5)
                      )+
   scale_fill_manual(name = "Temporal resolution", 
-                    values = c("#1F78B4","#B2DF8A","#FB9A99"), na.value="#D9D9D9")+
+                    values = c("#B2DF8A","#1F78B4", "#CAB2D6" ), na.value="#D9D9D9")+
+                              #"#6A3D9A", "#FFFF99","#A6CEE3", "#33A02C",   "#B15928"
   coord_fixed()+
   theme_bw()+
   ggtitle("Best temporal resolution available")+
@@ -469,7 +653,7 @@ ggplot( aes(x=year, y=adm_0_name))+
         panel.border = element_blank())
 ```
 
-![](C:\Users\AHYOUN~1\Dropbox\WORK\DENGUE~1\DENGUE~1\MASTER~1\DATA_C~1/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](C:\Users\AHYOUN~1\Dropbox\WORK\DENGUE~1\DENGUE~1\MASTER~1\DATA_C~1/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ## Spatial resolution
 
@@ -489,17 +673,17 @@ data %>%
     ## # A tibble: 1,797 × 6
     ## # Groups:   adm_0_name, year [1,797]
     ##    adm_0_name  year  adm0  adm1  adm2 total
-    ##    <chr>      <int> <dbl> <dbl> <dbl> <dbl>
+    ##    <fct>      <int> <dbl> <dbl> <dbl> <dbl>
     ##  1 Brazil      2001     1     1     1     3
     ##  2 Brazil      2002     1     1     1     3
     ##  3 Brazil      2003     1     1     1     3
     ##  4 Brazil      2004     1     1     1     3
     ##  5 Brazil      2005     1     1     1     3
-    ##  6 Anguilla    1980     1    NA    NA    NA
-    ##  7 Anguilla    1981     1    NA    NA    NA
-    ##  8 Anguilla    1982     1    NA    NA    NA
-    ##  9 Anguilla    1983     1    NA    NA    NA
-    ## 10 Anguilla    1984     1    NA    NA    NA
+    ##  6 Canada      2009     1    NA    NA    NA
+    ##  7 Canada      2012     1    NA    NA    NA
+    ##  8 Canada      2014     1    NA    NA    NA
+    ##  9 Canada      2015     1    NA    NA    NA
+    ## 10 Canada      2016     1    NA    NA    NA
     ## # … with 1,787 more rows
 
 No color gradient applied to each cell. It is possible, for example, to
@@ -528,7 +712,7 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
   scale_x_discrete(  breaks = seq(1990,2020, by=5), 
                      expand=c(0,0))+
   scale_fill_manual(name = "Spatial resolution", 
-                    values = c("#1F78B4","#B2DF8A","#FB9A99"), na.value="#D9D9D9")+
+                    values = c("#B2DF8A","#1F78B4", "#CAB2D6" ), na.value="#D9D9D9")+
   coord_fixed()+
   theme_bw()+
   ggtitle("Best spatial resolution available")+
@@ -545,7 +729,7 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
         panel.border=element_blank())
 ```
 
-![](C:\Users\AHYOUN~1\Dropbox\WORK\DENGUE~1\DENGUE~1\MASTER~1\DATA_C~1/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](C:\Users\AHYOUN~1\Dropbox\WORK\DENGUE~1\DENGUE~1\MASTER~1\DATA_C~1/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ## Data source
 
@@ -564,18 +748,18 @@ data %>%
 
     ## # A tibble: 1,797 × 7
     ## # Groups:   adm_0_name, year [1,797]
-    ##    adm_0_name  year   moh paho_sub tycho paho_tot total
-    ##    <chr>      <int> <dbl>    <dbl> <dbl>    <dbl> <dbl>
-    ##  1 Argentina   2019     1       NA    NA        1     2
-    ##  2 Argentina   2020     1       NA    NA        1     2
-    ##  3 Argentina   2021     1       NA    NA        1     2
-    ##  4 Bolivia     2004     1       NA     1       NA     2
-    ##  5 Bolivia     2005     1       NA     1       NA     2
-    ##  6 Bolivia     2006     1       NA     1       NA     2
-    ##  7 Bolivia     2007     1       NA     1       NA     2
-    ##  8 Bolivia     2008     1       NA     1       NA     2
-    ##  9 Bolivia     2009     1       NA     1       NA     2
-    ## 10 Bolivia     2014    NA        1    NA        1     2
+    ##    adm_0_name                year   moh paho_sub tycho paho_tot total
+    ##    <fct>                    <int> <dbl>    <dbl> <dbl>    <dbl> <dbl>
+    ##  1 United States of America  2015    NA       NA     1        1     2
+    ##  2 United States of America  2016    NA       NA     1        1     2
+    ##  3 United States of America  2017    NA       NA     1        1     2
+    ##  4 Costa Rica                2015    NA        1    NA        1     2
+    ##  5 Costa Rica                2016    NA        1    NA        1     2
+    ##  6 Costa Rica                2017    NA        1    NA        1     2
+    ##  7 Costa Rica                2018    NA        1    NA        1     2
+    ##  8 Guatemala                 2007     1       NA     1       NA     2
+    ##  9 Guatemala                 2008     1       NA     1       NA     2
+    ## 10 Guatemala                 2009     1       NA     1       NA     2
     ## # … with 1,787 more rows
 
 ``` r
@@ -612,7 +796,7 @@ ggplot( aes(x=year, y=adm_0_name, group=source_cat))+
   scale_x_discrete(  breaks = seq(1990,2020, by=5), 
                      expand=c(0,0))+
   scale_fill_manual(name = "Data source", 
-                    values = c("#1F78B4","#B2DF8A","#4c841c", "#FB9A99"), na.value="#D9D9D9")+
+                    values = c("#1F78B4","#B2DF8A","#4c841c", "#CAB2D6" ), na.value="#D9D9D9")+
   coord_fixed()+
   theme_bw()+
   ggtitle("Data source available")+
@@ -629,7 +813,7 @@ ggplot( aes(x=year, y=adm_0_name, group=source_cat))+
         panel.border=element_blank())
 ```
 
-![](C:\Users\AHYOUN~1\Dropbox\WORK\DENGUE~1\DENGUE~1\MASTER~1\DATA_C~1/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](C:\Users\AHYOUN~1\Dropbox\WORK\DENGUE~1\DENGUE~1\MASTER~1\DATA_C~1/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 Temporal/spatial resolution per data source? This is done by comparing
 the number of country-year data points between different sources. This
 allows us to identify which data source dominates each temporal
@@ -687,7 +871,7 @@ source_temp2 %>%
   )
 ```
 
-![](C:\Users\AHYOUN~1\Dropbox\WORK\DENGUE~1\DENGUE~1\MASTER~1\DATA_C~1/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](C:\Users\AHYOUN~1\Dropbox\WORK\DENGUE~1\DENGUE~1\MASTER~1\DATA_C~1/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ``` r
 # Weekly - PAHO; Monthly - TYCHO; Yearly - TYCHO
@@ -743,38 +927,8 @@ source_spat2 %>%
   )
 ```
 
-![](C:\Users\AHYOUN~1\Dropbox\WORK\DENGUE~1\DENGUE~1\MASTER~1\DATA_C~1/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](C:\Users\AHYOUN~1\Dropbox\WORK\DENGUE~1\DENGUE~1\MASTER~1\DATA_C~1/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 ``` r
 # Adm2 - MoH; Adm1 - equally distributed; Adm0 - Tycho. adm2 and adm1 code matching needs to be done to ensure more accurate data coverage though...
-```
-
-# Work on progress: heatmap with color gradient
-
-Produce summary statistics of spatial resolution by each year. Spatial
-resolution is grouped into admin 0, 1 & 2.. The maximum spatial
-resolution reached for that year is prioritised for colour coding the
-heatmap. The gradient of colour that applies to temporal resolution does
-not yet apply to spatial resolution. This is because while we plan to
-gradient it according to the proportion of the country that is available
-at that that resolution, we do not yet have all of the admin2 code
-kmatching complete in order to do so.
-
-# Visualisations
-
-Produce heatmaps for country by temporal resolution and then spatial
-resoluton. note that this will only be a single row for this country on
-it’s own, though when all country datasets are processed a fuller map
-will be developed.
-
-## Data coverage by temporal resolution
-
-## Data coverage by spatial resolution
-
-## Data coverage by spatial resolution
-
-``` r
-#ggplot(data_spatial, aes(x=year, y=country))+
-#  geom_tile(aes(fill=spatial_res), color = "white",  lwd = 1.5, linetype = 1)+
-#  scale_fill_manual(values = c("#1F78B4","#B2DF8A","#FB9A99"))
 ```
