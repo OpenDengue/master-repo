@@ -1,7 +1,7 @@
 OpenDengue data coverage
 ================
 Joe Clarke & Ahyoung Lim
-Last update on March 30, 2023
+Last update on March 31, 2023
 
 # Background
 
@@ -628,14 +628,14 @@ temp_boolean %>%
   
 ggplot( aes(x=year, y=adm_0_name))+
   geom_tile(aes(fill=temporal_res_nm), 
-            color = "white", lwd = 0.25, linetype = 1)+
+            color = "white", lwd = 0.8, linetype = 1)+
   scale_y_discrete(limits=rev, expand=c(0,0))+
   scale_x_discrete(expand=c(0,0),
                    breaks=seq(1990, 2020, by=5)
                      )+
   scale_fill_manual(name = "Temporal resolution", 
-                    values = c("#B2DF8A","#1F78B4", "#CAB2D6" ), na.value="#D9D9D9")+
-                              #"#6A3D9A", "#FFFF99","#A6CEE3", "#33A02C",   "#B15928"
+                    values = c("#B2DF8A",  "#1F78B4", "#CAB2D6"), na.value="#D9D9D9")+
+                             #"#6A3D9A", "#FFFF99", "#33A02C",   "#B15928","#A6CEE3"
   coord_fixed()+
   theme_bw()+
   ggtitle("Best temporal resolution available")+
@@ -707,7 +707,7 @@ spat_boolean %>%
   mutate(year = as.character(year))%>%
 ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
   geom_tile(aes(fill=spatial_res_nm), 
-            color = "white",  lwd = 0.25, linetype = 1)+
+            color = "white",  lwd = 0.8, linetype = 1)+
   scale_y_discrete(limits=rev, expand=c(0,0))+
   scale_x_discrete(  breaks = seq(1990,2020, by=5), 
                      expand=c(0,0))+
@@ -791,7 +791,7 @@ source_boolean %>%
   mutate(year = as.character(year))%>%
 ggplot( aes(x=year, y=adm_0_name, group=source_cat))+
   geom_tile(aes(fill=source_cat), 
-            color = "white",  lwd = 0.25, linetype = 1)+
+            color = "white",  lwd = 0.8, linetype = 1)+
   scale_y_discrete(limits=rev, expand=c(0,0))+
   scale_x_discrete(  breaks = seq(1990,2020, by=5), 
                      expand=c(0,0))+
