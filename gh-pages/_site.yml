@@ -1,0 +1,9 @@
+name: "OpenDengue"
+output_dir: "."
+navbar:
+  title: "OpenDengue"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
