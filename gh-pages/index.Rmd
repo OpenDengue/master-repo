@@ -1,6 +1,5 @@
 ---
-title: "index"
-author: "Ahyoung Lim"
+title: "OpenDengue"
 date: "Last update on `r format(Sys.Date(), '%B %d, %Y')`"
 ---
 
@@ -24,7 +23,7 @@ theme_set(theme_bw())
 
 <!--#Data preprocessing-->
 
-```{r include = FALSE}
+```{r Data preprocessing, include = FALSE, eval=FALSE}
 #* This part could be merged into earlier data processing stage
 db1 <- read.csv(here("data", "moh_pahosubnational_tycho_merge.csv"))
 db2 <- read.csv(here("data", "paho_for_opendengue.csv"))
@@ -39,8 +38,8 @@ names(db2)
 
 plyr::count(db2$source_cat)
 
-db2 <- db2 %>% 
-  mutate(source_cat = ifelse(source_cat %in% c("paho-adm0"), "paho_adm0", "paho_imputed"))
+#db2 <- db2 %>% 
+#  mutate(source_cat = ifelse(source_cat %in% c("paho-adm0"), "paho_adm0", "paho_imputed"))
 
 data <- rbind(db1, db2)
 plyr::count(data$source_cat)
@@ -54,7 +53,7 @@ Create columns for categorising each row according to it's spatial resolution & 
 Convert all case counts from PAHO portal to weekly. While they are currently cumulative with the calendar_end_date increasing weekly, we will be developing models to spread this data across weekly counts before release. In the portal itself, all denge cases are only listed cumulatively in single week increments, while incident "suspected" cases are listed weekly. 
 -->
 
-```{r, include=FALSE}
+```{r load master data, include=FALSE}
 data <- read.csv("data/master_data.csv")
 head(data)
 plyr::count(data$source_cat)
@@ -89,7 +88,7 @@ data <- data %>%
 <!--
 Convert calendar dates back to epi weeks, to help with tallying the number of weeks at each temporal and spatial resolution.
 -->
-```{r, include=FALSE}
+```{r epiweek, include=FALSE}
 # Overwrite EW as month of the calendar_end_date if the temporal resolution is monthly
 data <- data %>%
   mutate(EW = lubridate::week(calendar_end_date))%>%
@@ -99,7 +98,7 @@ data <- data %>%
 ```
 
 
-```{r, include=FALSE}
+```{r country name, include=FALSE}
 plyr::count(data$adm_0_name)
 
 # Make country names consistent
@@ -160,7 +159,7 @@ tot_subNational <- data %>%
 #c_points <- cbind(carib, st_coordinates(st_centroid(carib$geometry)))
 #p_points <- cbind(pacific, st_coordinates(st_centroid(pacific$geometry)))
 
-library(ggspatial)
+
 # plotting
 ggplot(data = world) +
   geom_sf(aes(fill = OD_status)) +
@@ -181,7 +180,7 @@ ggplot(data = world) +
 ```
 
 
-```{r, include=FALSE}
+```{r heatmap order, include=FALSE}
 # ordering country by longitude (?)
 lookup_order <- read.csv("data/heatmap_order.csv")
 names(lookup_order)
@@ -199,13 +198,13 @@ plyr::count(data$adm_0_name) #desired order
 ```
 
 # Summary statistics of data coverage
-<!--
+
 Produce summary statistics of temporal resolution by each year. temporal resolution is grouped into weekly, monthly, annually.  
 The maximum temporal resolution reached for that year is prioritised for colour coding the heatmap. 
-The opacity/gradient of the colour is determined by the proportion of the year at which that temporal resolution is available. 
--->
+<!--The opacity/gradient of the colour is determined by the proportion of the year at which that temporal resolution is available. -->
+
 ## Temporal resolution
-```{r, include=FALSE}
+```{r check temp res, include=FALSE}
 # first check if any country-year has data for more than one temporal resolution
 data %>%
   mutate(temporal_res_nm = ifelse(temporal_res==2, "Weekly", 
@@ -221,7 +220,7 @@ data %>%
 <!--
 No color gradient applied to each cell. It is possible, for example, to only have data for one month of a certain year available.
 -->
-```{r, include=FALSE}
+```{r temp_boolean, include=FALSE}
 temp_boolean <- data %>%
   group_by(adm_0_name, year, temporal_res)%>%
   tally()%>%
@@ -235,7 +234,7 @@ temp_boolean <- data %>%
 plyr::count(temp_boolean$adm_0_name)
 ```
 
-```{r, fig.width = 18, fig.height = 18, echo=FALSE}
+```{r temp fig, fig.width = 18, fig.height = 18, echo=FALSE}
 temp_boolean %>%
   filter(!year < 1990)%>%
   mutate(year = as.character(year))%>%
@@ -268,7 +267,7 @@ ggplot( aes(x=year, y=adm_0_name))+
 ```
 
 ## Spatial resolution
-```{r, include=FALSE}
+```{r check spatial res, include=FALSE}
 # first check if any country-year has data for more than one spatial resolution
 data %>%
   mutate(spatial_res_nm = ifelse(spatial_res==2, "adm2", 
@@ -281,9 +280,9 @@ data %>%
   arrange(desc(total)) #Data for Brazil (2001-2005) include different spatial resolutions 
 
 ```
-No color gradient applied to each cell. It is possible, for example, to only have data for one adm2 area of a certain country available.
+<!--No color gradient applied to each cell. It is possible, for example, to only have data for one adm2 area of a certain country available. -->
 
-```{r, include=FALSE}
+```{r spat boolean, include=FALSE}
 spat_boolean <- data %>%
   group_by(adm_0_name, year, spatial_res)%>%
   tally()%>%
@@ -295,7 +294,7 @@ spat_boolean <- data %>%
   mutate(spatial_res_nm = factor(spatial_res_nm, levels=c("adm2", "adm1", "adm0")))
 ```
 
-```{r, fig.width = 18, fig.height = 18, echo=FALSE}
+```{r spat fig, fig.width = 18, fig.height = 18, echo=FALSE}
 spat_boolean %>%
   filter(!year < 1990)%>%
   mutate(year = as.character(year))%>%
@@ -324,7 +323,7 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
 ```
 
 ## Data source
-```{r, include=FALSE}
+```{r check data source, include=FALSE}
 # first check if any country-year has data for more than one data source
 data %>%
   group_by(adm_0_name, year, source_cat)%>%
@@ -337,7 +336,7 @@ data %>%
   arrange(desc(total)) 
 ```
 
-```{r, include=FALSE}
+```{r source boolean, include=FALSE}
 source_boolean <- data %>%
   mutate(source_cat = ifelse(source_cat %in% c("paho_adm0", "paho_imputed"), "paho", source_cat))%>%
   group_by(adm_0_name, year, source_cat)%>%
@@ -349,7 +348,7 @@ source_boolean <- data %>%
 plyr::count(source_boolean$source_cat) # here 'NA' created because of the use of 'complete' function
 ```
 In the case of multiple data sources available for the same country-year, the data source with the most data rows is chosen and shown on the figure below. 
-```{r, fig.width = 18, fig.height = 18, echo=FALSE}
+```{r source fig, fig.width = 18, fig.height = 18, echo=FALSE}
 source_boolean %>%
   filter(!year < 1990)%>%
   mutate(year = as.character(year))%>%
@@ -376,8 +375,8 @@ ggplot( aes(x=year, y=adm_0_name, group=source_cat))+
         plot.background=element_blank(),
         panel.border=element_blank())
 ```
-Temporal/spatial resolution per data source? This is done by comparing the number of country-year data points between different sources. This allows us to identify which data source dominates each temporal resolution.  
-```{r, include=FALSE}
+<!--Temporal/spatial resolution per data source? This is done by comparing the number of country-year data points between different sources. This allows us to identify which data source dominates each temporal resolution. --> 
+```{r source temp, include=FALSE}
 # first check if any country-year has data for more than one data source
 source_temp <- data %>%
   mutate(source_cat = ifelse(source_cat %in% c("paho_adm0", "paho_imputed"), "paho", source_cat))%>%
@@ -401,8 +400,8 @@ source_temp2 <- source_temp %>%
 
 ```
 
-Summed horizontally. 
-```{r, echo=FALSE}
+<!--Summed horizontally. -->
+```{r source temp fig, echo=FALSE}
 source_temp2 %>%
   ggplot(aes(x=source_cat_nm, y=temporal_res_nm, fill=prop))+
   geom_tile(color = "white",  lwd = 0.5, linetype = 1)+
@@ -431,7 +430,7 @@ source_temp2 %>%
 # Weekly - PAHO; Monthly - TYCHO; Yearly - TYCHO
 ```
 
-```{r, include=FALSE}
+```{r source spat, include=FALSE}
 # first check if any country-year has data for more than one data source
 source_spat <- data %>%
   mutate(source_cat = ifelse(source_cat %in% c("paho_adm0", "paho_imputed"), "paho", source_cat))%>%
@@ -455,7 +454,7 @@ source_spat2 <- source_spat %>%
 
 ```
 
-```{r, echo=FALSE}
+```{r source spat fig, echo=FALSE}
 source_spat2 %>%
   ggplot(aes(x=source_cat_nm, y=spatial_res_nm, fill=prop))+
   geom_tile(color = "white",  lwd = 0.5, linetype = 1)+
@@ -485,7 +484,7 @@ source_spat2 %>%
 ```
 
 
-```{r, include= FALSE}
+```{r, include= FALSE, eval=FALSE}
 #select the best temporal resolution when spatial resolution == adm0 
 names(data)
 data_temporal_adm0 <- data %>%
@@ -505,7 +504,7 @@ data_temporal_adm0 <- data_temporal_adm0 %>%
 ```
 
 
-```{r, include= FALSE}
+```{r, include= FALSE, eval=FALSE}
 # 'n' refers to the number of data rows per country, year, time units (EW). For example, when a data row contains [Argentina - 2015 - weekly data - EW 15 - adm2 ] and n = 20, it means they are data for the week 15 of 2015 and for 20 different adm2 areas in Argentina. We do this to determine whether the abundance of data for each country is due to true high data coverage or a false impression caused by a large number of spatial units.
 nb_spatial_unit <- data %>% 
   group_by(adm_0_name, year, temporal_res, EW, spatial_res)%>%
@@ -526,7 +525,7 @@ nb_spatial_unit_adm2 <- nb_spatial_unit %>%
 ```
 
 
-```{r, include= FALSE}
+```{r, include= FALSE, eval=FALSE}
 # ** work on progress 
 #select the best temporal resolution when spatial resolution == adm1
 data_temporal_adm1 <- data %>%
@@ -547,7 +546,7 @@ data_temporal_adm1 <- data_temporal_adm1 %>%
 
 
 
-```{r, include= FALSE}
+```{r, include= FALSE, eval=FALSE}
 #Produce summary statistics of spatial resolution by each year. Spatial resolution is grouped into admin 0, 1 & 2.. 
 #The maximum spatial resolution reached for that year is prioritised for colour coding the heatmap.
 #The gradient of colour that applies to temporal resolution does not yet apply to spatial resolution. This is because while we plan to gradient it according to the proportion of the country that is available at that that resolution, we do not yet have all of the admin2 code kmatching complete in order to do so. 
@@ -571,7 +570,7 @@ data_spatial <- data %>%
 ```
 
 
-```{r, fig.width = 18, fig.height = 18, include = FALSE}
+```{r, fig.width = 18, fig.height = 18, include = FALSE, eval=FALSE}
 # Visualisations
 
 #Produce heatmaps for country by temporal resolution and then spatial resoluton. note that this will only be a single row for this country on it's own, though when all country datasets are processed a fuller map will be developed.
@@ -604,7 +603,7 @@ ggplot(data_temporal_adm0, aes(x=year, y=adm_0_name, group=temporal_res_nm))+
 
 ```
 
-```{r, fig.width = 18, fig.height = 18, include = FALSE}
+```{r, fig.width = 18, fig.height = 18, include = FALSE, eval=FALSE}
 ## Data coverage by spatial resolution 
 
 data %>%
