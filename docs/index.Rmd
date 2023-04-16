@@ -54,7 +54,7 @@ Convert all case counts from PAHO portal to weekly. While they are currently cum
 -->
 
 ```{r load master data, include=FALSE}
-data <- read.csv("data/master_data.csv")
+data <- read.csv(here("data", "master_data.csv"))
 head(data)
 plyr::count(data$source_cat)
 plyr::count(data$adm_0_name)
@@ -182,7 +182,7 @@ ggplot(data = world) +
 
 ```{r heatmap order, include=FALSE}
 # ordering country by longitude (?)
-lookup_order <- read.csv("data/heatmap_order.csv")
+lookup_order <- read.csv(here("data", "heatmap_order.csv"))
 names(lookup_order)
 
 #data_ctr <- data %>% select(adm_0_name) %>% distinct()
@@ -247,7 +247,7 @@ ggplot( aes(x=year, y=adm_0_name))+
                    breaks=seq(1990, 2020, by=5)
                      )+
   scale_fill_manual(name = "Temporal resolution", 
-                    values = c("#B2DF8A",  "#1F78B4", "#CAB2D6"), na.value="#D9D9D9")+
+                    values = c("#479A5A",  "#99D8CA", "#E5F5F9"), na.value="#D9D9D9")+
                              #"#6A3D9A", "#FFFF99", "#33A02C",   "#B15928","#A6CEE3"
   coord_fixed()+
   theme_bw()+
@@ -305,7 +305,7 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
   scale_x_discrete(  breaks = seq(1990,2020, by=5), 
                      expand=c(0,0))+
   scale_fill_manual(name = "Spatial resolution", 
-                    values = c("#B2DF8A","#1F78B4", "#CAB2D6" ), na.value="#D9D9D9")+
+                    values = c("#c51b8a", "#fa9fb5","#fde0dd"), na.value="#D9D9D9")+
   coord_fixed()+
   theme_bw()+
   ggtitle("Best spatial resolution available")+
@@ -359,7 +359,7 @@ ggplot( aes(x=year, y=adm_0_name, group=source_cat))+
   scale_x_discrete(  breaks = seq(1990,2020, by=5), 
                      expand=c(0,0))+
   scale_fill_manual(name = "Data source", 
-                    values = c("#1F78B4","#B2DF8A","#4c841c", "#CAB2D6" ), na.value="#D9D9D9")+
+                    values = c("#fb8072","#8dd3c7","#80B1D3", "#bebada" ), na.value="#D9D9D9")+
   coord_fixed()+
   theme_bw()+
   ggtitle("Data source available")+
