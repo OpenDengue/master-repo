@@ -7,7 +7,7 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
-    - text: "Process"
+    - text: "Methods"
       menu: 
         - text: PAHO
           href: PAHO_PLISA_cumulative_incident.html
