@@ -83,7 +83,12 @@ data %>%
 # **** need to check temporal resolution for some of paho subnational data ****
 data <- data %>%
   filter(!diff == 83)
-  
+
+plyr::count(data$source_cat)
+bahamas <- data %>%
+  filter(is.na(dengue_total))%>%
+  filter(year>2013)%>%
+  filter(source_cat %in% c("paho_adm0", "paho_imputed"))
 ```
 <!--
 Convert calendar dates back to epi weeks, to help with tallying the number of weeks at each temporal and spatial resolution.
