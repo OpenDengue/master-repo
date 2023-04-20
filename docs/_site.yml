@@ -16,7 +16,7 @@ navbar:
     - text: "Methods"
       menu: 
         - text: "PAHO"
-          href: PAHO_PLISA_cumulative_incident.html
+          href: PAHO_PLISA.html
         - text: "TYCHO"
           href: tycho.html
     - icon: fab fa-github

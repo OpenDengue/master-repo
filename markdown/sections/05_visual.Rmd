@@ -1,0 +1,128 @@
+---
+title: "05_visualisations"
+author: "Ahyoung Lim"
+date: "2023-04-05"
+output: html_document
+---
+
+```{r, include=FALSE}
+inc_dt2 <- read.csv("data/transformed_data/PAHO_for_visual.csv")
+plyr::count(inc_dt2$source_cat)
+inc_dt2$source_cat <- ifelse(is.na(inc_dt2$source_cat), "NA", inc_dt2$source_cat)
+```
+
+## Cumulative plot by country
+```{r cumulative plot for each country, fig.width = 18, fig.height = 10, echo=FALSE, results='hide'}
+
+dt_list3 <- inc_dt2 %>%
+  ungroup()%>%
+  #filter(adm_0_name %in% g3$adm_0_name)%>%
+  group_split(adm_0_name)
+
+plyr::count(inc_dt2$source_cat)
+source("function/plot_cumulative2.R")
+
+lapply(dt_list3, plot_cumulative2_spline) 
+```
+
+## Incidence plot by country
+```{r incidence plot for each country, fig.width = 18, fig.height = 10, echo=FALSE, results='hide'}
+
+dt_list2 <- inc_dt2 %>%
+  ungroup()%>%
+  #filter(adm_0_name %in% g3$adm_0_name)%>%
+  group_split(adm_0_name)
+
+plyr::count(inc_dt2$source_cat)
+source("function/plot_incidence.R")
+
+lapply(dt_list2, plot_incidence_spline) # produce plots for 16 countries
+```
+
+
+
+## Updated data coverage
+
+Let's see how the data coverage has been updated so far. The figure below shows the weekly data coverage (2014-2022) by sources (raw, imputed, revised, not available) and country. Imputation filled in the gap, whereas revision may have created more. NA refers to the case when the original raw data was not available; Revised-NA refers to the case when the original raw data was available but has been replaced with NAs because they were revised down over time. 
+
+```{r heatmap, fig.width = 28, fig.height = 20, echo=FALSE, results='hide'}
+ggplot(inc_dt2, aes(x=epidemiological_week, y=adm_0_name, fill=as.factor(source_cat)))+
+  geom_tile(color="white", lwd = 0.1)+
+  scale_fill_manual(values = c("#1f77b4", "#2ca02c","navy", "#d62728"),
+                     breaks = c("Raw", "Imputed","Zero",   "NA"),
+                     labels = c("Raw", "Imputed", "Zero",  "NA"))+
+  scale_x_continuous(expand = c(0,0))+
+  scale_y_discrete(limits=rev)+
+  ggtitle("Updated data coverage")+
+  xlab("Epidemiological week")+ylab("Country")+
+  theme(plot.title = element_text(size=28, family = "bold"),
+        axis.title = element_text(size=25))+
+  theme(axis.text.y = element_text(size=22), 
+        axis.text.x = element_blank())+
+  theme(axis.ticks = element_blank())+
+  theme(panel.spacing = unit(0.1, "lines"), 
+        panel.background = element_rect(fill = 'white'), 
+        panel.grid.major = element_blank(),
+        plot.margin = unit(c(1,1,1,1), "cm"))+
+  theme(strip.background = element_blank(), 
+        strip.text = element_text(size=22))+
+  theme(legend.title = element_blank(),
+        legend.text = element_text(size=18, margin = margin(t = 5)))+
+  facet_grid(.~year,  scales = "free", space = "free" )
+```
+
+So in summary, what changes have been made to the original raw datasets? 
+```{r percent data updates, fig.width = 18, fig.height = 20, echo=FALSE, results='hide'}
+
+inc_dt2 %>%
+  group_by(adm_0_name, source_cat)%>%
+  tally()%>%
+  mutate(prop = round(prop.table(n)*100, 1))%>%
+  ungroup()%>%
+  tidyr::complete(adm_0_name, source_cat)%>%
+  group_by(source_cat)%>%
+  summarise(avg_prop = mean(prop, na.rm=T))
+
+
+inc_dt2 %>%
+  group_by(adm_0_name, source_cat)%>%
+  tally()%>%
+  mutate(prop = round(prop.table(n)*100, 1))%>%
+  ungroup()%>%
+  tidyr::complete(adm_0_name, source_cat)%>%
+  filter(!source_cat %in% c("Raw"))%>%
+  mutate(source_cat = factor(source_cat, levels=c( "Zero", "Imputed","NA")))%>%
+  #for text annotations on tile
+  mutate(labels = paste0( sprintf("%.1f", prop), "%"), "")%>%
+  mutate(labels = ifelse(is.na(prop), "", labels))%>%
+
+  ggplot()+
+  geom_tile(aes(x=source_cat, y=adm_0_name, fill=prop), color = "white",  lwd = 1.5, linetype = 1)+
+  geom_text(aes(x = source_cat, y = adm_0_name, label = labels), color = "black", size= 6)+
+  scale_x_discrete(position = "top")+
+  scale_y_discrete(limits=rev)+
+  ggtitle("Updates to data by country")+
+  xlab(NULL) + ylab("Country")+
+  scale_fill_distiller(palette = "YlGnBu", direction = 1, na.value="#D9D9D9", name="Proportion (%)")+
+  theme(axis.text.x.top = element_text(size=22,  margin = margin(b = 0.1, unit = "in")))+
+  theme(plot.title = element_text(size=28, family = "bold", vjust = 5, hjust = 0.08),
+        axis.title.y = element_text(size=25,  margin = margin(b = 30)), 
+        axis.text.y = element_text(size=22, margin = margin(r = 2)), 
+        axis.ticks.x = element_blank(),        
+        axis.ticks.y = element_blank(), 
+        panel.background = element_rect(fill = 'white'), 
+        plot.margin = unit(c(1,1,1,1), "cm"),
+        axis.line.x = element_blank(), 
+        axis.line.y = element_blank(),
+        panel.grid.major = element_blank()
+  )+
+   theme(legend.title = element_text(size=20),
+        legend.text = element_text(size=18, vjust=1),
+        #legend.text.align = 0, 
+        legend.margin = margin(11,11,11,11), 
+        legend.background=element_rect(fill="white"),
+        legend.key = element_rect(fill="white")
+  )
+
+
+```

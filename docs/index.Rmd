@@ -5,7 +5,7 @@ date: "Last update on `r format(Sys.Date(), '%B %d, %Y')`"
 
 ```{r include = FALSE, echo = FALSE, results = "hide"}
 require(here); require(dplyr); require(stringr); require(lubridate); require(distill)
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.path="figure/")
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.path="../docs/figure/")
 knitr::opts_knit$set(root.dir = here())
 
 
@@ -22,32 +22,8 @@ theme_set(theme_bw())
 
 ```
 
-<!--#Data preprocessing-->
 
-```{r Data preprocessing, include = FALSE, eval=FALSE}
-#* This part could be merged into earlier data processing stage
-db1 <- read.csv(here("data", "moh_pahosubnational_tycho_merge.csv"))
-db2 <- read.csv(here("data", "paho_for_opendengue.csv"))
-colnames(db1)
 
-db1 <- db1 %>% 
-  select(-X) %>%
-  mutate(source_cat = ifelse(source_cat %in% c("paho"), "paho_sub", source_cat))
-
-names(db1)
-names(db2)
-
-plyr::count(db2$source_cat)
-
-#db2 <- db2 %>% 
-#  mutate(source_cat = ifelse(source_cat %in% c("paho-adm0"), "paho_adm0", "paho_imputed"))
-
-data <- rbind(db1, db2)
-plyr::count(data$source_cat)
-rm(db1, db2)
-
-#write.csv(data, here("data", "master_data.csv"), row.names=F)
-```
 <!--
 Create columns for categorising each row according to it's spatial resolution & temporal resolution.
 
@@ -55,7 +31,7 @@ Convert all case counts from PAHO portal to weekly. While they are currently cum
 -->
 
 ```{r load master data, include=FALSE}
-data <- read.csv(here("data", "master_data.csv"))
+data <- read.csv(here("data/transformed_data/", "master_data.csv"))
 head(data)
 plyr::count(data$source_cat)
 plyr::count(data$adm_0_name)
@@ -188,7 +164,7 @@ ggplot(data = world) +
 
 ```{r heatmap order, include=FALSE}
 # ordering country by longitude (?)
-lookup_order <- read.csv(here("data", "heatmap_order.csv"))
+lookup_order <- read.csv(here("data/ref_data", "heatmap_order.csv"))
 names(lookup_order)
 
 #data_ctr <- data %>% select(adm_0_name) %>% distinct()
