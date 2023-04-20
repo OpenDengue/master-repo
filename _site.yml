@@ -1,0 +1,26 @@
+name: "OpenDengue"
+title: "OpenDengue Dashboard"
+output_dir: "."
+creative_commons: CC BY
+favicon: favicon.ico
+
+navbar:
+  logo:
+    image: docs/logo3.png    
+    href: https://opendengue.github.io/master-repo/index.html
+  right:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
+    - text: "Methods"
+      menu: 
+        - text: "PAHO"
+          href: PAHO_PLISA.html
+        - text: "TYCHO"
+          href: tycho.html
+    - icon: fab fa-github
+      href: https://github.com/OpenDengue/master-repo
+output: 
+  distill::distill_article:
+    css: style.css
