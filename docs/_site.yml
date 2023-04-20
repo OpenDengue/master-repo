@@ -15,9 +15,9 @@ navbar:
       href: about.html
     - text: "Methods"
       menu: 
-        - text: PAHO
+        - text: "PAHO"
           href: PAHO_PLISA_cumulative_incident.html
-        - text: TYCHO
+        - text: "TYCHO"
           href: tycho.html
     - icon: fab fa-github
       href: https://github.com/OpenDengue/master-repo
