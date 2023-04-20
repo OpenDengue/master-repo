@@ -353,7 +353,9 @@ source_boolean <- data %>%
 
 plyr::count(source_boolean$source_cat) # here 'NA' created because of the use of 'complete' function
 ```
+
 In the case of multiple data sources available for the same country-year, the data source with the most data rows is chosen and shown on the figure below. 
+
 ```{r source fig, fig.width = 18, fig.height = 18, echo=FALSE}
 source_boolean %>%
   filter(!year < 1990)%>%
