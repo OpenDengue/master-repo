@@ -7,11 +7,12 @@ PLISA PAHO portal only permits download of all countries cumulative data sets in
 
 The files are loaded and a new directory created for processed data. 
 
-```{r Load all the raw datasets, encode, and merge into one, eval=FALSE}
-file_list<-list.files("data/raw_files/PAHO"); file_list
 
-old_dir<-paste0("data/raw_files/PAHO")
-new_dir<-paste0("data/source_files/PAHO")
+```{r Load all the raw datasets, encode, and merge into one, eval=FALSE}
+file_list<-list.files(here("data/raw_files/PAHO")); file_list
+
+old_dir<-here("data/raw_files/PAHO")
+new_dir<-here("data/source_files/PAHO")
 
 #Encoding & save again
 
@@ -104,7 +105,7 @@ all_dt <- all_dt %>%
 #administrative unit codes
 all_dt$adm_0_name <- stri_trans_general(all_dt$adm_0_name,"Latin-ASCII")
 
-gaul_codes_world <- read.csv(file="data/ref_data/gaul_codes_world.csv")
+gaul_codes_world <- read.csv(here("data/ref_data", "gaul_codes_world.csv"))
 
 gaul_codes_world <- gaul_codes_world %>% 
   select(ADM0_NAME, ADM0_CODE) %>% 
@@ -141,7 +142,8 @@ all_dt <- merge(all_dt, gaul_codes_world, by="adm_0_name", all.x=T)
 
 Each data set is then processed into two data hierarchies, primary (A) and secondary (B), with calendar dates added. Epidemiological week and year remain, as these are useful for processing later on.  
 
-The case counts are left in cumulative counts at this stage. This may be useful for users who prefer to deal in cumulative counts. here, the calendar start date is fixed at the beginning of epidemiological week one of each year, and the calendar end date is moved forward to account for the cumulative count.   
+The case counts are left in cumulative counts at this stage. This may be useful for users who prefer to deal in cumulative counts. here, the calendar start date is fixed at the beginning of epidemiological week one of each year, and the calendar end date is moved forward to account for the cumulative count.  
+
 ```{r, eval=FALSE}
 #select columns for master table_A and change to date format
 all_dt_A <- all_dt %>% 
@@ -170,7 +172,7 @@ admin_NA <- all_dt_A_tidy %>%
 #all_dt_A_tidy$adm_0_code[all_dt_A_tidy$adm_0_name=="Virgin Islands (US)"]<-"258"
 
 
-write.csv(all_dt_A_tidy,"data/processed_data/PAHO_processed_A.csv", row.names = FALSE)
+write.csv(all_dt_A_tidy,here("data/processed_data", "PAHO_processed_A.csv"), row.names = FALSE)
 ```
 
 
@@ -208,5 +210,5 @@ all_dt_B_tidy <- all_dt_B_tidy %>%
   select(adm_0_name, adm_0_code, calendar_start_date, calendar_end_date, 
          dengue_classification, total, Serotype, source_id)
 
-write.csv(all_dt_B_tidy,"data/processed_data/PAHO_processed_B.csv", row.names = FALSE)
+write.csv(all_dt_B_tidy,here("data/processed_data/", "PAHO_processed_B.csv"), row.names = FALSE)
 ```

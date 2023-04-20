@@ -39,8 +39,6 @@ source("function/plot_incidence.R")
 lapply(dt_list2, plot_incidence_spline) # produce plots for 16 countries
 ```
 
-
-
 ## Updated data coverage
 
 Let's see how the data coverage has been updated so far. The figure below shows the weekly data coverage (2014-2022) by sources (raw, imputed, revised, not available) and country. Imputation filled in the gap, whereas revision may have created more. NA refers to the case when the original raw data was not available; Revised-NA refers to the case when the original raw data was available but has been replaced with NAs because they were revised down over time. 
@@ -72,6 +70,7 @@ ggplot(inc_dt2, aes(x=epidemiological_week, y=adm_0_name, fill=as.factor(source_
 ```
 
 So in summary, what changes have been made to the original raw datasets? 
+
 ```{r percent data updates, fig.width = 18, fig.height = 20, echo=FALSE, results='hide'}
 
 inc_dt2 %>%

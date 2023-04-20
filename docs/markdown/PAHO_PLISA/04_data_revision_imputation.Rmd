@@ -374,6 +374,7 @@ plyr::count(data3$source_cat)
 ```
 
 Compare the original raw data, revised data, and imputed data. The black dotted line indicates original raw values but were excluded because those were revised down later, the red line indicates the revised & gap filled data (but not yet imputed), and the blue line shows the imputed data. 
+
 ```{r all processes result, fig.width = 20, fig.height = 25,  echo = FALSE, results = "hide"}
 data3 %>%
   group_by(adm_0_name, year) %>%
@@ -413,6 +414,7 @@ inc_dt %>%
 Of 24,440 rows, 151 rows have been replaced with NAs following the 'Revised down' stage. In total 2,155 gaps have been filled following the 'Zero filling' and 'Imputation' stage.  
 
 Following is an example of comparing different imputation methods for Panama and Argentina. Na.spline() function gives better imputation results than na.approx() when converted to incidence count. Na.spline() will only be included in our final dataset. 
+
 ```{r imputation methods comparison, fig.width = 20, fig.height = 8, echo=FALSE }
 source("function/plot_incidence.R")
 source("function/plot_cumulative2.R")
