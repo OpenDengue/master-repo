@@ -1,0 +1,162 @@
+---
+title: "02_priority_setting"
+output: html_document
+---
+
+## Data coverage
+Setup: Load cumulative dataset containing all PAHO countries, for all epidemiological weeks and years available. Summarise the number of epidemiological weeks which have reported cumulative data for each country, for each year. 
+```{r }
+#RAW cumulative datasets
+data <- read.csv("processed_data/all_dt_A.csv")
+
+data <- data %>%
+  select(adm_0_name, adm_0_code, year, epidemiological_week, 
+         calendar_start_date, calendar_end_date,
+         cum_start_date, cum_end_date, cum_interval,
+         dengue_total_cumulative, 
+         source_id)%>%
+  mutate(calendar_start_date = ymd(calendar_start_date), 
+         calendar_end_date = ymd(calendar_end_date), 
+         cum_start_date = ymd(cum_start_date), 
+         cum_end_date = ymd(cum_end_date))
+```
+
+Categorise the data coverage for each country in the cumulative dataset for each year. 
+There are four categories of data coverage : >75%, 50-75%, 25-50%, 0-25%.
+Produce heatmap of cumulative, weekly data coverage for all countries between 2014-2021.
+
+```{r}
+#Summarise number of weeks included per year and country
+coverage_weekly <- data %>%
+  filter(is.na(dengue_total_cumulative) == FALSE)%>%
+  dplyr::group_by(adm_0_name, year)%>%
+  tally()%>%
+  rename(cum = n)%>%
+  mutate(total_EW=as.numeric(ifelse(year=="2014","53",
+                              ifelse(year=="2019","53",
+                                ifelse(year=="2020","53","52")))))%>%
+  mutate(cum_p= round((cum/total_EW*100), 1))%>% # calculate the proportion
+  ungroup() #prevent tidyr complete error
+
+coverage_weekly <- coverage_weekly %>%
+  mutate(gap = ifelse(cum_p >= 75, '4', 
+                          ifelse(cum_p < 75 & cum_p >= 50, "3", 
+                                    ifelse(cum_p < 50 & cum_p >= 25, "2", 
+                                           ifelse(cum_p <25, "1",
+                                                  ifelse(cum_p %in% c(0, NA), "0", ""))))))%>%
+  tidyr::complete(adm_0_name, year) # fill in missing years with NA
+
+#write.csv(d1, "PAHO_cumulative_data_coverage.csv",  row.names=F)
+```
+
+
+```{r fig.height=12, fig.width=9, unit="in", dpi=300, out.width = "70%"}
+f1 <- ggplot(data = coverage_weekly, aes(x=year, y=adm_0_name, fill=as.factor(gap)))+
+  geom_tile(color="white")+
+  scale_y_discrete(limits=rev)+
+  scale_x_continuous(breaks=c(2014:2022))+
+  scale_fill_manual(values = c("#0C2C84", "#1D91C0", "#7FCDBB", "#FFFFCC"), 
+                    limits = c( "1", "2", "3", "4"),
+                    labels = c("Q1", "Q2", "Q3", "Q4"),
+                    name = "% of year with weekly coverage", 
+                    guide = guide_legend(reverse = TRUE), na.value="#D9D9D9")+
+  theme( axis.ticks.x = element_blank(),        
+         axis.ticks.y = element_blank(), 
+         axis.text.y = element_text(size = 10, margin = margin(r = -10)), 
+         panel.background = element_rect(fill = 'white'), 
+         panel.grid.major = element_blank(),
+         plot.margin = unit(c(1,1,1,1), "cm")); f1
+  
+#ggsave(file="figure/PAHO_cumulative_data_coverage.png",f1, height=12, width=9, unit="in", dpi=300)
+
+
+```
+Create ranked list based on % of the 8 years for which we have weekly coverage  (2014-2021, excluding 2022 for now because we do not have all 2022 data downloaded as was downlaoded June 2022)
+Categorise countries according to high or low coverage, based on threshold of 70% coverage over the 8 years.
+
+```{r}
+coverage_all <- coverage_weekly %>%
+  mutate_all(~replace(., is.na(.), 0)) %>% 
+  group_by(adm_0_name) %>% 
+  summarise(cum_overall=sum(cum)) %>% 
+  mutate(cum_overall_pct=(cum_overall/470)*100) %>%  # *AL: is the value of 470 is specific to this dataset and will not be changed if the dataset is modified in the future? * 
+  select(adm_0_name, cum_overall_pct) %>% 
+  arrange(desc(cum_overall_pct))
+  
+summary(coverage_all$cum_overall_pct)
+
+# The average data coverage for all countries is 64.1%, based on a total of 470 weeks. We split the countries into two groups based on a threshold of 70% coverage, which will create a high coverage and a low coverage group. 
+
+coverage_all <- coverage_all %>%  
+  mutate(cov_group = ifelse(cum_overall_pct > 70, "high coverage", "low coverage")) 
+
+write_csv(coverage_all,file="processed_data/data_coverage_group.csv")
+```
+
+## Global burden
+
+Create rank of countries by dengue disease burden. Categorise countries into high or low burden based on threshold of 0.1% of total global dengue burden. 
+```{r Categorise by global burden}
+
+burden <- read.csv("ref_data/Country_burden2.csv") %>%
+  filter(WHO.region %in% "Americas") # select countries that belong to the PAHO region only
+# *AL: need to check with Oli where this global burden data come from. Not all countries in PAHO included in this global burden data
+
+plyr::count(burden$Country_name)
+num <- nrow(plyr::count(burden$Country_name)); num
+
+burden <- burden %>%
+  #Make country names consistent with PAHO
+  mutate(Country_name = ifelse(Country_name %in% c("British Virgin Islands"), "Virgin Islands (UK)",                    ifelse(Country_name %in% c("United States Virgin Islands"), "Virgin Islands (US)",                ifelse(Country_name %in% c("Turks and Caicos islands"), "Turks and Caicos Islands",                Country_name))))%>%
+  arrange(desc(Percent_of_global_burden))%>%
+  mutate(burden_rank = 1:num)
+  
+burden <- burden %>%
+  select(Country_name, Percent_of_global_burden, burden_rank)%>%
+  mutate(burden_group = ifelse(Percent_of_global_burden > 0.1, "high burden", "low burden"))%>%
+  rename(adm_0_name = Country_name)
+
+head(burden)
+
+#The burden data includes 37 countries only. We need to find which countries are missing.
+
+missing_countries <- coverage_weekly %>% 
+  select(adm_0_name)%>%
+  group_by(adm_0_name)%>% tally()%>% select(-n)%>%
+  filter(!adm_0_name %in% burden$adm_0_name)%>%  # exclude countries that are in the burden data and select only for those are not.
+  mutate(burden_group = "low burden")%>% # we assumed that these countries are low burden countries.
+  mutate(Percent_of_global_burden = NA)%>% 
+  mutate(burden_rank = NA)%>%
+  select(adm_0_name, Percent_of_global_burden, burden_rank, burden_group)
+
+head(missing_countries)
+
+#Merge datasets on coverage of cumulative, weekly case data with dengue disease burden. 
+#This can then help us to prioritise which countries require more advanced methods for converting cumulative to incident counts. 
+burden_all <- rbind(burden, missing_countries) # merge burden data and missing countries
+```
+
+
+## Categorise countries by priority
+Different approaches will be employed for different priority groups. 
+
+```{r Final priority by country}
+# merge data coverage and burden by country and rearrange columns
+country_rank <- merge(burden_all, coverage_all, by=c("adm_0_name"), all.x=T) %>% 
+  select(adm_0_name, burden_group, cov_group, Percent_of_global_burden, cum_overall_pct) %>%
+  mutate(p_group = ifelse(burden_group == "high burden" & cov_group == "high coverage", "Group 1",
+                      ifelse(burden_group == "high burden" & cov_group == "low coverage", "Group 2", 
+                          ifelse(burden_group == "low burden" & cov_group == "low coverage", "Group 3", "Group 4"))))
+
+country_rank %>% 
+  filter(cum_overall_pct ==100) #Nicaragua is the only country with 100% of data coverage!
+
+# luckily we have high data coverage for the most of high-burden countries
+table(country_rank$burden_group, country_rank$cov_group) 
+
+write.csv(country_rank, "processed_data/Priority_country.csv", row.names=F)
+```
+
+
+
+
