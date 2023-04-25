@@ -16,17 +16,17 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 # Data overview
 ```{r, echo=FALSE}
 
-knitr::include_graphics("docs/flowchart/high_level_flow.png",   error = getOption("knitr.graphics.error", TRUE)
-)
+knitr::include_graphics("./flowchart/high_level_flow.png")
+
 
 ```
 
 ```{r, echo=FALSE}
-knitr::include_graphics("docs/flowchart/flow_condense.png")
+knitr::include_graphics("./flowchart/flow_condense.png")
 
 ```
 
 ```{r, echo=FALSE}
-knitr::include_graphics("docs/flowchart/dengue_classification.png")
+knitr::include_graphics("./flowchart/dengue_classification.png")
 
 ```
