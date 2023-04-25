@@ -92,7 +92,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <link rel="license" href="https://creativecommons.org/licenses/by/4.0/"/>
-  <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico"/>
+  <link rel="icon" type="image/vnd.microsoft.icon" href="./logo/favicon.ico"/>
 
   <!--  https://schema.org/Article -->
   <meta property="article:published" itemprop="datePublished" content="2023-04-25"/>
@@ -2429,7 +2429,7 @@ Methods
 <!--r child = 'markdown/sections/03_filling_gaps.Rmd', include=FALSE} -->
 <h1 id="data-revision-and-imputation">Data revision and imputation</h1>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="docs/flowchart/PAHO_process_summary.png" /><!-- --></p>
+<p><img src="flowchart/PAHO_process_summary.png" width="944" /></p>
 </div>
 <h2 id="revisions-to-cumulative-count-values">Revisions to cumulative count values</h2>
 <p>Since some cumulative counts may be revised down over time, we need to identify the rows in our dataset that contain such values. To achieve this, we will use a for loop. For instance, if the cumulative count for week 5 was initially 100 but revised down to 90 in week 6, we will tag week 5 as having revised down values. Cumulative count for week 5 was compared with all subsequent rows (e.g., week 6 to week 53).</p>

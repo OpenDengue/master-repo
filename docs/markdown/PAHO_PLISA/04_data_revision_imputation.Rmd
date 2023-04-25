@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ```{r, echo=FALSE}
-knitr::include_graphics("docs/flowchart/PAHO_process_summary.png")
+knitr::include_graphics("./flowchart/PAHO_process_summary.png")
 
 ```
 
