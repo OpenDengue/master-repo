@@ -95,8 +95,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico"/>
 
   <!--  https://schema.org/Article -->
-  <meta property="article:published" itemprop="datePublished" content="2023-04-20"/>
-  <meta property="article:created" itemprop="dateCreated" content="2023-04-20"/>
+  <meta property="article:published" itemprop="datePublished" content="2023-04-25"/>
+  <meta property="article:created" itemprop="dateCreated" content="2023-04-25"/>
   <meta name="article:author" content="Joe Clarke &amp; Ahyoung Lim &#10;"/>
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
@@ -113,7 +113,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["PAHO PLISA cumulative to incident"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Joe Clarke & Ahyoung Lim \n"]}]}]},{"type":"character","attributes":{},"value":["Last update on April 20, 2023"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["html_document"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["number_sections","toc","toc_float","output_dir"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["../docs/"]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["PAHO PLISA cumulative to incident"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Joe Clarke & Ahyoung Lim \n"]}]}]},{"type":"character","attributes":{},"value":["Last update on April 25, 2023"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["html_document"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["number_sections","toc","toc_float","output_dir"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["../docs/"]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2142,7 +2142,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"PAHO PLISA cumulative to incident","authors":[{"author":"Joe Clarke & Ahyoung Lim \n","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2023-04-20T00:00:00.000+01:00","citationText":"Lim, 2023"}
+{"title":"PAHO PLISA cumulative to incident","authors":[{"author":"Joe Clarke & Ahyoung Lim \n","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2023-04-25T00:00:00.000+01:00","citationText":"Lim, 2023"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2151,7 +2151,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <nav class="distill-site-nav distill-site-header">
 <div class="nav-left">
 <a class="logo" href="https://opendengue.github.io/master-repo/index.html">
-<img src="docs/logo3.png" alt="Logo"/>
+<img src="../docs/logo/logo3.png" alt="Logo"/>
 </a>
 <a href="index.html" class="title">OpenDengue Dashboard</a>
 </div>
@@ -2191,7 +2191,7 @@ Methods
   
   <p>Joe Clarke &amp; Ahyoung Lim</p>
   
-<br/>Last update on April 20, 2023
+<br/>Last update on April 25, 2023
 </div>
 
 <div class="d-article">
@@ -2428,7 +2428,7 @@ Methods
 <!--r child = 'markdown/sections/03_filling_gaps.Rmd', include=FALSE} -->
 <h1 id="data-revision-and-imputation">Data revision and imputation</h1>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="docs/flowchart/PAHO_process_summary.png" width="944" /></p>
+<p><img src="docs/flowchart/PAHO_process_summary.png" /><!-- --></p>
 </div>
 <h2 id="revisions-to-cumulative-count-values">Revisions to cumulative count values</h2>
 <p>Since some cumulative counts may be revised down over time, we need to identify the rows in our dataset that contain such values. To achieve this, we will use a for loop. For instance, if the cumulative count for week 5 was initially 100 but revised down to 90 in week 6, we will tag week 5 as having revised down values. Cumulative count for week 5 was compared with all subsequent rows (e.g., week 6 to week 53).</p>
@@ -2478,7 +2478,7 @@ Methods
 <p>When the total sum of weekly = annual count (assuming annual count data is correct), NA values were identified and replaced with count values for the following three use cases.</p>
 <h3 id="case-1.-an-entire-year-without-a-case">Case 1. An entire year without a case</h3>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="C:/docs/figure/PAHOzero%20filling-case1-1.png" width="624" /><img src="C:/docs/figure/PAHOzero%20filling-case1-2.png" width="624" /></p>
+<p><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOzero%20filling-case1-1.png" width="624" /><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOzero%20filling-case1-2.png" width="624" /></p>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2489,7 +2489,7 @@ Methods
 </div>
 <h3 id="case-2.-filling-in-values-for-the-weeks-after-the-latest-cumulative-count">Case 2. Filling in values for the weeks after the latest cumulative count</h3>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="C:/docs/figure/PAHOzero%20filling-case2-1.png" width="624" /><img src="C:/docs/figure/PAHOzero%20filling-case2-2.png" width="624" /><img src="C:/docs/figure/PAHOzero%20filling-case2-3.png" width="624" /></p>
+<p><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOzero%20filling-case2-1.png" width="624" /><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOzero%20filling-case2-2.png" width="624" /><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOzero%20filling-case2-3.png" width="624" /></p>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2500,7 +2500,7 @@ Methods
 </div>
 <h3 id="case-3.-duplicated-cumulative-counts-where-nas-exist-in-between">Case 3. Duplicated cumulative counts where NAs exist in between</h3>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="C:/docs/figure/PAHOzero%20filling-case3-1.png" width="624" /><img src="C:/docs/figure/PAHOzero%20filling-case3-2.png" width="624" /><img src="C:/docs/figure/PAHOzero%20filling-case3-3.png" width="624" /></p>
+<p><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOzero%20filling-case3-1.png" width="624" /><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOzero%20filling-case3-2.png" width="624" /><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOzero%20filling-case3-3.png" width="624" /></p>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2558,7 +2558,7 @@ Methods
 </div>
 <p>Compare the original raw data, revised data, and imputed data. The black dotted line indicates original raw values but were excluded because those were revised down later, the red line indicates the revised &amp; gap filled data (but not yet imputed), and the blue line shows the imputed data.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="C:/docs/figure/PAHOall%20processes%20result-1.png" width="1920" /></p>
+<p><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOall%20processes%20result-1.png" width="1920" /></p>
 </div>
 <h2 id="convert-cumulative-to-incident-counts">Convert cumulative to incident counts</h2>
 <p>Prepare dataset for converting cumulative to incident counts. This is more straightforward for data where we have consecutive epidemiological weeks, as a lag column can be created and subtracted from the previous weeks count.</p>
@@ -2578,7 +2578,7 @@ Methods
 <p>Of 24,440 rows, 151 rows have been replaced with NAs following the ‘Revised down’ stage. In total 2,155 gaps have been filled following the ‘Zero filling’ and ‘Imputation’ stage.</p>
 <p>Following is an example of comparing different imputation methods for Panama and Argentina. Na.spline() function gives better imputation results than na.approx() when converted to incidence count. Na.spline() will only be included in our final dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="C:/docs/figure/PAHOimputation%20methods%20comparison-1.png" width="1920" /><img src="C:/docs/figure/PAHOimputation%20methods%20comparison-2.png" width="1920" /><img src="C:/docs/figure/PAHOimputation%20methods%20comparison-3.png" width="1920" /><img src="C:/docs/figure/PAHOimputation%20methods%20comparison-4.png" width="1920" /><img src="C:/docs/figure/PAHOimputation%20methods%20comparison-5.png" width="1920" /><img src="C:/docs/figure/PAHOimputation%20methods%20comparison-6.png" width="1920" /></p>
+<p><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOimputation%20methods%20comparison-1.png" width="1920" /><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOimputation%20methods%20comparison-2.png" width="1920" /><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOimputation%20methods%20comparison-3.png" width="1920" /><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOimputation%20methods%20comparison-4.png" width="1920" /><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOimputation%20methods%20comparison-5.png" width="1920" /><img src="C:/Users/AhyoungLim/Dropbox/WORK/Dengue%20Project%202022/Dengue%20DB/docs/figure/PAHOimputation%20methods%20comparison-6.png" width="1920" /></p>
 </div>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--

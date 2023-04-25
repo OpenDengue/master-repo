@@ -1,12 +1,12 @@
 name: "OpenDengue"
-title: "OpenDengue Dashboard"
+title: "OpenDengue Web"
 output_dir: "."
 creative_commons: CC BY
 favicon: favicon.ico
 
 navbar:
   logo:
-    image: docs/logo3.png    
+    image: ../docs/logo/logo3.png    
     href: https://opendengue.github.io/master-repo/index.html
   right:
     - text: "Home"
@@ -15,6 +15,8 @@ navbar:
       href: about.html
     - text: "Methods"
       menu: 
+        - text: "Overview"
+          href: overview.html
         - text: "PAHO"
           href: PAHO_PLISA.html
         - text: "TYCHO"
