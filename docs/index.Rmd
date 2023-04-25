@@ -5,9 +5,8 @@ date: "Last update on `r format(Sys.Date(), '%B %d, %Y')`"
 
 ```{r include = FALSE, echo = FALSE, results = "hide"}
 require(here); require(dplyr); require(stringr); require(lubridate); require(distill)
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.path="../docs/figure/")
 knitr::opts_knit$set(root.dir = here())
-
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.path="./figure/")
 
 pacman::p_load("dplyr", "lubridate",  "tidyr", "tidyverse",  "knitr", "stringi", "zoo", "EpiWeek", "data.table", "ggplot2", "sf", 'rnaturalearth', "sf", "rnaturalearthdata", "distill")
 
