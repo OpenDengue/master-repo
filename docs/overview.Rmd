@@ -2,31 +2,20 @@
 title: "Overview"
 ---
 
-```{r setup, include=FALSE}
-library(knitr)
-require("here")
-require("pacman")
-require("rprojroot")
-require("formatR")
-
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.path="./flowchart/")
-knitr::opts_knit$set(root.dir = here())
-```
-
 # Data overview
 ```{r, echo=FALSE}
 
-knitr::include_graphics("docs/flowchart/high_level_flow.png")
+knitr::include_graphics("./flowchart/high_level_flow.png")
 
 
 ```
 
 ```{r, echo=FALSE}
-knitr::include_graphics("docs/flowchart/flow_condense.png")
+knitr::include_graphics("./flowchart/flow_condense.png")
 
 ```
 
 ```{r, echo=FALSE}
-knitr::include_graphics("docs/flowchart/dengue_classification.png")
+knitr::include_graphics("./flowchart/dengue_classification.png")
 
 ```
