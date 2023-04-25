@@ -2,7 +2,7 @@ name: "OpenDengue"
 title: "OpenDengue Web"
 output_dir: "."
 creative_commons: CC BY
-favicon: favicon.ico
+favicon: ./logo/favicon.ico
 
 navbar:
   logo:
