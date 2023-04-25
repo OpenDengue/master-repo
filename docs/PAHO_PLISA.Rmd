@@ -37,7 +37,7 @@ require("here")
 require("pacman")
 require("formatR")
 
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.path = here("../docs/figure/PAHO/"))
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.path = "../docs/figure/PAHO/")
 knitr::opts_knit$set(root.dir = here())
 pacman::p_load("dplyr", "lubridate",  "tidyr", "tidyverse",  "knitr", "stringi", "zoo", "EpiWeek", "data.table")
 
@@ -66,7 +66,8 @@ pacman::p_load("dplyr", "lubridate",  "tidyr", "tidyverse",  "knitr", "stringi",
 ```
 
 
-<!--
+
 # Visualisations
-```{r child = 'docs/markdown/PAHO_PLISA/05_visual.Rmd', echo=FALSE}```
--->
+```{r child = 'docs/markdown/PAHO_PLISA/05_visual.Rmd', echo=FALSE}
+```
+
