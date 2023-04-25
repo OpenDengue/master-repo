@@ -15,7 +15,7 @@ navbar:
       href: about.html
     - text: "Methods"
       menu: 
-        - text: "Overview"
+        - text: "OVERVIEW"
           href: overview.html
         - text: "PAHO"
           href: PAHO_PLISA.html

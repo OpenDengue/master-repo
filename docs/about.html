@@ -88,31 +88,28 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>OpenDengue Web: OpenDengue</title>
+  <title>OpenDengue Web: About This Website</title>
 
 
   <link rel="license" href="https://creativecommons.org/licenses/by/4.0/"/>
   <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico"/>
 
-  <!--  https://schema.org/Article -->
-  <meta property="article:published" itemprop="datePublished" content="2023-04-25"/>
-  <meta property="article:created" itemprop="dateCreated" content="2023-04-25"/>
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="OpenDengue Web: OpenDengue"/>
+  <meta property="og:title" content="OpenDengue Web: About This Website"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="OpenDengue Web"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="OpenDengue Web: OpenDengue"/>
+  <meta property="twitter:title" content="OpenDengue Web: About This Website"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","date"]}},"value":[{"type":"character","attributes":{},"value":["OpenDengue"]},{"type":"character","attributes":{},"value":["Last update on April 25, 2023"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title"]}},"value":[{"type":"character","attributes":{},"value":["About This Website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2141,7 +2138,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"OpenDengue","authors":[],"publishedDate":"2023-04-25T00:00:00.000+01:00"}
+{"title":"About This Website","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2181,7 +2178,7 @@ Methods
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>OpenDengue</h1>
+<h1>About This Website</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2189,47 +2186,8 @@ Methods
 
 
 <div class="d-article">
-<!--
-Create columns for categorising each row according to it's spatial resolution & temporal resolution.
-
-Convert all case counts from PAHO portal to weekly. While they are currently cumulative with the calendar_end_date increasing weekly, we will be developing models to spread this data across weekly counts before release. In the portal itself, all denge cases are only listed cumulatively in single week increments, while incident "suspected" cases are listed weekly. 
--->
-<!--
-Convert calendar dates back to epi weeks, to help with tallying the number of weeks at each temporal and spatial resolution.
--->
-<h1 id="map-of-countries-covered">Map of countries covered</h1>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="../docs/figure/worldmap-1.png" width="624" /></p>
-</div>
-<h1 id="summary-statistics-of-data-coverage">Summary statistics of data coverage</h1>
-<p>Produce summary statistics of temporal resolution by each year. temporal resolution is grouped into weekly, monthly, annually.<br />
-The maximum temporal resolution reached for that year is prioritised for colour coding the heatmap.
-<!--The opacity/gradient of the colour is determined by the proportion of the year at which that temporal resolution is available. --></p>
-<h2 id="temporal-resolution">Temporal resolution</h2>
-<!--
-No color gradient applied to each cell. It is possible, for example, to only have data for one month of a certain year available.
--->
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="../docs/figure/temp fig-1.png" width="1728" /></p>
-</div>
-<h2 id="spatial-resolution">Spatial resolution</h2>
-<!--No color gradient applied to each cell. It is possible, for example, to only have data for one adm2 area of a certain country available. -->
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="../docs/figure/spat fig-1.png" width="1728" /></p>
-</div>
-<h2 id="data-source">Data source</h2>
-<p>In the case of multiple data sources available for the same country-year, the data source with the most data rows is chosen and shown on the figure below.</p>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="../docs/figure/source fig-1.png" width="1728" /></p>
-</div>
-<!--Temporal/spatial resolution per data source? This is done by comparing the number of country-year data points between different sources. This allows us to identify which data source dominates each temporal resolution. -->
-<!--Summed horizontally. -->
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="../docs/figure/source temp fig-1.png" width="624" /></p>
-</div>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="../docs/figure/source spat fig-1.png" width="624" /></p>
-</div>
+<p>Created by DMMG.<br />
+Github repo: <a href="https://github.com/OpenDengue/master-repo" class="uri">https://github.com/OpenDengue/master-repo</a></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
