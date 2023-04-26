@@ -300,6 +300,8 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
         panel.border=element_blank())
 ```
 
+
+<!--
 ## Data source
 ```{r check data source, include=FALSE}
 # first check if any country-year has data for more than one data source
@@ -355,7 +357,7 @@ ggplot( aes(x=year, y=adm_0_name, group=source_cat))+
         plot.background=element_blank(),
         panel.border=element_blank())
 ```
-<!--Temporal/spatial resolution per data source? This is done by comparing the number of country-year data points between different sources. This allows us to identify which data source dominates each temporal resolution. --> 
+<!--Temporal/spatial resolution per data source? This is done by comparing the number of country-year data points between different sources. This allows us to identify which data source dominates each temporal resolution. 
 ```{r source temp, include=FALSE}
 # first check if any country-year has data for more than one data source
 source_temp <- data %>%
@@ -380,7 +382,7 @@ source_temp2 <- source_temp %>%
 
 ```
 
-<!--Summed horizontally. -->
+<!--Summed horizontally. 
 ```{r source temp fig, echo=FALSE}
 source_temp2 %>%
   ggplot(aes(x=source_cat_nm, y=temporal_res_nm, fill=prop))+
@@ -611,4 +613,4 @@ data %>%
         panel.border=element_blank())
 ```
 
-
+-->
