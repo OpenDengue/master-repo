@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Playfair+Display|Asap:400,400i,700,700i|Roboto:400,400i,700,700i&display=swap');
 
 
+
 h1, h2, h3, h4, h5, h6 {
   font-family: "Asap";
 }
@@ -13,7 +14,13 @@ body {
 /* --------------logo-------------------- */
 
 .distill-site-header .logo img{
-  max-height: 25px; /* Makes logo bigger, default was 20px */
+  max-height: 20px; /* Makes logo bigger, default was 20px */
+  margin-right: 50px;
+}
+
+.distill-site-header a.title, .distill-site-header a.nav-toggle {
+    display: none;
+   
 }
 
 
@@ -25,8 +32,12 @@ body {
   /*background-color: transparent;*/
   font-size: 15px;
   font-family: "Asap";
+  margin-left: 50px;
+  margin-right: 50px;
+  
   /*letter-spacing: 2px;
   /*text-transform: uppercase;*/
+  
 }
 
 /* -------------Footer------------------*/
