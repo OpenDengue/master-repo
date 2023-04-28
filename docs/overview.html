@@ -88,28 +88,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>OpenDengue Web: Overview</title>
+  <title>: Methods</title>
 
 
-  <link rel="license" href="https://creativecommons.org/licenses/by/4.0/"/>
   <link rel="icon" type="image/vnd.microsoft.icon" href="./logo/favicon.ico"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="OpenDengue Web: Overview"/>
+  <meta property="og:title" content=": Methods"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
-  <meta property="og:site_name" content="OpenDengue Web"/>
+  <meta property="og:site_name" content=""/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="OpenDengue Web: Overview"/>
+  <meta property="twitter:title" content=": Methods"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title"]}},"value":[{"type":"character","attributes":{},"value":["Overview"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title"]}},"value":[{"type":"character","attributes":{},"value":["Methods"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2073,7 +2072,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2138,7 +2137,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Overview","authors":[]}
+{"title":"Methods","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2146,14 +2145,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <header class="header header--fixed" role="banner">
 <nav class="distill-site-nav distill-site-header">
 <div class="nav-left">
-<a class="logo" href="https://opendengue.github.io/master-repo/index.html">
+<a class="logo" href="https://opendengue.github.io/master-repo">
 <img src="logo/logo3.png" alt="Logo"/>
 </a>
-<a href="index.html" class="title">OpenDengue Web</a>
-</div>
-<div class="nav-right">
+<a href="index.html" class="title"></a>
 <a href="index.html">Home</a>
-<a href="about.html">About</a>
+<a href="data.html">Data</a>
+<a href="project.html">Project</a>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
 Methods
@@ -2166,9 +2164,12 @@ Methods
 <a href="tycho.html">TYCHO</a>
 </div>
 </div>
+<a href="contribute.html">Contribute</a>
 <a href="https://github.com/OpenDengue/master-repo">
 <i class="fab fa-github" aria-hidden="true"></i>
 </a>
+</div>
+<div class="nav-right">
 <a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
 </div>
 </nav>
@@ -2178,7 +2179,7 @@ Methods
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Overview</h1>
+<h1>Methods</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2186,15 +2187,38 @@ Methods
 
 
 <div class="d-article">
-<h1 id="data-overview">Data overview</h1>
+<h2 id="overview">Overview</h2>
+<p>OpenDengue combines data from a variety of existing databases, ministry of health reports and other sources and conducts a series of extraction, geopositioning, standardisation and error checking protocols. Each step of our analysis is accompanied by detailed metadata to ensure case counts can be tracked back to their original reporting source. A summary and detailed workflow diagram are presented below with more detail on specific sub-protocols. An accompanying manuscript detailing all protocols, imputation performance checking and data summaries is under preparation.</p>
+<h2 id="summary-work-flow">Summary work flow</h2>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="flowchart/high_level_flow.png" width="1030" /></p>
 </div>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="flowchart/flow_condense.png" width="2644" /></p>
-</div>
+<h3 id="double-count-values-sub-protocol">Double count values sub-protocol</h3>
+<p>Sometimes multiple different sources will report different case counts for the same location and time period. Where this occurred sources were prioritised in the following order (highest priority to lowest): Ministry of Health report / Regional health body report / other sources.</p>
+<h3 id="dengue-classification-sub-protocol">Dengue classification sub-protocol</h3>
+<p>Some sources dissaggregate dengue cases by severity or other attributes that may or may not be mutually exclusive, making the total number of dengue cases reported unclear. We therefore use the following protocol to systematically measure total cases under these circumstances.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="flowchart/dengue_classification.png" width="688" /></p>
+</div>
+<h3 id="cumulative-cases-to-incident-cases-sub-protocol">Cumulative cases to incident cases sub-protocol</h3>
+<p>Some data sources, in particular the Pan American Health Organization, report case counts as cumulative values since the beginning of the calendar year. Converting cumulative counts to incident counts can be difficult when there are gaps in the middle or end of the time series.</p>
+<p>For gaps at the end of the time series, missing weeks’ values were imputed with the value 0 if alternative sources confirmed that the annual total cases matched the final reported cumulative case count. For short (6 weeks of less) gaps in the middle of the time series we use spline-based imputation to estimate the distribution of values over missing weeks. For gaps longer than 6 weeks all values are assigned missing values (NA).</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="flowchart/PAHO_process_summary.png" width="944" /></p>
+</div>
+<p>An example application of this protocol for Guatemala:</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="figure/PAHO/cumulative%20plot%20for%20each%20country-26.png" width="1728" /></p>
+</div>
+<p>Summary of imputation across the PAHO dataset:</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="figure/PAHO/heatmap-1.png" width="2688" /></p>
+</div>
+<h3 id="error-checking-sub-protocol">Error checking sub-protocol</h3>
+<p>We use the <code>anomalize</code> R package to detect anomalous values after de-trending the data. All identified anomalies were manually checked for extraction errors.</p>
+<h2 id="detailed-protocol">Detailed protocol</h2>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="flowchart/flow_condense.png" width="2644" /></p>
 </div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
@@ -2208,18 +2232,13 @@ Methods
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
 <!--radix_placeholder_appendices-->
-<div class="appendix-bottom">
-<h3 id="reuse">Reuse</h3>
-<p>Text and figures are licensed under Creative Commons Attribution <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The figures that have been reused from other sources don't fall under this license and can be recognized by a note in their caption: "Figure from ...".</p>
-</div>
+<div class="appendix-bottom"></div>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
-<p>© Copyright 2023 [The Distill Template Authors]
-(https://github.com/distillpub/template/blob/master/AUTHORS) and <a
-href="https://www.rstudio.com">RStudio, Inc</a>.</p>
-<p>Software licensed under the [Apache License, v2.0]
-(https://www.apache.org/licenses/LICENSE-2.0).</p>
+<div id="footer">
+    <p class="left">© Copyright 2023 the OpenDengue project<br />The Dengue Mapping and Modelling Group<br /> LSHTM, London UK</p>
+</div>
 </div>
 <!--/radix_placeholder_navigation_after_body-->
 

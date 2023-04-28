@@ -1,32 +1,85 @@
 ---
 title: "OpenDengue"
-date: "Last update on `r format(Sys.Date(), '%B %d, %Y')`"
+description: "A global database of publicly available dengue case data"
+output: html_document
 ---
-
 ```{r include = FALSE, echo = FALSE, results = "hide"}
 require(here); require(dplyr); require(stringr); require(lubridate); require(distill)
 knitr::opts_knit$set(root.dir = here())
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.path="./figure/")
 
-pacman::p_load("dplyr", "lubridate",  "tidyr", "tidyverse",  "knitr", "stringi", "zoo", "EpiWeek", "data.table", "ggplot2", "sf", 'rnaturalearth', "sf", "rnaturalearthdata", "distill")
-
-# load medium resolution global shapefile
-world <- ne_countries(scale = "medium", returnclass = "sf")
-
-# OpenDengue green
-ODGreen <-  "#48743F"
-ODBeige <- "#F1E4E1"
-
-theme_set(theme_bw())
+pacman::p_load("dplyr", "lubridate",  "tidyr", "tidyverse",  "knitr", "stringi", "zoo", "data.table", "ggplot2", "sf", 'rnaturalearth', "sf", "rnaturalearthdata", "distill", "downloadthis")
 
 ```
+![](./figure/OpenDengue_map_28Apr2023.png)
 
+## Access the data
+
+
+```{r data download buttons, echo=FALSE}
+N_data <- read.csv(here("data/transformed_data/", "master_data.csv"))
+SN_data <- read.csv(here("data/transformed_data/", "MOH_PAHO_SUB_transformed.csv"))
+
+# National download button
+N_data %>%
+  download_this(
+    output_name = "national dataset",
+    output_extension = ".csv",
+    button_label = "Download OpenDengue national data as csv",
+    button_type = "info",
+    has_icon = TRUE,
+    icon = "fa fa-save",
+    class = "button_large"
+  )
+
+# Sub-national download button
+SN_data %>%
+  download_this(
+    output_name = "sub-national dataset",
+    output_extension = ".csv",
+    button_label = "Download OpenDengue sub-national data (select countries) as csv",
+    button_type = "info",
+    has_icon = TRUE,
+    icon = "fa fa-save",
+    class = "button_large"
+  )
+```
+
+
+Suggested citation:
+
+"The OpenDengue database, Version 1.0, 2023, https://opendengue.github.io/master-repo/, Accesssed [today's date]"
+
+Please read our [Data](./docs/data) page for details, definitions and limitations
+
+## About OpenDengue
+<br>
+![](./figure/OpenDengue_logo.jpg)
+<br>
+The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases. Learn more about the [project](./docs/project) or our [methods](./docs/overview)
+
+In this first release (V1) we only include data from North America, South America and the Caribbean, but data from Asia (V2) and the rest of the world (V3) will be included over the coming months.
+
+We are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please [contribute](./docs/contribute) or [get in touch](./docs/contribute).
+
+![](./figure/Sum_icons.png)
+
+
+## Potential uses
+OpenDengue draws together and standardises data from multiple sources that enable new analyses at global and regional scales. Examples include:
+<br>
+- Identifying worst affected areas and years
+<br>
+- Understanding drivers of transmission such as climate factors and interventions
+<br>
+- Predicting future trends and outbreak risk
+
+## Summary of data coverage
 <!--
 Create columns for categorising each row according to it's spatial resolution & temporal resolution.
 
 Convert all case counts from PAHO portal to weekly. While they are currently cumulative with the calendar_end_date increasing weekly, we will be developing models to spread this data across weekly counts before release. In the portal itself, all denge cases are only listed cumulatively in single week increments, while incident "suspected" cases are listed weekly. 
 -->
-
 ```{r load master data, include=FALSE}
 data <- read.csv(here("data/transformed_data/", "master_data.csv"))
 head(data)
@@ -75,8 +128,6 @@ data <- data %>%
                 ifelse(temporal_res==0, NA, EW)))
 
 ```
-
-
 ```{r country name, include=FALSE}
 plyr::count(data$adm_0_name)
 
@@ -97,8 +148,6 @@ data <- data %>%
 
 plyr::count(data$adm_0_name) #52 countries
 ```
-
-# Map of countries covered
 ```{r worldmap, echo=FALSE}
 
 # load medium resolution global shapefile
@@ -107,7 +156,7 @@ world <- ne_countries(scale = "medium", returnclass = "sf")
 # exclude antarctica from maps
 world = world[world$continent != "Antarctica", ]
 
-# 3 letter ISO codes for which we have daa in the OpenDengue database
+# 3 letter ISO codes for which we have data in the OpenDengue database
 Incl_countries <- world$iso_a3[world$continent %in% c("North America", "South America")]
 world$OD_status <- world$iso_a3 %in% Incl_countries
 
@@ -132,30 +181,6 @@ tot_subNational <- data %>%
   group_by(adm_0_name)%>% 
   tally() %>% nrow()
 
-# caribbean and pacific labels
-#carib <- world[world$subregion == "Caribbean", ]
-#pacific <- world[world$subregion %in% c("Polynesia", "Melanesia", "Micronesia"), ]
-#c_points <- cbind(carib, st_coordinates(st_centroid(carib$geometry)))
-#p_points <- cbind(pacific, st_coordinates(st_centroid(pacific$geometry)))
-
-
-# plotting
-ggplot(data = world) +
-  geom_sf(aes(fill = OD_status)) +
-  scale_fill_manual(values=c(ODBeige, ODGreen)) +
-  coord_sf(ylim = c(-60, 72), expand = FALSE, clip="off") +
-  theme(legend.position="none",
-        panel.border = element_blank(),
-        axis.text=element_blank(),
-        axis.ticks=element_blank(),
-        panel.grid.major=element_blank(), 
-        plot.margin = unit(c(-5,1,-5,1), "cm"))+
-  xlab(NULL)+ylab(NULL)+
-  annotate(geom = "text", x = -125, y = -20, label = paste0("Data for ", tot_any_data, " countries"), 
-           fontface = "bold", color = ODGreen, size = 6) +
-  annotate(geom = "text", x = -125, y = -30, label = paste0("Monthly or weekly data for ", tot_wkMn_data, " countries"), color = ODGreen, size = 4) +
-  annotate(geom = "text", x = -125, y = -40, label = paste0("Sub-national data for ", tot_subNational, " countries"), color = ODGreen, size = 4)
-
 ```
 
 ```{r heatmap order, include=FALSE}
@@ -175,13 +200,8 @@ plyr::count(data$adm_0_name) #desired order
 
 ```
 
-# Summary statistics of data coverage
-
-Produce summary statistics of temporal resolution by each year. temporal resolution is grouped into weekly, monthly, annually.  
-The maximum temporal resolution reached for that year is prioritised for colour coding the heatmap. 
 <!--The opacity/gradient of the colour is determined by the proportion of the year at which that temporal resolution is available. -->
 
-## Temporal resolution
 ```{r check temp res, include=FALSE}
 # first check if any country-year has data for more than one temporal resolution
 data %>%
@@ -244,7 +264,6 @@ ggplot( aes(x=year, y=adm_0_name))+
         panel.border = element_blank())
 ```
 
-## Spatial resolution
 ```{r check spatial res, include=FALSE}
 # first check if any country-year has data for more than one spatial resolution
 data %>%
@@ -300,317 +319,4 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
         panel.border=element_blank())
 ```
 
-
-<!--
-## Data source
-```{r check data source, include=FALSE}
-# first check if any country-year has data for more than one data source
-data %>%
-  group_by(adm_0_name, year, source_cat)%>%
-  tally()%>% 
-  mutate(n2 = ifelse(is.na(n)==FALSE, 1, NA))%>% select(-n)%>% 
-  spread(., source_cat, n2)%>%
-  mutate(paho_tot = ifelse(sum(c_across(paho_adm0:paho_imputed), na.rm=T)>0, 1, NA))%>% 
-  select(-paho_adm0, -paho_imputed)%>%
-  mutate(total = sum(c_across(moh:paho_tot), na.rm = T)) %>%
-  arrange(desc(total)) 
-```
-
-```{r source boolean, include=FALSE}
-source_boolean <- data %>%
-  mutate(source_cat = ifelse(source_cat %in% c("paho_adm0", "paho_imputed"), "paho", source_cat))%>%
-  group_by(adm_0_name, year, source_cat)%>%
-  tally()%>%
-  arrange(adm_0_name, year, desc(n))%>%  
-  group_by(adm_0_name, year) %>% slice_head(n=1)%>%  ungroup()%>%
-  complete(adm_0_name, year) 
-
-plyr::count(source_boolean$source_cat) # here 'NA' created because of the use of 'complete' function
-```
-
-In the case of multiple data sources available for the same country-year, the data source with the most data rows is chosen and shown on the figure below. 
-
-```{r source fig, fig.width = 18, fig.height = 18, echo=FALSE}
-source_boolean %>%
-  filter(!year < 1990)%>%
-  mutate(year = as.character(year))%>%
-ggplot( aes(x=year, y=adm_0_name, group=source_cat))+
-  geom_tile(aes(fill=source_cat), 
-            color = "white",  lwd = 0.8, linetype = 1)+
-  scale_y_discrete(limits=rev, expand=c(0,0))+
-  scale_x_discrete(  breaks = seq(1990,2020, by=5), 
-                     expand=c(0,0))+
-  scale_fill_manual(name = "Data source", 
-                    values = c("#fb8072","#8dd3c7","#80B1D3", "#bebada" ), na.value="#D9D9D9")+
-  coord_fixed()+
-  theme_bw()+
-  ggtitle("Data source available")+
-  xlab("Year")+ylab("Country")+
-  theme(plot.title = element_text(size=28), 
-        axis.title.x = element_text(size=28, vjust=0),
-        axis.title.y = element_text(size=28), 
-        axis.text = element_text(size=18), 
-        axis.ticks = element_line(size=1),
-        legend.title = element_text(size=20),
-        legend.text = element_text(size=18), 
-        plot.margin = margin(t=20, b=20, l=20, r=20), 
-        plot.background=element_blank(),
-        panel.border=element_blank())
-```
-<!--Temporal/spatial resolution per data source? This is done by comparing the number of country-year data points between different sources. This allows us to identify which data source dominates each temporal resolution. 
-```{r source temp, include=FALSE}
-# first check if any country-year has data for more than one data source
-source_temp <- data %>%
-  mutate(source_cat = ifelse(source_cat %in% c("paho_adm0", "paho_imputed"), "paho", source_cat))%>%
-  group_by(temporal_res, source_cat, adm_0_name, year)%>%
-  tally() %>% mutate(n = 1)
-
-source_temp2 <- source_temp %>%
-  group_by(temporal_res, source_cat) %>% tally() %>%
-  mutate(prop = round(prop.table(n)*100, 1))%>% ungroup()%>%
-  complete(temporal_res, source_cat)%>%
-  mutate(source_cat_nm = ifelse(source_cat %in% c("moh"), "MoH", 
-                      ifelse(source_cat %in% c("paho"), "PAHO", 
-                      ifelse(source_cat %in% c("paho_sub"), "PAHO\nsubnational", 
-                             "Project\nTycho"))))%>%
-  mutate(source_cat_nm = factor(source_cat_nm, levels=c("MoH", "PAHO", "PAHO\nsubnational", "Project\nTycho")))%>%
-  mutate(temporal_res_nm = ifelse(temporal_res==2, "Weekly", 
-                            ifelse(temporal_res==1, "Monthly", "Yearly")))%>%
-  mutate(temporal_res_nm = factor(temporal_res_nm, levels=c("Weekly", "Monthly", "Yearly")))%>%
-  mutate(text = ifelse(is.na(n), "0", "1"))%>%
-  mutate(labels = ifelse(text %in% c("1"), paste0(sprintf("%.1f", prop), "%") , ""))
-
-```
-
-<!--Summed horizontally. 
-```{r source temp fig, echo=FALSE}
-source_temp2 %>%
-  ggplot(aes(x=source_cat_nm, y=temporal_res_nm, fill=prop))+
-  geom_tile(color = "white",  lwd = 0.5, linetype = 1)+
-  geom_text(aes(x = source_cat_nm, y = temporal_res_nm, label = labels), color = "black", size= 4)+
-  scale_fill_distiller(palette = "YlGnBu", direction = 1, na.value="#D9D9D9", name="Proportion (%)")+
-  scale_y_discrete(limits=rev, expand=c(0,0))+
-  scale_x_discrete(position = "top", expand=c(0,0))+
-  xlab("Data source")+ylab("Temporal resolution")+
-  theme(axis.title.x.top = element_text(size=15, face = "bold", margin = margin(b = 0.1, unit = "in")))+
-  theme(axis.title.y = element_text(size=15, face = "bold", vjust = 4),
-        axis.text.x = element_text(size=12), 
-        axis.text.y = element_text(size=12), 
-        axis.ticks.x = element_blank(),        
-        axis.ticks.y = element_blank(), 
-        axis.line=element_blank(),
-        panel.background = element_rect(fill = 'white'), 
-        panel.grid.major = element_blank(),
-        plot.margin = unit(c(1,1,1,1), "cm")
-  )+
-  theme(legend.title = element_text(size=10),
-        legend.text = element_text(size=8, vjust=1),
-        legend.margin = margin(9,9,9,9), 
-        legend.text.align = 0
-  )
-
-# Weekly - PAHO; Monthly - TYCHO; Yearly - TYCHO
-```
-
-```{r source spat, include=FALSE}
-# first check if any country-year has data for more than one data source
-source_spat <- data %>%
-  mutate(source_cat = ifelse(source_cat %in% c("paho_adm0", "paho_imputed"), "paho", source_cat))%>%
-  group_by(spatial_res, source_cat, adm_0_name, year)%>%
-  tally() %>% mutate(n = 1)
-
-source_spat2 <- source_spat %>%
-  group_by(spatial_res, source_cat) %>% tally() %>%
-  mutate(prop = round(prop.table(n)*100, 1))%>% ungroup()%>%
-  complete(spatial_res, source_cat)%>%
-  mutate(source_cat_nm = ifelse(source_cat %in% c("moh"), "MoH", 
-                      ifelse(source_cat %in% c("paho"), "PAHO", 
-                      ifelse(source_cat %in% c("paho_sub"), "PAHO\nsubnational", 
-                             "Project\nTycho"))))%>%
-  mutate(source_cat_nm = factor(source_cat_nm, levels=c("MoH", "PAHO", "PAHO\nsubnational", "Project\nTycho")))%>%
-  mutate(spatial_res_nm = ifelse(spatial_res==2, "Admin 2", 
-                            ifelse(spatial_res==1, "Admin 1", "Admin 0")))%>%
-  mutate(spatial_res_nm = factor(spatial_res_nm, levels=c("Admin 2", "Admin 1", "Admin 0")))%>%
-  mutate(text = ifelse(is.na(n), "0", "1"))%>%
-  mutate(labels = ifelse(text %in% c("1"), paste0(sprintf("%.1f", prop), "%") , ""))
-
-```
-
-```{r source spat fig, echo=FALSE}
-source_spat2 %>%
-  ggplot(aes(x=source_cat_nm, y=spatial_res_nm, fill=prop))+
-  geom_tile(color = "white",  lwd = 0.5, linetype = 1)+
-  geom_text(aes(x = source_cat_nm, y = spatial_res_nm, label = labels), color = "black", size= 4)+
-  scale_fill_distiller(palette = "OrRd", direction = 1, na.value="#D9D9D9", name="Proportion (%)")+
-  scale_y_discrete(limits=rev, expand=c(0,0))+
-  scale_x_discrete(position = "top", expand=c(0,0))+
-  xlab("Data source")+ylab("Spatial resolution")+
-  theme(axis.title.x.top = element_text(size=15, face = "bold", margin = margin(b = 0.1, unit = "in")))+
-  theme(axis.title.y = element_text(size=15, face = "bold", vjust = 4),
-        axis.text.x = element_text(size=12), 
-        axis.text.y = element_text(size=12), 
-        axis.ticks.x = element_blank(),        
-        axis.ticks.y = element_blank(), 
-        axis.line=element_blank(),
-        panel.background = element_rect(fill = 'white'), 
-        panel.grid.major = element_blank(),
-        plot.margin = unit(c(1,1,1,1), "cm")
-  )+
-  theme(legend.title = element_text(size=10),
-        legend.text = element_text(size=8, vjust=1),
-        legend.margin = margin(9,9,9,9), 
-        legend.text.align = 0
-  )
-
-# Adm2 - MoH; Adm1 - equally distributed; Adm0 - Tycho. adm2 and adm1 code matching needs to be done to ensure more accurate data coverage though...
-```
-
-
-```{r, include= FALSE, eval=FALSE}
-#select the best temporal resolution when spatial resolution == adm0 
-names(data)
-data_temporal_adm0 <- data %>%
-  group_by(adm_0_name, year, temporal_res, spatial_res)%>%
-  tally()%>%
-  filter(spatial_res == 0)%>%
-  arrange(adm_0_name, year, desc(temporal_res))%>%  
-  group_by(adm_0_name, year) %>% slice_head(n=1)
-
-# denominator for weekly = 53, for monthly = 12
-data_temporal_adm0 <- data_temporal_adm0 %>%
-  mutate(n2 = ifelse(n > 53, 53, n))%>% 
-  mutate(prop = ifelse(temporal_res==1, n2/12, 
-                       ifelse(temporal_res==0, n2/1, n2/53)))%>%
-  mutate(temporal_res_nm = ifelse(temporal_res ==2, "Weekly", 
-                               ifelse(temporal_res==1, "Monthly", "Yearly")))
-```
-
-
-```{r, include= FALSE, eval=FALSE}
-# 'n' refers to the number of data rows per country, year, time units (EW). For example, when a data row contains [Argentina - 2015 - weekly data - EW 15 - adm2 ] and n = 20, it means they are data for the week 15 of 2015 and for 20 different adm2 areas in Argentina. We do this to determine whether the abundance of data for each country is due to true high data coverage or a false impression caused by a large number of spatial units.
-nb_spatial_unit <- data %>% 
-  group_by(adm_0_name, year, temporal_res, EW, spatial_res)%>%
-  tally() 
-
-# number of spatial units reported vary depending on the country and year. We calculated the maximum number of spatial units reported country and to use it as a denominator.  
-nb_spatial_unit_adm1 <- nb_spatial_unit %>%
-  filter(!is.na(EW))%>%
-  group_by(adm_0_name, temporal_res, spatial_res)%>%
-  summarise(nb_sp_units = max(n))%>%
-  filter(spatial_res==1)
-
-nb_spatial_unit_adm2 <- nb_spatial_unit %>%
-  filter(!is.na(EW))%>%
-  group_by(adm_0_name, temporal_res, spatial_res)%>%
-  summarise(nb_sp_units = max(n))%>%
-  filter(spatial_res==2)
-```
-
-
-```{r, include= FALSE, eval=FALSE}
-# ** work on progress 
-#select the best temporal resolution when spatial resolution == adm1
-data_temporal_adm1 <- data %>%
-  group_by(adm_0_name, year, temporal_res, spatial_res, EW)%>%
-  tally()%>%
-  filter(spatial_res == 1)%>%
-  arrange(adm_0_name, year, desc(temporal_res))%>%  
-  group_by(adm_0_name, year) %>% slice_head(n=1)
-
-# denominator for weekly = 53, for monthly = 12
-data_temporal_adm1 <- data_temporal_adm1 %>%
-  mutate(n2 = ifelse(n > 53, 53, n))%>% 
-  mutate(prop = ifelse(temporal_res==1, n2/12, 
-                       ifelse(temporal_res==0, n2/1, n2/53)))%>%
-  mutate(temporal_res_nm = ifelse(temporal_res ==2, "Weekly", 
-                               ifelse(temporal_res==1, "Monthly", "Yearly")))
-```
-
-
-
-```{r, include= FALSE, eval=FALSE}
-#Produce summary statistics of spatial resolution by each year. Spatial resolution is grouped into admin 0, 1 & 2.. 
-#The maximum spatial resolution reached for that year is prioritised for colour coding the heatmap.
-#The gradient of colour that applies to temporal resolution does not yet apply to spatial resolution. This is because while we plan to gradient it according to the proportion of the country that is available at that that resolution, we do not yet have all of the admin2 code kmatching complete in order to do so. 
-
-data_spatial <- data %>% 
-  #filter(spatial_res %in% c('A0'))%>%
-  group_by(year, spatial_res)%>%
-  tally()%>%
-  #===number of temporal resolutions available
-  #group_by(year) %>% 
-  #mutate(n2 = n())%>% 
-  #select the best temporal resolution 
-  arrange(year, desc(spatial_res))%>%   print (n=30)%>%
-  group_by(year) %>% slice_head(n=1)%>%
-  #tidyr::spread(., temporal_res, n) 
-  #mutate(yearly = ifelse(is.na(monthly)==FALSE & is.na(yearly)==FALSE, NA, yearly))%>%
-  #tidyr::gather(., temporal_res, n, monthly:yearly) %>% print(n=72) %>% 
-  filter(!n %in% NA)
-
-  
-```
-
-
-```{r, fig.width = 18, fig.height = 18, include = FALSE, eval=FALSE}
-# Visualisations
-
-#Produce heatmaps for country by temporal resolution and then spatial resoluton. note that this will only be a single row for this country on it's own, though when all country datasets are processed a fuller map will be developed.
-
-# Data coverage by temporal resolution 
-
-ggplot(data_temporal_adm0, aes(x=year, y=adm_0_name, group=temporal_res_nm))+
-  geom_tile(aes(alpha = prop, fill=temporal_res_nm), 
-            color = "white",  lwd = 0.25, linetype = 1)+
-  scale_y_discrete(limits=rev, expand=c(0,0))+
-  scale_x_continuous(limits = c(1988, 2022), 
-                     breaks = seq(1990,2020, by=5), 
-                     expand=c(0,0))+
-  scale_fill_manual(name = "Temporal resolution", 
-                    values = c("#1F78B4","#B2DF8A","#FB9A99"))+
-  scale_alpha(guide = 'none')+
-  coord_fixed()+
-  theme_grey()+
-  ggtitle("Best temporal resolution available for adm0")+
-  xlab("Year")+ylab("Country")+
-  theme(plot.title = element_text(size=28), 
-        axis.title = element_text(size=28), 
-        axis.text = element_text(size=18), 
-        axis.ticks = element_line(size=1),
-        legend.title = element_text(size=20),
-        legend.text = element_text(size=18), 
-        plot.margin = margin(t=-50, b=-50, l=20, r=20), 
-        plot.background=element_blank(),
-        panel.border=element_blank())
-
-```
-
-```{r, fig.width = 18, fig.height = 18, include = FALSE, eval=FALSE}
-## Data coverage by spatial resolution 
-
-data %>%
-  filter(!spatial_res==2)%>%
-  group_by(adm_0_name, year)%>%
-  tally()%>%
-  ggplot(aes(x=year, y=adm_0_name))+
-  geom_tile(aes(fill=n), lwd = 0.25, linetype = 1)+
-  scale_y_discrete(limits=rev, expand=c(0,0))+
-  scale_x_continuous(limits = c(1988, 2022), 
-                     breaks = seq(1990,2020, by=5), 
-                     expand=c(0,0))+
-  scale_fill_distiller(palette = "YlGnBu", direction = 1, na.value="#D9D9D9", name="Row count")+
-  coord_fixed()+
-  theme_grey()+
-  xlab("Year")+ylab("Country")+
-  theme(plot.title = element_text(size=28), 
-        axis.title = element_text(size=28), 
-        axis.text = element_text(size=18), 
-        axis.ticks = element_line(size=1),
-        legend.title = element_text(size=20),
-        legend.text = element_text(size=18), 
-        plot.margin = margin(t=-50, b=-50, l=20, r=20), 
-        plot.background=element_blank(),
-        panel.border=element_blank())
-```
-
--->
+Our goal at the OpenDengue project is to fill as many of these gaps as we can. If you know of any publicly available data sources for any of the grey or light coloured countries or years in the above figures please [contribute](./docs/contribute) or [get in touch](./docs/contribute).
