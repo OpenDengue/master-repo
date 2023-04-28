@@ -10,7 +10,7 @@ Where reported, we include dengue cases at all levels of severity (dengue, dengu
 
 Location is encoded by text name at national (`adm_0_name`) and sub-national (`adm_1_name` and `adm_2_name`) level , a numeric Global Administrative Unit Layers (GAUL, see [UN FAO website](https://data.apps.fao.org/catalog/dataset/gaul-codes)) code (`adm0_code`, `adm1_code` and `adm2_code`) and a national level three letter [ISO alpha-3](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes) country code. If using the `rnaturalearth` R package global shapefiles we would reccomend matching using the ISO codes.
 
-Time periods are recorded using a start date (`calendar_start_date`) and end date (`calendar_end_date`) with the format `YY-mm-dd`.
+Time periods are recorded using a start date (`calendar_start_date`) and end date (`calendar_end_date`) with the format `YYYY-mm-dd`.
 
 ## Limitations
 * Dengue surveillance, reporting and accessibility of data varies between countries, sources and, sometimes, over time which can make comparisons invalid. Please check the consistency  of original sources if making comparisons.
@@ -48,7 +48,7 @@ SN_data %>%
   )
 ```
 
-
+<br>
 Suggested citation:
 
 "The OpenDengue database, Version 1.0, 2023, https://opendengue.github.io/master-repo/, Accesssed [today's date]"
