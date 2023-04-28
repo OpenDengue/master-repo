@@ -88,21 +88,22 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>: The OpenDengue project</title>
+  <title>OpenDengue: The OpenDengue project</title>
 
 
-  <link rel="icon" type="image/vnd.microsoft.icon" href="./logo/favicon.ico"/>
+  <link rel="license" href="https://creativecommons.org/licenses/by/4.0/"/>
+  <link rel="icon" type="image/vnd.microsoft.icon" href="./logo/favicon_v2.ico"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content=": The OpenDengue project"/>
+  <meta property="og:title" content="OpenDengue: The OpenDengue project"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
-  <meta property="og:site_name" content=""/>
+  <meta property="og:site_name" content="OpenDengue"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content=": The OpenDengue project"/>
+  <meta property="twitter:title" content="OpenDengue: The OpenDengue project"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
@@ -2072,7 +2073,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2085,19 +2086,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <style type="text/css">
   @import url('https://fonts.googleapis.com/css?family=Playfair+Display|Asap:400,400i,700,700i|Roboto:400,400i,700,700i&display=swap');
 
+
+
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Roboto";
+    font-family: "Asap";
   }
 
   body {
-    font-family: "Roboto;
+    font-family: "Asap;
     color: #595959;
   }
 
   /* --------------logo-------------------- */
 
   .distill-site-header .logo img{
-    max-height: 30px; /* Makes logo bigger, default was 20px */
+    max-height: 20px; /* Makes logo bigger, default was 20px */
+    margin-right: 30px;
+  }
+
+  .distill-site-header a.title, .distill-site-header a.nav-toggle {
+      display: none;
+     
   }
 
 
@@ -2108,9 +2117,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     background-color: #065D10; /*--linear-gradient(to bottom, rgba(244, 228, 224, 1), rgba(40,92,29,0.5)); */  
     /*background-color: transparent;*/
     font-size: 15px;
-    font-family: "Roboto";
-    letter-spacing: 2px;
+    font-family: "Asap";
+   
+    
+    /*letter-spacing: 2px;
     /*text-transform: uppercase;*/
+    
   }
 
   /* -------------Footer------------------*/
@@ -2146,9 +2158,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <nav class="distill-site-nav distill-site-header">
 <div class="nav-left">
 <a class="logo" href="https://opendengue.github.io/master-repo">
-<img src="logo/logo3.png" alt="Logo"/>
+<img src="logo/logo3_v2.png" alt="Logo"/>
 </a>
-<a href="index.html" class="title"></a>
+<a href="index.html" class="title">OpenDengue</a>
 <a href="index.html">Home</a>
 <a href="data.html">Data</a>
 <a href="project.html">Project</a>
@@ -2209,7 +2221,10 @@ into the burden, spread and containment of mosquito-transmitted diseases. We are
 <!--radix_placeholder_site_after_body-->
 <!--/radix_placeholder_site_after_body-->
 <!--radix_placeholder_appendices-->
-<div class="appendix-bottom"></div>
+<div class="appendix-bottom">
+<h3 id="reuse">Reuse</h3>
+<p>Text and figures are licensed under Creative Commons Attribution <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The figures that have been reused from other sources don't fall under this license and can be recognized by a note in their caption: "Figure from ...".</p>
+</div>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">

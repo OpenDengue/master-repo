@@ -15,7 +15,7 @@ body {
 
 .distill-site-header .logo img{
   max-height: 20px; /* Makes logo bigger, default was 20px */
-  margin-right: 50px;
+  margin-right: 30px;
 }
 
 .distill-site-header a.title, .distill-site-header a.nav-toggle {
