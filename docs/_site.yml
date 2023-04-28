@@ -16,13 +16,7 @@ navbar:
     - text: "Project"
       href: project.html
     - text: "Methods"
-      menu: 
-        - text: "OVERVIEW"
-          href: overview.html
-        - text: "PAHO"
-          href: PAHO_PLISA.html
-        - text: "TYCHO"
-          href: tycho.html
+    - href: overview.html
     - text: "Contribute"
       href: contribute.html          
     - icon: fab fa-github

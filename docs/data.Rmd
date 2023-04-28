@@ -1,0 +1,54 @@
+---
+title: "Data"
+output: html_document
+---
+
+## Data definitions
+The OpenDengue dataset contains reported total case counts with each row corresponds to a unique location and time. 
+
+Where reported, we include dengue cases at all levels of severity (dengue, dengue with/without warning signs, severe dengue, dengue haemorhaggic fever, dengue shock syndrome, dengue deaths) and methods of confirmation (suspected, probable, clinically confirmed, laboratory confirmed) in the variable `dengue_total`. The specific case definition used for a particular datapoint  will depend on the original data source which can be examined in the [OpenDengue Github repo](https://github.com/OpenDengue/master-repo) using the `UUID` source reference identifier. Future versions of the OpenDengue dataset will dissaggregate data by severity and method of confirmation where reported.
+
+Location is encoded by text name at national (`adm_0_name`) and sub-national (`adm_1_name` and `adm_2_name`) level , a numeric Global Administrative Unit Layers (GAUL, see [UN FAO website](https://data.apps.fao.org/catalog/dataset/gaul-codes)) code (`adm0_code`, `adm1_code` and `adm2_code`) and a national level three letter [ISO alpha-3](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes) country code. If using the `rnaturalearth` R package global shapefiles we would reccomend matching using the ISO codes.
+
+Time periods are recorded using a start date (`calendar_start_date`) and end date (`calendar_end_date`) with the format `YY-mm-dd`.
+
+## Limitations
+* Dengue surveillance, reporting and accessibility of data varies between countries, sources and, sometimes, over time which can make comparisons invalid. Please check the consistency  of original sources if making comparisons.
+* In all countries reported cases are likely to only be a small subset of total dengue infections due to many asymptomatic and sub-clinical infections.
+
+## Download
+
+```{r data download buttons, echo=FALSE}
+require(here);require(dplyr);require(downloadthis)
+N_data <- read.csv(here("data/transformed_data/", "master_data.csv"))
+SN_data <- read.csv(here("data/transformed_data/", "MOH_PAHO_SUB_transformed.csv"))
+
+# National download button
+N_data %>%
+  download_this(
+    output_name = "national dataset",
+    output_extension = ".csv",
+    button_label = "Download OpenDengue national data as csv",
+    button_type = "info",
+    has_icon = TRUE,
+    icon = "fa fa-save",
+    class = "button_large"
+  )
+
+# Sub-national download button
+SN_data %>%
+  download_this(
+    output_name = "sub-national dataset",
+    output_extension = ".csv",
+    button_label = "Download OpenDengue sub-national data (select countries) as csv",
+    button_type = "info",
+    has_icon = TRUE,
+    icon = "fa fa-save",
+    class = "button_large"
+  )
+```
+
+
+Suggested citation:
+
+"The OpenDengue database, Version 1.0, 2023, https://opendengue.github.io/master-repo/, Accesssed [today's date]"
