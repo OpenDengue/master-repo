@@ -29,4 +29,4 @@ Key individuals include:
 
 
 ## Funders
-The OpenDengue project is supported by a research grant from the UK Medical Research Council UK Medical Research Council (Grant number: [MR/V031112/1](https://gtr.ukri.org/projects?ref=MR%2FV031112%2F1))
+The OpenDengue project is supported by a research grant from the UK Medical Research Council UK Medical Research Council (Grant number: [MR/V031112/1](https://gtr.ukri.org/projects?ref=MR%2FV031112%2F1)).

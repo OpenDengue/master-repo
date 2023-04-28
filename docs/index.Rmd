@@ -16,7 +16,7 @@ pacman::p_load("dplyr", "lubridate",  "tidyr", "tidyverse",  "knitr", "stringi",
 ## Access the data
 
 
-```{r data download buttons, echo=FALSE}
+```{r data download buttons1, echo=FALSE}
 N_data <- read.csv(here("data/transformed_data/", "master_data.csv"))
 SN_data <- read.csv(here("data/transformed_data/", "MOH_PAHO_SUB_transformed.csv"))
 
@@ -45,18 +45,18 @@ SN_data %>%
   )
 ```
 
-
+<br>
 Suggested citation:
 
 "The OpenDengue database, Version 1.0, 2023, https://opendengue.github.io/master-repo/, Accesssed [today's date]"
 
-Please read our [Data](https://opendengue.github.io/master-repo/data.html) page for details, definitions and limitations
+Please read our [Data](https://opendengue.github.io/master-repo/data.html) page for details, definitions and limitations.
 
 ## About OpenDengue
 <br>
 ![](./figure/OpenDengue_logo.jpg)
 <br>
-The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases. Learn more about the [project](https://opendengue.github.io/master-repo/project.html) or our [methods](https://opendengue.github.io/master-repo/overview.html)
+The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases. Learn more about the [project](https://opendengue.github.io/master-repo/project.html) or our [methods](https://opendengue.github.io/master-repo/overview.html).
 
 In this first release (V1) we only include data from North America, South America and the Caribbean, but data from Asia (V2) and the rest of the world (V3) will be included over the coming months.
 
@@ -66,20 +66,14 @@ We are continually adding new data to the OpenDengue repository. If you are awar
 
 
 ## Potential uses
-OpenDengue draws together and standardises data from multiple sources that enable new analyses at global and regional scales. Examples include:
-<br>
+OpenDengue draws together and standardises data from multiple sources that enable new analyses at global and regional scales. Examples include:  
+
 - Identifying worst affected areas and years
-<br>
 - Understanding drivers of transmission such as climate factors and interventions
-<br>
 - Predicting future trends and outbreak risk
 
 ## Summary of data coverage
-<!--
-Create columns for categorising each row according to it's spatial resolution & temporal resolution.
 
-Convert all case counts from PAHO portal to weekly. While they are currently cumulative with the calendar_end_date increasing weekly, we will be developing models to spread this data across weekly counts before release. In the portal itself, all denge cases are only listed cumulatively in single week increments, while incident "suspected" cases are listed weekly. 
--->
 ```{r load master data, include=FALSE}
 data <- read.csv(here("data/transformed_data/", "master_data.csv"))
 head(data)
@@ -262,6 +256,7 @@ ggplot( aes(x=year, y=adm_0_name))+
         plot.background = element_blank(),
         panel.grid = element_blank(),
         panel.border = element_blank())
+
 ```
 
 ```{r check spatial res, include=FALSE}
@@ -319,4 +314,4 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
         panel.border=element_blank())
 ```
 
-Our goal at the OpenDengue project is to fill as many of these gaps as we can. If you know of any publicly available data sources for any of the grey or light coloured countries or years in the above figures please [contribute](./docs/contribute) or [get in touch](./docs/contribute).
+Our goal at the OpenDengue project is to fill as many of these gaps as we can. If you know of any publicly available data sources for any of the grey or light coloured countries or years in the above figures please [contribute](https://opendengue.github.io/master-repo/contribute.html) or [get in touch](https://opendengue.github.io/master-repo/contribute.html).

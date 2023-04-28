@@ -18,7 +18,7 @@ Time periods are recorded using a start date (`calendar_start_date`) and end dat
 
 ## Download
 
-```{r data download buttons, echo=FALSE}
+```{r data download buttons2, echo=FALSE}
 require(here);require(dplyr);require(downloadthis)
 N_data <- read.csv(here("data/transformed_data/", "master_data.csv"))
 SN_data <- read.csv(here("data/transformed_data/", "MOH_PAHO_SUB_transformed.csv"))
