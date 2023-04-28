@@ -50,17 +50,17 @@ Suggested citation:
 
 "The OpenDengue database, Version 1.0, 2023, https://opendengue.github.io/master-repo/, Accesssed [today's date]"
 
-Please read our [Data](./docs/data) page for details, definitions and limitations
+Please read our [Data](https://opendengue.github.io/master-repo/data.html) page for details, definitions and limitations
 
 ## About OpenDengue
 <br>
 ![](./figure/OpenDengue_logo.jpg)
 <br>
-The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases. Learn more about the [project](./docs/project) or our [methods](./docs/overview)
+The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases. Learn more about the [project](https://opendengue.github.io/master-repo/project.html) or our [methods](https://opendengue.github.io/master-repo/overview.html)
 
 In this first release (V1) we only include data from North America, South America and the Caribbean, but data from Asia (V2) and the rest of the world (V3) will be included over the coming months.
 
-We are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please [contribute](./docs/contribute) or [get in touch](./docs/contribute).
+We are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please [contribute](https://opendengue.github.io/master-repo/contribute.html) or [get in touch](https://opendengue.github.io/master-repo/contribute.html).
 
 ![](./figure/Sum_icons.png)
 
