@@ -16,7 +16,7 @@ navbar:
     - text: "Project"
       href: project.html
     - text: "Methods"
-    - href: overview.html
+      href: overview.html
     - text: "Contribute"
       href: contribute.html          
     - icon: fab fa-github
