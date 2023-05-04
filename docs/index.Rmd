@@ -28,7 +28,7 @@ N_data %>%
     button_label = "Download OpenDengue national data as csv",
     button_type = "info",
     has_icon = TRUE,
-    icon = "fa fa-save",
+    icon = "fa fa-save fa-1x",
     class = "button_large"
   )
 
@@ -40,7 +40,7 @@ SN_data %>%
     button_label = "Download OpenDengue sub-national data (select countries) as csv",
     button_type = "info",
     has_icon = TRUE,
-    icon = "fa fa-save",
+    icon = "fa fa-save fa-1x",
     class = "button_large"
   )
 ```
@@ -48,7 +48,7 @@ SN_data %>%
 <br>
 Suggested citation:
 
-"The OpenDengue database, Version 1.0, 2023, https://opendengue.github.io/master-repo/, Accesssed [today's date]"
+"The OpenDengue database, Version 1.0, 2023, https://opendengue.org/, Accesssed [today's date]"
 
 Please read our [Data](https://opendengue.github.io/master-repo/data.html) page for details, definitions and limitations.
 
@@ -60,7 +60,7 @@ The OpenDengue project aims to build and maintain a database of dengue case coun
 
 In this first release (V1) we only include data from North America, South America and the Caribbean, but data from Asia (V2) and the rest of the world (V3) will be included over the coming months.
 
-We are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please [contribute](https://opendengue.github.io/master-repo/contribute.html) or [get in touch](https://opendengue.github.io/master-repo/contribute.html).
+We are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please [contribute](https://opendengue.github.io/master-repo/contribute.html) or [get in touch](mailto:contribute@opendengue.org).
 
 ![](./figure/Sum_icons.png)
 
@@ -314,4 +314,4 @@ ggplot( aes(x=year, y=adm_0_name, group=spatial_res_nm))+
         panel.border=element_blank())
 ```
 
-Our goal at the OpenDengue project is to fill as many of these gaps as we can. If you know of any publicly available data sources for any of the grey or light coloured countries or years in the above figures please [contribute](https://opendengue.github.io/master-repo/contribute.html) or [get in touch](https://opendengue.github.io/master-repo/contribute.html).
+Our goal at the OpenDengue project is to fill as many of these gaps as we can. If you know of any publicly available data sources for any of the grey or light coloured countries or years in the above figures please [contribute](https://opendengue.github.io/master-repo/contribute.html) or [get in touch](mailto:contribute@opendengue.org).

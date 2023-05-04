@@ -13,7 +13,7 @@ While many countries regularly publish dengue case statistics, they can often be
 
 
 ## How you can help
-We are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please [contribute](./docs/contribute) or [get in touch](./docs/contribute).
+We are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please [contribute](https://opendengue.github.io/master-repo/contribute.html) or [get in touch](mailto:contribute@opendengue.org).
 
 
 ## Team
