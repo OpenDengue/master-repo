@@ -7,34 +7,49 @@ output: html_document
 <iframe height="1000px" width=1000px frameBorder="0" src="https://ahyounglim.shinyapps.io/OpenDengue/"> </iframe>
 
 
+### Download global data
 ```{r data download buttons2, echo=FALSE}
 require(here);require(dplyr);require(downloadthis)
-N_data <- read.csv(here("data/raw_data/", "master_data.csv"))
-#SN_data <- read.csv(here("data/transformed_data/", "MOH_PAHO_SUB_transformed.csv"))
+National <- read.csv(here("data/releases/V1", "National_extract_V1_0.csv"))
+Spatial <- read.csv(here("data/releases/V1", "Spatial_extract_V1_0.csv"))
+Temporal <- read.csv(here("data/releases/V1", "Temporal_extract_V1_0.csv"))
 
-# National download button
-N_data %>%
+
+# download button
+National %>%
   download_this(
-    output_name = "national dataset",
+    output_name = "OpenDengue_global_national",
     output_extension = ".csv",
-    button_label = "Download OpenDengue national data as csv",
+    button_label = "Download OpenDengue global national data",
     button_type = "info",
     has_icon = TRUE,
     icon = "fa fa-save",
     class = "button_large"
   )
 
-# Sub-national download button
-#SN_data %>%
-#  download_this(
-#    output_name = "sub-national dataset",
-#    output_extension = ".csv",
-#    button_label = "Download OpenDengue sub-national data (select countries) as csv",
-#    button_type = "info",
-#    has_icon = TRUE,
-#    icon = "fa fa-save",
-#    class = "button_large"
-#  )
+# download button
+Temporal %>%
+  download_this(
+    output_name = "OpenDengue_global_highest_temporal_resolution",
+    output_extension = ".csv",
+    button_label = "Download OpenDengue global highest temporal resolution data",
+    button_type = "info",
+    has_icon = TRUE,
+    icon = "fa fa-save",
+    class = "button_large"
+  )
+
+Spatial %>%
+  download_this(
+    output_name = "OpenDengue_global_highest_spatial_resolution",
+    output_extension = ".csv",
+    button_label = "Download OpenDengue global highest spatial resolution data",
+    button_type = "info",
+    has_icon = TRUE,
+    icon = "fa fa-save",
+    class = "button_large"
+  )
+
 ```
 
 <br>

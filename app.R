@@ -16,6 +16,10 @@ National$T_res <- factor(National$T_res, levels=c("Week", "Month", "Year"))
 Temporal$T_res <- factor(Temporal$T_res, levels=c("Week", "Month", "Year"))
 Spatial$T_res <- factor(Spatial$T_res, levels=c("Week", "Month", "Year"))
 
+National <- National %>% select(-X)
+Temporal <- Temporal %>% select(-X)
+Spatial <- Spatial %>% select(-X)
+
 # plotly function  ===========================================
 plotly_list <- function(data) { 
     
@@ -63,7 +67,7 @@ all_plots <- function(plot_list) {
 
   all_p <- subplot(plot_list, nrows=length(plot_list), margin = 0.08)
   
-  names <- names(plot_list)
+  names <- paste0(names(plot_list), "ly resolution")
   
   for (i in 1:length(plot_list)) {
   all_p <- layout(all_p, margin = list(t = 40), annotations = list(
@@ -105,13 +109,13 @@ ui <- fluidPage(
     )),
     
     
-  titlePanel("OpenDengue Data Download"),
+  titlePanel(h3(strong("Download data for specific countries and date ranges"))),
   sidebarLayout(
     sidebarPanel(width = 3,
       radioButtons("typeInput", "Data type",
-                  choices = c("National" = "National",
-                              "Temporal" = "Temporal",
-                              "Spatial" = "Spatial"
+                  choices = c("National-level data" = "National",
+                              "Highest temporal resolution data" = "Temporal",
+                              "Highest spatial resolution data" = "Spatial"
                               ),
                   selected = "National"),
       pickerInput("countryInput", "Country", 
@@ -134,7 +138,7 @@ ui <- fluidPage(
     
        tabsetPanel(
         tabPanel("Table", div(dataTableOutput("table"), style = "font-size: 90%")), 
-        tabPanel("Plot", plotlyOutput("plot", height="70vh")) 
+        tabPanel("Plot", plotlyOutput("plot", height="50vh")) 
         
       )
   
@@ -198,7 +202,7 @@ server <- function(input, output, session) {
  
   output$table <- renderDataTable ({
       filteredDT()
-    }, options = list(scrollX=TRUE, sScrollY = '70vh', scrollCollapse=TRUE))
+    }, options = list(scrollX=TRUE, sScrollY = '50vh', scrollCollapse=TRUE))
     
   
   output$plot <- renderPlotly({
@@ -208,7 +212,7 @@ server <- function(input, output, session) {
     
      aggDT <- filteredDT() %>%  
          group_by(calendar_start_date, calendar_end_date, S_res, T_res)%>%
-         summarise(dengue_total = sum(dengue_total, na.rm=T))%>% ungroup()
+         summarise(dengue_total = sum(dengue_total, na.rm=T), .groups = 'drop')
 
      d_lst <- aggDT %>%
           group_split(T_res)%>%
