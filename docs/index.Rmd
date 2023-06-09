@@ -8,7 +8,7 @@ require(here); require(dplyr); require(stringr); require(lubridate); require(dis
 knitr::opts_knit$set(root.dir = here())
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.path="./figure/")
 
-pacman::p_load("dplyr", "lubridate",  "tidyr", "tidyverse",  "knitr", "stringi", "zoo", "data.table", "ggplot2", "sf", 'rnaturalearth', "sf", "rnaturalearthdata", "distill", "downloadthis")
+pacman::p_load("dplyr", "lubridate",  "tidyr", "tidyverse",  "knitr", "stringi", "zoo", "data.table", "ggplot2", "sf", 'rnaturalearth', "sf", "rnaturalearthdata", "distill", "downloadthis", "metathis")
 
 ```
 ![](./figure/OpenDengue_map_07Jun2023.png)
@@ -20,7 +20,6 @@ Please visit our [Data](https://opendengue.github.io/master-repo/data.html) page
 Suggested citation:
 
 "The OpenDengue database, Version 1.0, 2023, https://opendengue.org/, Accesssed [today's date]"
-
 
 
 ## About OpenDengue
@@ -54,3 +53,22 @@ OpenDengue draws together and standardises data from multiple sources that enabl
 
 
 Our goal at the OpenDengue project is to fill as many of these gaps as we can. If you know of any publicly available data sources for any of the grey or light coloured countries or years in the above figures please [contribute](https://opendengue.github.io/master-repo/contribute.html) or [get in touch](mailto:contribute@opendengue.org).
+
+
+```{r echo=FALSE}
+
+meta() %>%
+  meta_description(
+    "The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."
+  ) %>% 
+  
+  meta_social(
+    title = "OpenDengue",
+    url = "opendengue.org",
+    image = "https://github.com/OpenDengue/master-repo/docs/logo/thumbnail.png",
+    image_alt = "OpenDengue Logo",
+    og_type = "website",
+
+  )
+```
+
