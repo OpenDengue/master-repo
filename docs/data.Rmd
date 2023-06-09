@@ -3,27 +3,14 @@ title: "Data"
 output: html_document
 ---
 
-## Data definitions
-The OpenDengue dataset contains reported total case counts with each row corresponds to a unique location and time. 
-
-Where reported, we include dengue cases at all levels of severity (dengue, dengue with/without warning signs, severe dengue, dengue haemorhaggic fever, dengue shock syndrome, dengue deaths) and methods of confirmation (suspected, probable, clinically confirmed, laboratory confirmed) in the variable `dengue_total`. The specific case definition used for a particular datapoint  will depend on the original data source which can be examined in the [OpenDengue Github repo](https://github.com/OpenDengue/master-repo) using the `UUID` source reference identifier. Future versions of the OpenDengue dataset will dissaggregate data by severity and method of confirmation where reported.
-
-Location is encoded by text name at national (`adm_0_name`) and sub-national (`adm_1_name` and `adm_2_name`) level , a numeric Global Administrative Unit Layers (GAUL, see [UN FAO website](https://data.apps.fao.org/catalog/dataset/gaul-codes)) code (`adm0_code`, `adm1_code` and `adm2_code`) and a national level three letter [ISO alpha-3](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes) country code. If using the `rnaturalearth` R package global shapefiles we would reccomend matching using the ISO codes.
-
-Time periods are recorded using a start date (`calendar_start_date`) and end date (`calendar_end_date`) with the format `YYYY-mm-dd`.
-
-## Limitations
-* Dengue surveillance, reporting and accessibility of data varies between countries, sources and, sometimes, over time which can make comparisons invalid. Please check the consistency  of original sources if making comparisons.
-* In all countries reported cases are likely to only be a small subset of total dengue infections due to many asymptomatic and sub-clinical infections.
-
 ## Download
 <iframe height="1000px" width=1000px frameBorder="0" src="https://ahyounglim.shinyapps.io/OpenDengue/"> </iframe>
 
 
 ```{r data download buttons2, echo=FALSE}
 require(here);require(dplyr);require(downloadthis)
-N_data <- read.csv(here("data/transformed_data/", "master_data.csv"))
-SN_data <- read.csv(here("data/transformed_data/", "MOH_PAHO_SUB_transformed.csv"))
+N_data <- read.csv(here("data/raw_data/", "master_data.csv"))
+#SN_data <- read.csv(here("data/transformed_data/", "MOH_PAHO_SUB_transformed.csv"))
 
 # National download button
 N_data %>%
@@ -38,19 +25,35 @@ N_data %>%
   )
 
 # Sub-national download button
-SN_data %>%
-  download_this(
-    output_name = "sub-national dataset",
-    output_extension = ".csv",
-    button_label = "Download OpenDengue sub-national data (select countries) as csv",
-    button_type = "info",
-    has_icon = TRUE,
-    icon = "fa fa-save",
-    class = "button_large"
-  )
+#SN_data %>%
+#  download_this(
+#    output_name = "sub-national dataset",
+#    output_extension = ".csv",
+#    button_label = "Download OpenDengue sub-national data (select countries) as csv",
+#    button_type = "info",
+#    has_icon = TRUE,
+#    icon = "fa fa-save",
+#    class = "button_large"
+#  )
 ```
 
 <br>
 Suggested citation:
 
 "The OpenDengue database, Version 1.0, 2023, https://opendengue.org/, Accesssed [today's date]"
+<br>
+
+## Data definitions
+The OpenDengue dataset contains reported total case counts with each row corresponds to a unique location and time. 
+
+Where reported, we include dengue cases at all levels of severity (dengue, dengue with/without warning signs, severe dengue, dengue haemorhaggic fever, dengue shock syndrome, dengue deaths) and methods of confirmation (suspected, probable, clinically confirmed, laboratory confirmed) in the variable `dengue_total`. The specific case definition used for a particular data point  will depend on the original data source. The data source can be identified by looking up the record `UUID` in the `metadata.csv` file which can be found in the [OpenDengue Github repo](https://github.com/OpenDengue/master-repo). This will include a URL reference to the original public data source. Future versions of the OpenDengue data set will dissaggregate data by severity and method of confirmation where reported.
+
+<br>
+Location is encoded by text name at national (`adm_0_name`) and sub-national (`adm_1_name` and `adm_2_name`) level. Records are matched to Global Administrative Unit Layers (GAUL, see [UN FAO website](https://data.apps.fao.org/catalog/dataset/gaul-codes)) codes (`FAO_GAUL_code`, Admin0-2) and [Natural Earth](https://www.naturalearthdata.com) shapefiles (downloadable via the `rnaturalearth` [R package](https://github.com/ropensci/rnaturalearth)) using [ISO alpha-3](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes) (admin0) and [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) (admin1) standards.
+
+<br>
+Time periods are recorded using a start date (`calendar_start_date`) and end date (`calendar_end_date`) with the format `YYYY-mm-dd`.
+
+## Limitations
+* Dengue surveillance, reporting and accessibility of data varies between countries, sources and, sometimes, over time which can make comparisons invalid. Please check the consistency  of original sources if making comparisons.
+* In all countries reported cases are likely to only be a small subset of total dengue infections due to many asymptomatic and sub-clinical infections.

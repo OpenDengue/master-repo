@@ -5,14 +5,23 @@ output: html_document
 ---
 
 ### Step 1: Finding an appropriate source
+<br>
+![](./figure/Contribute_1.png)
+<br>
 Take a look at the visual summaries of our [data coverage](https://opendengue.github.io/master-repo/index.html) and if you are aware of a data source for a country or time period that we have not included please get in touch. The data source must be publicly accessible (e.g. on a ministry of health website) and denominator based (e.g. 10 cases from a defined population over a defined period of time) but can be in any format (graph, table, etc) and any language. Please see our [Methods](https://opendengue.github.io/master-repo/overview.html) page for further details on the types of data we can and cannot include.
 
 ### Step 2: Raise a new issue on the [OpenDengue Github page](https://github.com/OpenDengue/master-repo/issues)
+<br>
+![](./figure/Contribute_2.png)
+<br>
 Adding new data by raising a Github issue  improves transparency of the data gathering process and allows us to easily track progress in filling data gaps. Please include a web link to the original data source and a brief description of the area and time period of the data gap to be filled.
 
 If you are unsure how to raise a Github issue take a look at [this guide](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue#:~:text=On%20GitHub.com%2C%20navigate%20to,to%20open%2C%20click%20Get%20started.).
 
 ### Step 3: See the improvement
+<br>
+![](./figure/Contribute_3.png)
+<br>
 A member of the OpenDengue team will regularly review submissions and update the global database accordingly. When issues are closed you can expect to see new updates to the database. Tracking submissions by Github allows us to identify and credit all contributors for their efforts.
 
 The above outlines our preferred process for contributing to OpenDengue, but if you would prefer to contact us directly, please do get in touch via email.
