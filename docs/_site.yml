@@ -7,7 +7,7 @@ favicon: ./logo/favicon_v2.ico
 navbar:
   logo: 
     image: ./logo/logo3_v2.png    
-    href: https://opendengue.github.io/master-repo
+    href: https://opendengue.org/index.html
   left:
     - text: "Home"
       href: index.html

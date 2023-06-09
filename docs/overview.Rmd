@@ -36,12 +36,12 @@ knitr::include_graphics("./flowchart/PAHO_process_summary.png")
 An example application of this protocol for Guatemala:
 
 ```{r, echo=FALSE}
-knitr::include_graphics("./figure/PAHO/cumulative plot for each country-26.png")
+knitr::include_graphics("./figure/cumulative plot for each country-26.png")
 ```
 Summary of imputation across the PAHO dataset:
 
 ```{r, echo=FALSE}
-knitr::include_graphics("./figure/PAHO/heatmap-1.png")
+knitr::include_graphics("./figure/heatmap-1.png")
 ```
 
 ### Error checking sub-protocol
@@ -53,3 +53,20 @@ knitr::include_graphics("./flowchart/flow_condense.png")
 
 ```
 
+
+```{r echo=FALSE}
+library(metathis)
+meta() %>%
+  meta_description(
+    "The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."
+  ) %>% 
+  
+  meta_social(
+    title = "OpenDengue: Methods",
+    url = "opendengue.org",
+    image = "https://raw.githubusercontent.com/OpenDengue/master-repo/c679d73e51ad0b0fd3d1bfb66f5eaa6e52b26e1a/docs/logo/thumbnail.png",
+    image_alt = "OpenDengue Logo",
+    og_type = "website",
+
+  )
+```

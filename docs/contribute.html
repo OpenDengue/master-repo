@@ -460,8 +460,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
 
   <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-  <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
-  <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
   <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
   <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
@@ -2076,7 +2076,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+  <meta name="description" content="The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."/>
+  <meta name="twitter:title" content="OpenDengue: Contribute"/>
+  <meta name="twitter:description" content="The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."/>
+  <meta name="twitter:url" content="opendengue.org"/>
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/OpenDengue/master-repo/c679d73e51ad0b0fd3d1bfb66f5eaa6e52b26e1a/docs/logo/thumbnail.png"/>
+  <meta name="twitter:image:alt" content="OpenDengue Logo"/>
+  <meta name="twitter:card" content="summary"/>
+  <meta property="og:title" content="OpenDengue: Contribute"/>
+  <meta property="og:description" content="The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."/>
+  <meta property="og:url" content="opendengue.org"/>
+  <meta property="og:image" content="https://raw.githubusercontent.com/OpenDengue/master-repo/c679d73e51ad0b0fd3d1bfb66f5eaa6e52b26e1a/docs/logo/thumbnail.png"/>
+  <meta property="og:image:alt" content="OpenDengue Logo"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="en_US"/>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2105,7 +2119,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   body {
     font-family: "Open Sans", sans-serif;
-    margin: 0;
+    margin: 0px;
+    padding: 0px;
     /*color: #595959;*/
   }
 
@@ -2179,7 +2194,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <header class="header header--fixed" role="banner">
 <nav class="distill-site-nav distill-site-header">
 <div class="nav-left">
-<a class="logo" href="https://opendengue.github.io/master-repo">
+<a class="logo" href="https://opendengue.org/index.html">
 <img src="logo/logo3_v2.png" alt="Logo"/>
 </a>
 <a href="index.html" class="title">OpenDengue</a>
@@ -2214,6 +2229,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p><br>
 <img src="figure/Contribute_1.png" />
 <br>
+<br>
 Take a look at the visual summaries of our <a href="https://opendengue.github.io/master-repo/index.html">data coverage</a> and if you are aware of a data source for a country or time period that we have not included please get in touch. The data source must be publicly accessible (e.g. on a ministry of health website) and denominator based (e.g. 10 cases from a defined population over a defined period of time) but can be in any format (graph, table, etc) and any language. Please see our <a href="https://opendengue.github.io/master-repo/overview.html">Methods</a> page for further details on the types of data we can and cannot include.</p>
 <h3 id="step-2-raise-a-new-issue-on-the-opendengue-github-page">Step 2: Raise a new issue on the <a href="https://github.com/OpenDengue/master-repo/issues">OpenDengue Github page</a></h3>
 <p><br>
@@ -2225,8 +2241,12 @@ Adding new data by raising a Github issue improves transparency of the data gath
 <p><br>
 <img src="figure/Contribute_3.png" />
 <br>
+<br>
 A member of the OpenDengue team will regularly review submissions and update the global database accordingly. When issues are closed you can expect to see new updates to the database. Tracking submissions by Github allows us to identify and credit all contributors for their efforts.</p>
-<p>The above outlines our preferred process for contributing to OpenDengue, but if you would prefer to contact us directly, please do get in touch via email.</p>
+<p>The above outlines our preferred process for contributing to OpenDengue, but if you would prefer to contact us directly, please do <a href="mailto:contribute@opendengue.org">get in touch</a> via email.</p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
@@ -2258,12 +2278,12 @@ A member of the OpenDengue team will regularly review submissions and update the
 onclick="window.location = 'http://www.facebook.com/share.php?u=' + encodeURIComponent(window.location); return false" 
 class="fa fa-facebook fa-2x"></a>
 
-<a href="http://twitter.com/share?text=OpenDengue Project: A global database of publicly available dengue case data&url=http://opendengue.org&hashtags=OpenDengue" 
+<a href="http://twitter.com/share?text=OpenDengue Project: A global database of publicly available dengue case data&url=http://opendengue.org/index.html&hashtags=OpenDengue" 
 style="padding-right:32px; padding-left:25px" 
 class="fa fa-twitter fa-2x"></a>
 
 <a href="https://www.linkedin.com/" 
-onclick= "window.location = 'https://www.linkedin.com/sharing/share-offsite/?url=https://opendengue.org
+onclick= "window.location = 'https://www.linkedin.com/sharing/share-offsite/?url=https://opendengue.org/index.html
 '" 
 class="fa fa-linkedin fa-2x"></a>
 
