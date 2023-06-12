@@ -43,9 +43,9 @@ meta() %>%
   meta_social(
     title = "OpenDengue: Project",
     url = "opendengue.org",
-    image = "https://raw.githubusercontent.com/OpenDengue/master-repo/c679d73e51ad0b0fd3d1bfb66f5eaa6e52b26e1a/docs/logo/thumbnail.png",
+    image = "https://raw.githubusercontent.com/OpenDengue/master-repo/03017327fbe34bb2d67fcc5a360b4992434be0a4/docs/logo/thumbnail.png",
     image_alt = "OpenDengue Logo",
-    twitter_card_type = c("summary_large_image"),
+    twitter_card_type = "summary_large_image",
     og_type = "website"
 
   )
