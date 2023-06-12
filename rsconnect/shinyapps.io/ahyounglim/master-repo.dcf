@@ -1,0 +1,14 @@
+name: master-repo
+title: master-repo
+username:
+account: ahyounglim
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9291840
+bundleId: 7334254
+url: https://ahyounglim.shinyapps.io/master-repo/
+when: 1686573767.00399
+lastSyncTime: 1686573767.00401
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: docs

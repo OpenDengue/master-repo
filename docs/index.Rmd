@@ -8,7 +8,7 @@ require(here); require(dplyr); require(stringr); require(lubridate); require(dis
 knitr::opts_knit$set(root.dir = here())
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.path="./figure/")
 
-pacman::p_load("dplyr", "lubridate",  "tidyr", "tidyverse",  "knitr", "stringi", "zoo", "data.table", "ggplot2", "sf", 'rnaturalearth', "sf", "rnaturalearthdata", "distill", "downloadthis", "metathis")
+pacman::p_load("dplyr",   "tidyr", "tidyverse",  "knitr",   "distill",  "metathis")
 
 ```
 ![](./figure/OpenDengue_map_07Jun2023.png)
@@ -43,8 +43,9 @@ OpenDengue draws together and standardises data from multiple sources that enabl
 - Predicting future trends and outbreak risk
 
 ## Summary of data coverage
+Click the image below to view the full size interactive image.
 
-
+<br>
 <a href="./figure/heatmap_temporal_.html" target="_blank">
     <img height="512px" width="864px" border="0" align="left"  src="./figure/heatmap_temporal.png"/></a>
 
@@ -63,11 +64,12 @@ meta() %>%
   ) %>% 
   
   meta_social(
-    title = "OpenDengue",
+    title = "OpenDengue: Home",
     url = "opendengue.org",
     image = "https://raw.githubusercontent.com/OpenDengue/master-repo/c679d73e51ad0b0fd3d1bfb66f5eaa6e52b26e1a/docs/logo/thumbnail.png",
     image_alt = "OpenDengue Logo",
-    og_type = "website",
+    twitter_card_type = c("summary_large_image"),
+    og_type = "website"
 
   )
 ```

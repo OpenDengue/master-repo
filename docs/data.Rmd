@@ -8,54 +8,14 @@ output: html_document
 
 
 ### Download global data
-```{r data download buttons2, echo=FALSE}
-require(here);require(dplyr);require(downloadthis); require(metathis)
-National <- read.csv(here("data/releases/V1", "National_extract_V1_0.csv"))
-Spatial <- read.csv(here("data/releases/V1", "Spatial_extract_V1_0.csv"))
-Temporal <- read.csv(here("data/releases/V1", "Temporal_extract_V1_0.csv"))
+
+Please visit our [git repository](https://github.com/OpenDengue/master-repo/tree/d94409df15c35787108f21738dcf6d87bf7f4d61/data/releases/V1) to download OpenDengue global national, highest temporal and highest spatial data. 
 
 
-# download button
-National %>%
-  download_this(
-    output_name = "OpenDengue_global_national",
-    output_extension = ".csv",
-    button_label = "Download OpenDengue global national data",
-    button_type = "info",
-    has_icon = TRUE,
-    icon = "fa fa-save",
-    class = "button_large"
-  )
-
-# download button
-Temporal %>%
-  download_this(
-    output_name = "OpenDengue_global_highest_temporal_resolution",
-    output_extension = ".csv",
-    button_label = "Download OpenDengue global highest temporal resolution data",
-    button_type = "info",
-    has_icon = TRUE,
-    icon = "fa fa-save",
-    class = "button_large"
-  )
-
-Spatial %>%
-  download_this(
-    output_name = "OpenDengue_global_highest_spatial_resolution",
-    output_extension = ".csv",
-    button_label = "Download OpenDengue global highest spatial resolution data",
-    button_type = "info",
-    has_icon = TRUE,
-    icon = "fa fa-save",
-    class = "button_large"
-  )
-
-```
-
-<br>
-Suggested citation:
+### Suggested citation
 
 "The OpenDengue database, Version 1.0, 2023, https://opendengue.org/, Accesssed [today's date]"
+<br>
 <br>
 
 ## Data definitions
@@ -75,6 +35,7 @@ Time periods are recorded using a start date (`calendar_start_date`) and end dat
 
 
 ```{r echo=FALSE}
+require(dplyr);require(metathis)
 
 meta() %>%
   meta_description(
@@ -86,7 +47,8 @@ meta() %>%
     url = "opendengue.org",
     image = "https://raw.githubusercontent.com/OpenDengue/master-repo/c679d73e51ad0b0fd3d1bfb66f5eaa6e52b26e1a/docs/logo/thumbnail.png",
     image_alt = "OpenDengue Logo",
-    og_type = "website",
+    twitter_card_type = c("summary_large_image"),
+    og_type = "website"
 
   )
 ```

@@ -31,7 +31,7 @@ The above outlines our preferred process for contributing to OpenDengue, but if 
 
 
 ```{r echo=FALSE}
-library(metathis)
+library(metathis); library(dplyr)
 
 meta() %>%
   meta_description(
@@ -43,7 +43,8 @@ meta() %>%
     url = "opendengue.org",
     image = "https://raw.githubusercontent.com/OpenDengue/master-repo/c679d73e51ad0b0fd3d1bfb66f5eaa6e52b26e1a/docs/logo/thumbnail.png",
     image_alt = "OpenDengue Logo",
-    og_type = "website",
+    twitter_card_type = c("summary_large_image"),
+    og_type = "website"
 
   )
 ```

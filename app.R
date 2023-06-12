@@ -16,9 +16,9 @@ National$T_res <- factor(National$T_res, levels=c("Week", "Month", "Year"))
 Temporal$T_res <- factor(Temporal$T_res, levels=c("Week", "Month", "Year"))
 Spatial$T_res <- factor(Spatial$T_res, levels=c("Week", "Month", "Year"))
 
-National <- National %>% select(-X)
-Temporal <- Temporal %>% select(-X)
-Spatial <- Spatial %>% select(-X)
+National <- National %>% select(-X) %>% filter(!adm_0_name %in% c("REPUBLIC OF KOREA", "CANADA"))
+Temporal <- Temporal %>% select(-X)%>% filter(!adm_0_name %in% c("REPUBLIC OF KOREA", "CANADA"))
+Spatial <- Spatial %>% select(-X)%>% filter(!adm_0_name %in% c("REPUBLIC OF KOREA", "CANADA"))
 
 # plotly function  ===========================================
 plotly_list <- function(data) { 
@@ -184,7 +184,7 @@ server <- function(input, output, session) {
 
     }
     
-  updateSelectInput(session, "countryInput", choices = choiceList) })
+  updatePickerInput(session, "countryInput", choices = choiceList, selected = "AMERICAN SAMOA") })
   
   observeEvent(input$countryInput, {
   updateDateRangeInput(session,

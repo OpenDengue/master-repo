@@ -55,7 +55,7 @@ knitr::include_graphics("./flowchart/flow_condense.png")
 
 
 ```{r echo=FALSE}
-library(metathis)
+library(metathis); library(dplyr)
 meta() %>%
   meta_description(
     "The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."
@@ -66,7 +66,8 @@ meta() %>%
     url = "opendengue.org",
     image = "https://raw.githubusercontent.com/OpenDengue/master-repo/c679d73e51ad0b0fd3d1bfb66f5eaa6e52b26e1a/docs/logo/thumbnail.png",
     image_alt = "OpenDengue Logo",
-    og_type = "website",
+    twitter_card_type = c("summary_large_image"),
+    og_type = "website"
 
   )
 ```
