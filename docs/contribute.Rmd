@@ -39,11 +39,12 @@ meta() %>%
   ) %>% 
   
   meta_social(
-    title = "OpenDengue: Contribute",
+    title = "OpenDengue: Data",
     url = "opendengue.org",
-    image = "https://raw.githubusercontent.com/OpenDengue/master-repo/03017327fbe34bb2d67fcc5a360b4992434be0a4/docs/logo/thumbnail.png",
-    image_alt = "OpenDengue Logo",
+    image = "https://raw.githubusercontent.com/OpenDengue/master-repo/main/docs/logo/thumbnail.png",
     twitter_card_type = "summary_large_image",
+    twitter_creator = "@OliverBrady1",
+    image_alt = "OpenDengue Logo",
     og_type = "website"
 
   )

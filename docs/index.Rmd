@@ -62,14 +62,15 @@ meta() %>%
   meta_description(
     "The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."
   ) %>% 
-  
+
   meta_social(
     title = "OpenDengue: Home",
     url = "opendengue.org",
-    image = "https://raw.githubusercontent.com/OpenDengue/master-repo/03017327fbe34bb2d67fcc5a360b4992434be0a4/docs/logo/thumbnail.png",
-    
-    image_alt = "OpenDengue Logo",
+    image = "https://raw.githubusercontent.com/OpenDengue/master-repo/main/docs/logo/thumbnail.png",
     twitter_card_type = "summary_large_image",
+    twitter_creator = "@OliverBrady1",
+    image_alt = "OpenDengue Logo",
+
     og_type = "website"
 
   )
