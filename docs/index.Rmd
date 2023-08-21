@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.path=".
 pacman::p_load("dplyr",   "tidyr", "tidyverse",  "knitr",   "distill",  "metathis")
 
 ```
-![](./figure/OpenDengue_map_07Jun2023.png)
+![](./figure/OpenDengue_map_18Aug2023.png)
 
 ## Access the data
 
@@ -19,7 +19,7 @@ Please visit our [Data](https://opendengue.github.io/master-repo/data.html) page
 
 Suggested citation:
 
-"The OpenDengue database, Version 1.0, 2023, https://opendengue.org/, Accesssed [today's date]"
+"The OpenDengue database, Version 1.1, 2023, https://opendengue.org/, Accesssed [today's date]"
 
 
 ## About OpenDengue
@@ -28,7 +28,7 @@ Suggested citation:
 <br>
 The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases. Learn more about the [project](https://opendengue.org/project.html) or our [methods](https://opendengue.org/overview.html).
 
-The database will continue to be developed over the coming years in different versions. The current release (Version 1) will focus on collating dengue case data for as many countries and years as possible. Version 2 will aim to maximise the spatial and temporal resolution of the data and Version 3 will add disaggregate dengue case counts by severity, method of confirmation, age and serotype where such data are available.
+The database will continue to be developed over the coming years in different versions. The current release (Version 1.1) fills some key data gaps not included in version 1.0 thansk to the efforst of the OpenDengue team and collaborators. We are currently working on Version 2 that will add additional metadata on case definition criteria (expected end of September 2023). Version 3 will add disaggregate dengue case counts by severity, method of confirmation, age and serotype where such data are available.
 
 We are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please [contribute](https://opendengue.org/contribute.html) or [get in touch](mailto:contribute@opendengue.org).
 

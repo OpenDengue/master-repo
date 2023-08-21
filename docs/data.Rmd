@@ -14,7 +14,7 @@ Please visit our [git repository](https://github.com/OpenDengue/master-repo/tree
 
 ### Suggested citation
 
-"The OpenDengue database, Version 1.0, 2023, https://opendengue.org/, Accesssed [today's date]"
+"The OpenDengue database, Version 1.1, 2023, https://opendengue.org/, Accesssed [today's date]"
 <br>
 <br>
 
