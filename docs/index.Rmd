@@ -47,10 +47,10 @@ Click the image below to view the full size interactive image.
 
 <br>
 <a href="./figure/heatmap_temporal_.html" target="_blank">
-    <img height="512px" width="864px" border="0" align="left"  src="./figure/heatmap_temporal.png"/></a>
+    <img height="614.4px" width="1036.8px" border="0" align="left"  src="./figure/heatmap_temporal.png"/></a>
 
 <a href="./figure/heatmap_spatial_.html" target="_blank">
-    <img height="512px" width="864px" border="0" align="left"  src="./figure/heatmap_spatial.png"/></a>
+    <img height="614.4px" width="1036.8px" border="0" align="left"  src="./figure/heatmap_spatial.png"/></a>
 
 
 Our goal at the OpenDengue project is to fill as many of these gaps as we can. If you know of any publicly available data sources for any of the grey or light coloured countries or years in the above figures please [contribute](https://opendengue.github.io/master-repo/contribute.html) or [get in touch](mailto:contribute@opendengue.org).
