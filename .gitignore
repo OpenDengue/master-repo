@@ -2,3 +2,10 @@
 .Rhistory
 .RData
 .Ruserdata
+app.R
+helpers.R
+plotly.R
+shiny/
+*.fst
+*.DS_Store
+.Rproj
