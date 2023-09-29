@@ -18,7 +18,7 @@ require(here);require(dplyr);require(downloadthis)
 # download button
 
 download_link(
-  link = "https://github.com/OpenDengue/master-repo/raw/main/National_extract_V1_2.zip",
+  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.2/National_extract_V1_2.zip",
   button_label = "Download global national data",
   button_type = "info",
   has_icon = TRUE,
@@ -27,7 +27,7 @@ download_link(
 )
 
 download_link(
-  link = "https://github.com/OpenDengue/master-repo/raw/main/Spatial_extract_V1_2.zip",
+  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.2/Spatial_extract_V1_2.zip",
   button_label = "Download global highest spatial resolution data",
   button_type = "info",
   has_icon = TRUE,
@@ -36,7 +36,7 @@ download_link(
 )
 
 download_link(
-  link = "https://github.com/OpenDengue/master-repo/raw/main/Temporal_extract_V1_2.zip",
+  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.2/Temporal_extract_V1_2.zip",
   button_label = "Download global highest temporal resolution data",
   button_type = "info",
   has_icon = TRUE,
