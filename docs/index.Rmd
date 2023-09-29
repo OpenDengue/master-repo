@@ -19,7 +19,7 @@ Please visit our [Data](https://opendengue.github.io/master-repo/data.html) page
 
 Suggested citation:
 
-"The OpenDengue database, Version 1.1, 2023, https://opendengue.org/, Accesssed [today's date]"
+"The OpenDengue database, Version 1.2, 2023, https://opendengue.org/, Accesssed [today's date]"
 
 
 ## About OpenDengue

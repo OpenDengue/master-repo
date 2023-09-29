@@ -457,8 +457,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
 
   <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-  <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet"/>
-  <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
   <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
   <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
@@ -2073,7 +2073,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+  <script src="site_libs/font-awesome-5.13.0/js/script.js"></script>
   <meta name="description" content="The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."/>
   <meta name="twitter:title" content="OpenDengue: Data"/>
   <meta name="twitter:description" content="The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."/>
@@ -2257,14 +2258,25 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <iframe height="1000px" width="1000px" frameBorder="0" src="https://ahyounglim.shinyapps.io/OpenDengue/">
 </iframe>
 <h3 id="download-global-data">Download global data</h3>
-<p>Please visit our <a href="https://github.com/OpenDengue/master-repo/tree/6d55d8158dbd70d03ddb2f39c18ba560bab4b163/data/releases">git repository</a> to download OpenDengue global national, highest temporal and highest spatial data.</p>
+<p>Download the latest OpenDengue global national, highest temporal and highest spatial data or visit our <a href="https://github.com/OpenDengue/master-repo/tree/6d55d8158dbd70d03ddb2f39c18ba560bab4b163/data/releases">Github repo</a> for previous versions and more information.</p>
+<div class="layout-chunk" data-layout="l-body">
+<a href="https://github.com/OpenDengue/master-repo/raw/main/National_extract_V1_2.zip">
+<button class="btn btn-info"><i class="fa fa-save"></i> Download global national data</button>
+</a>
+<a href="https://github.com/OpenDengue/master-repo/raw/main/Spatial_extract_V1_2.zip">
+<button class="btn btn-info"><i class="fa fa-save"></i> Download global highest spatial resolution data</button>
+</a>
+<a href="https://github.com/OpenDengue/master-repo/raw/main/Temporal_extract_V1_2.zip">
+<button class="btn btn-info"><i class="fa fa-save"></i> Download global highest temporal resolution data</button>
+</a>
+</div>
 <h3 id="suggested-citation">Suggested citation</h3>
-<p>“The OpenDengue database, Version 1.1, 2023, <a href="https://opendengue.org/" class="uri">https://opendengue.org/</a>, Accesssed [today’s date]”
+<p>“The OpenDengue database, Version 1.2, 2023, <a href="https://opendengue.org/" class="uri">https://opendengue.org/</a>, Accesssed [today’s date]”
 <br>
 <br></p>
 <h2 id="data-definitions">Data definitions</h2>
 <p>The OpenDengue dataset contains reported total case counts with each row corresponds to a unique location and time.</p>
-<p>Where reported, we include dengue cases at all levels of severity (dengue, dengue with/without warning signs, severe dengue, dengue haemorhaggic fever, dengue shock syndrome, dengue deaths) and methods of confirmation (suspected, probable, clinically confirmed, laboratory confirmed) in the variable <code>dengue_total</code>. The specific case definition used for a particular data point will depend on the original data source. The data source can be identified by looking up the record <code>sourceID</code> in the <code>metadata.xlsx</code> file which can be found in the <a href="https://github.com/OpenDengue/master-repo">OpenDengue Github repo</a>. This will include a URL reference to the original public data source. Future versions of the OpenDengue data set will dissaggregate data by severity and method of confirmation where reported.</p>
+<p>Where reported, we include dengue cases at all levels of severity (dengue, dengue with/without warning signs, severe dengue, dengue haemorhaggic fever, dengue shock syndrome, dengue deaths) and methods of confirmation (suspected, probable, clinically confirmed, laboratory confirmed) in the variable <code>dengue_total</code>. The specific case definition used for a particular data point will depend on the original data source and can be identified by looking up the record <code>case_definition_original</code> in the <code>metadata_V1.2.xlsx</code> file which can be found in the <a href="https://github.com/OpenDengue/master-repo/data/raw_data">OpenDengue Github repo</a>. This will include a URL reference to the original public data source. Future versions of the OpenDengue data set will dissaggregate data by severity and method of confirmation where reported.</p>
 <p><br>
 Location is encoded by text name at national (<code>adm_0_name</code>) and sub-national (<code>adm_1_name</code> and <code>adm_2_name</code>) level. Records are matched to Global Administrative Unit Layers (GAUL, see <a href="https://data.apps.fao.org/catalog/dataset/gaul-codes">UN FAO website</a>) codes (<code>FAO_GAUL_code</code>, Admin0-2) and <a href="https://www.naturalearthdata.com">Natural Earth</a> shapefiles (downloadable via the <code>rnaturalearth</code> <a href="https://github.com/ropensci/rnaturalearth">R package</a>) using <a href="https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes">ISO alpha-3</a> (admin0) and <a href="https://en.wikipedia.org/wiki/ISO_3166-2">ISO 3166-2</a> (admin1) standards.</p>
 <p><br>
