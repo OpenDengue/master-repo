@@ -1,0 +1,92 @@
+{
+  "_id": "c1eeaaf855017e16",
+  "@type": "niaid:Dataset",
+  "@context": {
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "schema": "http://schema.org/",
+    "bioschemas": "https://discovery.biothings.io/view/bioschemas/",
+    "niaid": "https://discovery.biothings.io/view/niaid/"
+  },
+  "includedInDataCatalog": [
+    {
+      "@type": "DataCatalog",
+      "name": "N3C Datasets from Data Discovery Engine",
+      "url": "https://discovery.biothings.io/dataset/c1eeaaf855017e16"
+    },
+    {
+      "name": "N3C Datasets",
+      "url": "https://ncats.nih.gov/n3c/"
+    }
+  ],
+  "name": "OpenDengue: data from the OpenDengue database",
+  "description": "The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990 or earlier. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases.\n\nThe latest database is available on our OpenDengue website (https://opendengue.org/data.html). Past and current versions are also available in the Opendengue Github repository (https://github.com/OpenDengue/master-repo).\n\nGlobal summaries of data: We provide three global summaries of the data in OpenDengue. We provide the best national estimate (\"National_extract.csv\"), the best temporal resolution (\"Temporal_extract.csv\") and the best spatial resolution (\"Spatial_extract.csv\"). This allows users to customise their data extraction based on their research question. Each row in the data table contains a unique, non-overlapping location and time period with the associated dengue case data. The below codebook describes each variable.\nadm_0_name : administrative level 0/country name\nadm_1_name : administrative level 1 name\nadm_2_name : administrative level 2 name\nfull_name : full place name\nISO_A0 : ISO country code\nFAO_GAUL_code : Food and Agricultural Organization Global Administrative Unit Layer Code\nRNE_iso_code : RNaturalEarth ISO code\nIBGE_code : Brazilian Instituto Brasileiro de Geografia e Estatística (IBGE) code\ncalendar_start_date : the start date in calendar time with the format YYYY-mm-dd\ncalendar_end_date : the end date in calendar time with the format YYYY-mm-dd\nYear : year\ndengue_total : the total dengue case count relating to the period and place\ncase_definition_standardised : case definition after standardisation\nS_res : spatial resolution\nT_res : temporal resolution\nUUID : Universal Unique Identifier relating to the source file from which the data originates\n\nThe source data and source files can be found here: https://doi.org/10.6084/m9.figshare.24259573.",
+  "measurementTechnique": "Informatics",
+  "identifier": "Dengue",
+  "creator": [
+    {
+      "@type": "Person",
+      "name": "Joeseph R. A. Clarke"
+    },
+    {
+      "@type": "Person",
+      "name": "Ahyoung Lim"
+    },
+    {
+      "@type": "Person",
+      "name": "Pratik R. Gupte"
+    },
+    {
+      "@type": "Person",
+      "name": "David M. Pigott"
+    },
+    {
+      "@type": "Person",
+      "name": "Wilbert G. van Panhuis"
+    },
+    {
+      "@type": "Person",
+      "name": "Oliver J. Brady"
+    }
+  ],
+  "sdPublisher": {
+    "@type": "Organization",
+    "name": "Figshare"
+  },
+  "distribution": {
+    "@type": "DataDownload",
+    "dateModified": "2023-11-07",
+    "contentUrl": "https://doi.org/10.6084/m9.figshare.24259573"
+  },
+  "funding": {
+    "@type": "MonetaryGrant",
+    "funder": {
+      "@type": "Organization",
+      "name": "UK Medical Research Council"
+    },
+    "identifier": "MR/V031112/1"
+  },
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+  "species": "http://purl.obolibrary.org/obo/NCBITaxon_12637",
+  "infectiousAgent": "http://purl.obolibrary.org/obo/NCBITaxon_12637",
+  "healthCondition": [
+    "http://purl.obolibrary.org/obo/MONDO_0005502",
+    "http://purl.obolibrary.org/obo/MONDO_0000248",
+    "http://purl.obolibrary.org/obo/MONDO_0005358",
+    "http://purl.obolibrary.org/obo/MONDO_0000259"
+  ],
+  "temporalCoverage": {
+    "@type": "TemporalInterval",
+    "startDate": "1924-01-20",
+    "endDate": "2023-09-30"
+  },
+  "_meta": {
+    "username": "ahyoung-lim",
+    "class_id": "niaid::niaid:Dataset",
+    "private": false,
+    "guide": "/guide/niaid",
+    "date_created": "2023-11-07T14:00:54.654964+00:00",
+    "last_updated": "2023-11-07T15:49:05.784002+00:00"
+  }
+}

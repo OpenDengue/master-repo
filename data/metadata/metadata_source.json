@@ -1,0 +1,92 @@
+{
+  "_id": "1835020c4702506e",
+  "@type": "niaid:Dataset",
+  "@context": {
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "schema": "http://schema.org/",
+    "bioschemas": "https://discovery.biothings.io/view/bioschemas/",
+    "niaid": "https://discovery.biothings.io/view/niaid/"
+  },
+  "includedInDataCatalog": [
+    {
+      "@type": "DataCatalog",
+      "name": "N3C Datasets from Data Discovery Engine",
+      "url": "https://discovery.biothings.io/dataset/1835020c4702506e"
+    },
+    {
+      "name": "N3C Datasets",
+      "url": "https://ncats.nih.gov/n3c/"
+    }
+  ],
+  "name": "OpenDengue: source data",
+  "description": "Sourcedata relevant to the original data source category that was searched, located and extracted was stored in a corresponding version-specific “.csv” file. This includes date accessed, url of main landing page, steps taken through website/sitemap navigation, relevant search terms used, and other relevant notes such as positioning on page. The data source can be identified and interrogated by looking up the record UUID in the sourcedata.csv file then checking the corresponding URL or the archived download of the source (source_files.zip) in the repository. \n\nThe main OpenDengue datasets can be found here: https://doi.org/10.6084/m9.figshare.24259573.",
+  "measurementTechnique": "Informatics",
+  "identifier": "Dengue fever",
+  "creator": [
+    {
+      "@type": "Person",
+      "name": "Joseph R. A. Clarke"
+    },
+    {
+      "@type": "Person",
+      "name": "Ahyoung Lim"
+    },
+    {
+      "@type": "Person",
+      "name": "Pratik R. Gupte"
+    },
+    {
+      "@type": "Person",
+      "name": "David M. Pigott"
+    },
+    {
+      "@type": "Person",
+      "name": "Wilbert G. van Panhuis"
+    },
+    {
+      "@type": "Person",
+      "name": "Oliver J. Brady"
+    }
+  ],
+  "sdPublisher": {
+    "@type": "Organization",
+    "name": "Figshare"
+  },
+  "distribution": {
+    "@type": "DataDownload",
+    "contentUrl": "https://doi.org/10.6084/m9.figshare.24468397",
+    "dateModified": "2023-11-07"
+  },
+  "funding": {
+    "@type": "MonetaryGrant",
+    "funder": {
+      "@type": "Organization",
+      "name": "UK Medical Research Council"
+    },
+    "identifier": "MR/V031112/1"
+  },
+  "license": "https://creativecommons.org/licenses/by-sa/4.0/deed.en",
+  "species": "http://purl.obolibrary.org/obo/NCBITaxon_12637",
+  "infectiousAgent": "http://purl.obolibrary.org/obo/NCBITaxon_12637",
+  "healthCondition": [
+    "http://purl.obolibrary.org/obo/MONDO_0005502",
+    "http://purl.obolibrary.org/obo/MONDO_0000248",
+    "http://purl.obolibrary.org/obo/MONDO_0005358",
+    "http://purl.obolibrary.org/obo/MONDO_0000259"
+  ],
+  "temporalCoverage": {
+    "@type": "TemporalInterval",
+    "startDate": "1924-01-20",
+    "endDate": "2023-09-30"
+  },
+  "_meta": {
+    "username": "ahyoung-lim",
+    "class_id": "niaid::niaid:Dataset",
+    "private": false,
+    "guide": "/guide/niaid",
+    "date_created": "2023-11-07T14:33:54.166844+00:00",
+    "last_updated": "2023-11-07T15:44:21.179362+00:00"
+  }
+}

@@ -10,7 +10,7 @@ output: html_document
 
 ### Download global data
 
-Download the latest OpenDengue global national, highest temporal and highest spatial data or visit our [Github repo](https://github.com/OpenDengue/master-repo/tree/6d55d8158dbd70d03ddb2f39c18ba560bab4b163/data/releases) for previous versions and more information. 
+Download the latest OpenDengue global national, highest temporal and highest spatial data or visit our [Github repository](https://github.com/OpenDengue/master-repo/tree/6d55d8158dbd70d03ddb2f39c18ba560bab4b163/data/releases) and [Figshare repository](https://doi.org/10.6084/m9.figshare.24259573) for previous versions and more information. 
 
 ```{r echo=FALSE}
 
@@ -46,18 +46,21 @@ download_link(
 
 ```
 
-
+<br>
 
 ### Suggested citation
 
-"The OpenDengue database, Version 1.2, 2023, https://opendengue.org/, Accesssed [today's date]"
-<br>
+The preferred citation for OpenDengue is the citation of our research paper [URL to be confirmed] in addition to the Figshare repository link to the specific version of the dataset used:
+
+“Clarke, Joe; Lim, Ahyoung; Gupte, Pratik R.; Pigott, David M.; van Panhuis, Wilbert G; Brady, Oliver (2023). OpenDengue: data from the OpenDengue database. Version [1.2]. figshare. Dataset. https://doi.org/10.6084/m9.figshare.24259573.v3.”
+
+
 <br>
 
 ## Data definitions
 The OpenDengue dataset contains reported total case counts with each row corresponds to a unique location and time. 
 
-Where reported, we include dengue cases at all levels of severity (dengue, dengue with/without warning signs, severe dengue, dengue haemorhaggic fever, dengue shock syndrome, dengue deaths) and methods of confirmation (suspected, probable, clinically confirmed, laboratory confirmed) in the variable `dengue_total`. The specific case definition used for a particular data point will depend on the original data source and can be identified by looking up the record  `case_definition_original` in the `metadata_V1.2.xlsx` file which can be found in the [OpenDengue Github repo](https://github.com/OpenDengue/master-repo/data/raw_data). This will include a URL reference to the original public data source. Future versions of the OpenDengue data set will dissaggregate data by severity and method of confirmation where reported.
+Where reported, we include dengue cases at all levels of severity (dengue, dengue with/without warning signs, severe dengue, dengue haemorhaggic fever, dengue shock syndrome, dengue deaths) and methods of confirmation (suspected, probable, clinically confirmed, laboratory confirmed) in the variable `dengue_total`. The specific case definition used for a particular data point will depend on the original data source and can be identified by looking up the record  `case_definition_original` in the `sourcedata_V1.2.csv` file which can be found in the [OpenDengue Github repo](https://github.com/OpenDengue/master-repo/data/raw_data). This will include a URL reference to the original public data source. Future versions of the OpenDengue data set will dissaggregate data by severity and method of confirmation where reported.
 
 <br>
 Location is encoded by text name at national (`adm_0_name`) and sub-national (`adm_1_name` and `adm_2_name`) level. Records are matched to Global Administrative Unit Layers (GAUL, see [UN FAO website](https://data.apps.fao.org/catalog/dataset/gaul-codes)) codes (`FAO_GAUL_code`, Admin0-2) and [Natural Earth](https://www.naturalearthdata.com) shapefiles (downloadable via the `rnaturalearth` [R package](https://github.com/ropensci/rnaturalearth)) using [ISO alpha-3](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes) (admin0) and [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) (admin1) standards.
@@ -75,7 +78,7 @@ require(dplyr);require(metathis)
 
 meta() %>%
   meta_description(
-    "The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."
+    "The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990 or earlier. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."
   ) %>% 
   
   meta_social(

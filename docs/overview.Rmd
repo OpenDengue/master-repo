@@ -3,7 +3,7 @@ title: "Methods"
 ---
 
 ## Overview
-OpenDengue combines data from a variety of existing databases, ministry of health reports and other sources and conducts a series of extraction, geopositioning, standardisation and error checking protocols. Each step of our analysis is accompanied by detailed metadata to ensure case counts can be tracked back to their original reporting source. A summary and detailed workflow diagram are presented below with more detail on specific sub-protocols. An accompanying manuscript detailing all protocols, imputation performance checking and data summaries is under preparation.
+OpenDengue combines data from a variety of existing databases, ministry of health reports and other sources and conducts a series of extraction, geopositioning, standardisation and error checking protocols. Each step of our analysis is accompanied by detailed sourcedata to ensure case counts can be tracked back to their original reporting source. A summary and detailed workflow diagram are presented below with more detail on specific sub-protocols. An accompanying manuscript detailing all protocols, imputation performance checking and data summaries is under preparation.
 
 ## Summary work flow
 ```{r, echo=FALSE}
@@ -58,7 +58,7 @@ knitr::include_graphics("./flowchart/flow_condense.png")
 library(metathis); library(dplyr)
 meta() %>%
   meta_description(
-    "The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."
+    "The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990 or earlier. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases."
   ) %>% 
   
   meta_social(
