@@ -1028,7 +1028,7 @@ od <- read.csv("01_Dengue_data/OD_master/od.csv") %>%
 
 
 # For original data source names of TYCHO
-tycho <- read.csv("01_Dengue_data/open_dengue_1.0/source_files/all_source_files/tycho_dengue_allcountries.csv")
+tycho <- read.csv("01_Dengue_data/source_files/original_name/tycho_dengue_allcountries.csv")
 
 tycho$PeriodStartDate <- dmy(tycho$PeriodStartDate)
 tycho$Year <- year(tycho$PeriodStartDate)
@@ -1040,6 +1040,18 @@ tycho_source <- tycho %>%
 od <- od %>%
   rowwise()%>%
   mutate(source_cat = strsplit(UUID, "-")[[1]][1])
+
+
+# leap year corrections
+od <- od %>%
+  mutate(leap = lubridate::leap_year(calendar_end_date) & month(calendar_end_date) == 2 & day(calendar_end_date) == 28) %>%
+  mutate(calendar_end_date = ifelse(leap == TRUE, paste0(Year, "-02-29"), calendar_end_date))
+
+od <- od %>%
+  mutate(leap_start = lubridate::leap_year(calendar_start_date) & month(calendar_start_date) == 2 & day(calendar_start_date) == 28) %>%
+  mutate(calendar_start_date = ifelse(leap_start == TRUE, paste0(Year, "-02-29"), calendar_start_date))
+
+od <- od %>% select(-leap, -leap_start)
 
 # 1) check double count cases 
 od <- od %>%
@@ -1143,8 +1155,8 @@ meta_public <- f %>%
  
   arrange(desc(source_cat), country, period)
 
-writexl::write_xlsx(f, "01_Dengue_data/OD_master/filingDB_allV.xlsx")
-write.csv(meta_public, "01_Dengue_data/OD_master/OD_V1.2/metadata_V1.2.xlsx")
+writexl::write_xlsx(f, "01_Dengue_data/OD_master/filingDB_allV_V1.2.1.xlsx")
+write.csv(meta_public, "01_Dengue_data/OD_master/OD_V1.2/metadata_V1.2.1.xlsx")
 
 
 # 383548 obs
@@ -1300,7 +1312,7 @@ national_extract <- od_adm0
 
 # save national extract
 # write.csv(national_extract, file = "/Users/eideobra/Documents/GitHub/OpenDengue/master-repo/data/releases/V1.1/National_extract_V1_1.csv", row.names=F)
-write.csv(national_extract, file = "01_Dengue_data/OD_master/OD_V1.2/releases/National_extract_V1_2.csv", row.names=F)
+write.csv(national_extract, file = "01_Dengue_data/OD_master/OD_V1.2.1/releases/National_extract_V1_2_1.csv", row.names=F)
 
 
 
@@ -1414,7 +1426,7 @@ spatial_extract <- rbind(od_adm2, toadd_national_only, toadd_mix)
 spatial_extract = spatial_extract[order(spatial_extract$adm_0_name, spatial_extract$calendar_start_date), ]
 
 # write.csv(spatial_extract, file = "/Users/eideobra/Documents/GitHub/OpenDengue/master-repo/data/releases/V1.1/Spatial_extract_V1_1.csv", row.names=F)
-write.csv(spatial_extract, file = "01_Dengue_data/OD_master/OD_V1.2/releases/Spatial_extract_V1_2.csv", row.names=F)
+write.csv(spatial_extract, file = "01_Dengue_data/OD_master/OD_V1.2/releases/Spatial_extract_V1_2_1.csv", row.names=F)
 
 
 
@@ -1554,21 +1566,21 @@ num_w <- bra_Week %>%
 num_m <- bra_Month %>%
  filter(full_name %in% num_w$full_name)%>%
  group_by(full_name, Year)%>%
-  tally() %>% rename(month_n = n)
+ tally() %>% rename(month_n = n)
 
 num <- merge(num_w, num_m, by=c("full_name", "Year"), all = T) %>%
   filter(!is.na(week_n) & !is.na(month_n))
 
 # no overlaps found for now !!!!!
 
-# subset records to loop through (only the records for 2013 overlap in Week and Month)
+# #subset records to loop through (only the records for 2013 overlap in Week and Month)
 # btoadd3 = bra_Month[bra_Month$full_name %in% num$full_name & !bra_Month$Year == 2013 , ]
 # btoadd4 = bra_Week[bra_Week$full_name %in% num$full_name & !bra_Week$Year == 2013, ]
 # 
 # # subset records to loop through (only the records for 2013 overlap in Week and Month)
 # s_bra_Month = bra_Month[bra_Month$full_name %in% num$full_name & bra_Month$Year == 2013 , ]
 # f_bra_Week = bra_Week[bra_Week$full_name %in% num$full_name & bra_Week$Year == 2013, ]
-
+# 
 # # template for collection
 # btoadd_mix1 = bra_Month[1, ]
 # btoadd_mix1 = btoadd_mix1[-1, ]
@@ -1579,11 +1591,11 @@ num <- merge(num_w, num_m, by=c("full_name", "Year"), all = T) %>%
 #     if(!(s_bra_Month$calendar_start_date[i] %in% unique(f_bra_Week$calendar_start_date))){
 #       btoadd_mix1 = rbind(btoadd_mix1, s_bra_Month[i, ])
 #     }
-#   
+# 
 #  cat("Loop Progress: ", i, "/", nrow(s_bra_Month), "\r")
 # 
-# } 
-
+# }
+# 
 bra_Week = rbind(bra_Week, bra_Month)
  
 
@@ -1595,7 +1607,7 @@ num_w <- bra_Week %>%
   group_by(full_name, Year)%>%
   tally() %>% rename(week_n = n)
 
-num_y<- bra_Year %>%
+num_y <- bra_Year %>%
  filter(full_name %in% num_w$full_name)%>%
  group_by(full_name, Year)%>%
   tally() %>% rename(year_n = n)
@@ -1606,10 +1618,10 @@ num2 <- merge(num_w, num_y, by=c("full_name", "Year"), all = T) %>%
 # no overlaps found for now !!!!!
 
 
-# # # subset records to loop through (only the records for 2013 overlap in Week and Month)
-# s_bra_Year = bra_Year[bra_Year$full_name %in% num2$full_name & bra_Year$Year == 2013 , ]
+# subset records to loop through (only the records for 2013 overlap in Week and Month)
+# s_bra_Year = bra_Year[bra_Year$full_name %in% num2$full_name & bra_Year$Year == 2013, ]
 # f_bra_Week = bra_Week[bra_Week$full_name %in% num2$full_name & bra_Week$Year == 2013, ]
-
+# 
 # # template for collection
 # btoadd_mix1 = bra_Month[1, ]
 # btoadd_mix1 = btoadd_mix1[-1, ]
@@ -1620,10 +1632,10 @@ num2 <- merge(num_w, num_y, by=c("full_name", "Year"), all = T) %>%
 #     if(!(s_bra_Month$calendar_start_date[i] %in% unique(f_bra_Week$calendar_start_date))){
 #       btoadd_mix1 = rbind(btoadd_mix1, s_bra_Month[i, ])
 #     }
-#   
+# 
 #  cat("Loop Progress: ", i, "/", nrow(s_bra_Month), "\r")
 # 
-# } 
+# }
 
 bra_extract <- rbind(bra_Week, btoadd1, btoadd2, bra_Year)
 
@@ -1633,7 +1645,7 @@ temporal_extract <- rbind(temporal_extract, bra_extract)
 temporal_extract = temporal_extract[order(temporal_extract$adm_0_name, temporal_extract$calendar_start_date), ]
 
 # write.csv(temporal_extract, file = "/Users/eideobra/Documents/GitHub/OpenDengue/master-repo/data/releases/V1.1/Temporal_extract_V1_1.csv", row.names=F)
-write.csv(temporal_extract, file = "01_Dengue_data/OD_master/OD_V1.2/releases/Temporal_extract_V1_2.csv", row.names=F)
+write.csv(temporal_extract, file = "01_Dengue_data/OD_master/OD_V1.2/releases/Temporal_extract_V1_2_1.csv", row.names=F)
 
 ### extract comparison metrics
 
