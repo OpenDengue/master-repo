@@ -1,4 +1,4 @@
-setwd("C:/Users/AhyoungLim/Dropbox/WORK/Dengue Project 2022/11_DENData")
+setwd("C:/Users/user/Dropbox/WORK/Dengue Project 2022/11_DENData")
 # setwd("/Users/eideobra/Dropbox/11_DENData")
 rm(list= ls())
 require(stringi)
@@ -7,11 +7,10 @@ require(sf)
 require(lubridate)
 require(rnaturalearth)
 require(dplyr)
-# remotes::install_github("epicentre-msf/hmatch")
+remotes::install_github("epicentre-msf/hmatch")
 require(hmatch)
 require(countrycode)
-require(mgcv)
-require(lubridate)
+require(mapview)
 require(readxl)
 
 # load in master openDengue file
@@ -191,6 +190,14 @@ GAUL_adm2 <- as.data.frame(read_sf("./04_Reference_data/Country_shapefiles/Admin
 # gaul_adm1 <- read_sf("./04_Reference_data/Country_shapefiles/Admin1(2011)/admin1.shp")
 # gaul_adm2 <- read_sf("./04_Reference_data/Country_shapefiles/Admin2(2011)/admin2.shp")
 
+# check if multiple adm 0 gaul codes assigned to a country
+error_countries <- GAUL_adm0 %>%
+  group_by(COUNTRY_ID)%>%
+  mutate(n = n_distinct(GAUL_CODE))%>%
+  arrange(COUNTRY_ID)%>%
+  filter(n>1)
+  
+
 
 # A) processing GAUL codes ===========================================================================
 GAUL_adm0$NAME_A0 = GAUL_adm0$COUNTRY_ID
@@ -216,6 +223,8 @@ GAUL_all[, 1:3] = apply(GAUL_all[, 1:3], 2, toupper)
 
 od_match = od[, c("ISO_A0", "adm_1_name", "adm_2_name", "full_name")]
 colnames(od_match) = c("NAME_A0", "NAME_A1", "NAME_A2", "description")
+
+
 
 
 # manually edited exceptions
@@ -577,9 +586,11 @@ od_match$NAME_A1[od_match$description == "VIET NAM, HO CHI MINH CITY"] = "HO CHI
 
 # national level
 od_match$NAME_A0[od_match$description == "BONAIRE, SAINT EUSTATIUS AND SABA"] = "ANT"
-od_match$NAME_A0[od_match$description == "SAINT BARTHELEMY"] = "FRA"
-od_match$NAME_A0[od_match$description == "SAINT MARTIN"] = "FRA"
-od_match$NAME_A0[od_match$description == "SINT MAARTEN"] = "NLD"
+od_match$NAME_A0[od_match$description == "SINT MAARTEN"] = "ANT"
+od_match$NAME_A0[od_match$description == "CURACAO"] = "ANT"
+od_match$NAME_A0[od_match$description == "SAINT BARTHELEMY"] = "GLP"
+od_match$NAME_A0[od_match$description == "SAINT MARTIN"] = "GLP"
+
 
 
 GAUL_match <- hmatch_composite(raw = od_match,
@@ -659,6 +670,15 @@ GAUL_match$GAUL_CODE[GAUL_match$description == "TONGA, VAVA'U"] = 2976
 GAUL_match$GAUL_CODE[GAUL_match$description == "PAKISTAN, AJK"] = 40408
 GAUL_match$GAUL_CODE[grepl("PAKISTAN, GILGIT BALTISTAN,", GAUL_match$description)] = 40409
 GAUL_match$GAUL_CODE[GAUL_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, LAKIMARWAT"] = 40341
+
+# more than one admin0 GAUL codes
+GAUL_match$GAUL_CODE[GAUL_match$description == "CHINA"] = 53
+GAUL_match$GAUL_CODE[GAUL_match$description == "JAPAN"] = 126
+GAUL_match$GAUL_CODE[GAUL_match$description == "PAKISTAN"] = 188
+GAUL_match$GAUL_CODE[GAUL_match$description == "UNITED STATES OF AMERICA"] = 259
+# GAUL_match$GAUL_CODE[GAUL_match$description == "MALAYSIA"] = 153
+# GAUL_match$GAUL_CODE[GAUL_match$description == "PORTUGAL"] = 199
+
 
 
 
@@ -1018,14 +1038,30 @@ od = od[, c("adm_0_name",
 summary(is.na(od)) #391429 obs
 
 # write.csv(od, "01_Dengue_data/OD_master/od.csv", row.names=F)
+rm(GAUL_match, RNE_match, od_match); gc()
 
 
 # DOUBLE COUNT PROTOCOL  =============================================================
 bra <- read.csv("01_Dengue_data/open_dengue_1.2/Brazil_adm2_2001_2021.csv") 
-od <- read.csv("01_Dengue_data/OD_master/od.csv") %>%
+od <- od %>%
+  # read.csv("01_Dengue_data/OD_master/od.csv") %>%
   rbind(., bra)%>%
   mutate(rowid = row_number())
 
+# leap year corrections
+od <- od %>%
+  mutate(calendar_end_date = ifelse(
+    leap_year(calendar_end_date) & month(calendar_end_date) == 2 & day(calendar_end_date) == 28,
+    paste0(Year, "-02-29"),
+    as.character(calendar_end_date)
+  ),
+  calendar_start_date = ifelse(
+    leap_year(calendar_start_date) & month(calendar_start_date) == 2 & day(calendar_start_date) == 28,
+    paste0(Year, "-02-29"),
+    as.character(calendar_start_date)
+  ))
+
+od <- od %>% select(-leap, -leap_start)
 
 # For original data source names of TYCHO
 tycho <- read.csv("01_Dengue_data/source_files/original_name/tycho_dengue_allcountries.csv")
@@ -1041,17 +1077,6 @@ od <- od %>%
   rowwise()%>%
   mutate(source_cat = strsplit(UUID, "-")[[1]][1])
 
-
-# leap year corrections
-od <- od %>%
-  mutate(leap = lubridate::leap_year(calendar_end_date) & month(calendar_end_date) == 2 & day(calendar_end_date) == 28) %>%
-  mutate(calendar_end_date = ifelse(leap == TRUE, paste0(Year, "-02-29"), calendar_end_date))
-
-od <- od %>%
-  mutate(leap_start = lubridate::leap_year(calendar_start_date) & month(calendar_start_date) == 2 & day(calendar_start_date) == 28) %>%
-  mutate(calendar_start_date = ifelse(leap_start == TRUE, paste0(Year, "-02-29"), calendar_start_date))
-
-od <- od %>% select(-leap, -leap_start)
 
 # 1) check double count cases 
 od <- od %>%
@@ -1155,8 +1180,8 @@ meta_public <- f %>%
  
   arrange(desc(source_cat), country, period)
 
-writexl::write_xlsx(f, "01_Dengue_data/OD_master/filingDB_allV_V1.2.1.xlsx")
-write.csv(meta_public, "01_Dengue_data/OD_master/OD_V1.2/metadata_V1.2.1.xlsx")
+writexl::write_xlsx(f, "01_Dengue_data/OD_master/filingDB_allV_V1.2.2.xlsx")
+write.csv(meta_public, "01_Dengue_data/OD_master/OD_V1.2.2/sourcedata_V1.2.2.csv", row.names = F)
 
 
 # 383548 obs
@@ -1164,13 +1189,16 @@ write.csv(meta_public, "01_Dengue_data/OD_master/OD_V1.2/metadata_V1.2.1.xlsx")
 od <- od %>% select(-(rowid:error))
 
 
-# write.csv(od, "01_Dengue_data/OD_master/od2.csv", row.names=F)
+write.csv(od, "01_Dengue_data/OD_master/od.csv", row.names=F)
 # 
 # od <- read.csv("01_Dengue_data/OD_master/od2.csv")
 
 # EXTRACT builders ===========================================
 
-
+adm0_codes <- od[od$S_res == "Admin0", c("adm_0_name", "FAO_GAUL_code", "RNE_iso_code")] %>% 
+  distinct()
+adm0_codes <- rbind(adm0_codes, 
+                    data.frame = c("COLOMBIA", 54, "COL"))
 
 ##### 01 national extract builder  ########
 
@@ -1213,6 +1241,8 @@ for(i in 1:nrow(a1_sum)){
   
 }
 
+
+
 # now go through the conflicts one by one, aggregate up the ad1 data then replace or add to ad0 as necessary
 for(i in 1:nrow(conflicts)){
   # if replacing the record, remove original record first
@@ -1233,6 +1263,10 @@ for(i in 1:nrow(conflicts)){
     # compose the new record to be added
     new_rec = ad1_recs_t[1, ]
     new_rec$adm_1_name = NA
+    new_rec$FAO_GAUL_code = adm0_codes$FAO_GAUL_code[new_rec$adm_0_name == adm0_codes$adm_0_name]
+    new_rec$RNE_iso_code = adm0_codes$RNE_iso_code[new_rec$adm_0_name == adm0_codes$adm_0_name]
+    new_rec$IBGE_code = NA
+    
     new_rec$S_res = "Admin0"
     new_rec$full_name = new_rec$adm_0_name
     new_rec$dengue_total = sum(ad1_recs_t$dengue_total)
@@ -1297,10 +1331,14 @@ for(i in 1:nrow(conflicts)){
     new_rec = ad2_recs_t[1, ]
     new_rec$adm_1_name = NA
     new_rec$adm_2_name = NA
+    new_rec$FAO_GAUL_code = adm0_codes$FAO_GAUL_code[new_rec$adm_0_name == adm0_codes$adm_0_name]
+    new_rec$RNE_iso_code = adm0_codes$RNE_iso_code[new_rec$adm_0_name == adm0_codes$adm_0_name]
+    new_rec$IBGE_code = NA
     new_rec$S_res = "Admin0"
     new_rec$full_name = new_rec$adm_0_name
     new_rec$dengue_total = sum(ad2_recs_t$dengue_total)
-    
+
+   
     # now replace with new record
     od_adm0 = rbind(od_adm0, new_rec)
   }
@@ -1312,7 +1350,7 @@ national_extract <- od_adm0
 
 # save national extract
 # write.csv(national_extract, file = "/Users/eideobra/Documents/GitHub/OpenDengue/master-repo/data/releases/V1.1/National_extract_V1_1.csv", row.names=F)
-write.csv(national_extract, file = "01_Dengue_data/OD_master/OD_V1.2.1/releases/National_extract_V1_2_1.csv", row.names=F)
+write.csv(national_extract, file = "01_Dengue_data/OD_master/OD_V1.2.2/releases/National_extract_V1_2_2.csv", row.names=F)
 
 
 
@@ -1426,7 +1464,7 @@ spatial_extract <- rbind(od_adm2, toadd_national_only, toadd_mix)
 spatial_extract = spatial_extract[order(spatial_extract$adm_0_name, spatial_extract$calendar_start_date), ]
 
 # write.csv(spatial_extract, file = "/Users/eideobra/Documents/GitHub/OpenDengue/master-repo/data/releases/V1.1/Spatial_extract_V1_1.csv", row.names=F)
-write.csv(spatial_extract, file = "01_Dengue_data/OD_master/OD_V1.2/releases/Spatial_extract_V1_2_1.csv", row.names=F)
+write.csv(spatial_extract, file = "01_Dengue_data/OD_master/OD_V1.2.2/releases/Spatial_extract_V1_2_2.csv", row.names=F)
 
 
 
@@ -1645,7 +1683,7 @@ temporal_extract <- rbind(temporal_extract, bra_extract)
 temporal_extract = temporal_extract[order(temporal_extract$adm_0_name, temporal_extract$calendar_start_date), ]
 
 # write.csv(temporal_extract, file = "/Users/eideobra/Documents/GitHub/OpenDengue/master-repo/data/releases/V1.1/Temporal_extract_V1_1.csv", row.names=F)
-write.csv(temporal_extract, file = "01_Dengue_data/OD_master/OD_V1.2/releases/Temporal_extract_V1_2_1.csv", row.names=F)
+write.csv(temporal_extract, file = "01_Dengue_data/OD_master/OD_V1.2.2/releases/Temporal_extract_V1_2_2.csv", row.names=F)
 
 ### extract comparison metrics
 
@@ -1680,8 +1718,10 @@ length(unique(temporal_extract$adm_0_name[temporal_extract$S_res != "Admin0"]))
 
 
 # comparison between previous versions
-od_old <- read.csv("/Users/eideobra/Documents/GitHub/OpenDengue/master-repo/data/releases/V1.1/National_extract_V1_1.csv")
-od_new <- read.csv("/Users/eideobra/Documents/GitHub/OpenDengue/master-repo/data/releases/V1.2/National_extract_V1_2.csv")
+# od_old <- read.csv("/Users/eideobra/Documents/GitHub/OpenDengue/master-repo/data/releases/V1.2.1/National_extract_V1_2_1.csv")
+# od_new <- read.csv("/Users/eideobra/Documents/GitHub/OpenDengue/master-repo/data/releases/V1.2.2/National_extract_V1_2_2.csv")
+od_old <- read.csv("./01_Dengue_data/OD_master/OD_V1.2.1/releases/Temporal_extract_V1_2_1.csv")
+od_new <- read.csv("./01_Dengue_data/OD_master/OD_V1.2.2/releases/Temporal_extract_V1_2_2.csv")
 
 
 # total number of countries
