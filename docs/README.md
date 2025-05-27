@@ -7,4 +7,4 @@ The preferred citation for OpenDengue is the citation of our [research paper](ht
 
 "Clarke J, Lim A, Gupte P, Pigott DM, van Panhuis WG, Brady OJ. A global dataset of publicly available dengue case count data. Sci Data. 2024 Mar 14;11(1):296."
 
-"Clarke J, Lim A, Gupte P, Pigott DM, van Panhuis WG, Brady OJ. OpenDengue: data from the OpenDengue database. Version [1.2]. figshare; 2023. Available from:  https://doi.org/10.6084/m9.figshare.24259573."
+"Clarke J, Lim A, Gupte P, Pigott DM, van Panhuis WG, Brady OJ. OpenDengue: data from the OpenDengue database. Version [1.3]. figshare; 2025. Available from:  https://doi.org/10.6084/m9.figshare.24259573."
