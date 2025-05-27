@@ -287,7 +287,7 @@ The preferred citation for OpenDengue is the citation of our [research paper](ht
 <br>
 The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990 or earlier. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases. Learn more about the [project](https://opendengue.org/project.html) or our [methods](https://opendengue.org/overview.html).
 
-The database will continue to be developed over the coming years in different versions. The current release (Version 1.2) adds case definitions as well as addressing some double case counting bugs. We are currently finalising a manuscript that details all the work done on OpenDengue so far. Future versions will add disaggregate dengue case counts by severity, method of confirmation, age and serotype where such data are available.
+The database will continue to be developed over the coming years in different versions. The current release (Version 1.3) adds case definitions as well as addressing some double case counting bugs. We are currently finalising a manuscript that details all the work done on OpenDengue so far. Future versions will add disaggregate dengue case counts by severity, method of confirmation, age and serotype where such data are available.
 
 We are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please [contribute](https://opendengue.org/contribute.html) or [get in touch](mailto:contribute@opendengue.org).
 
