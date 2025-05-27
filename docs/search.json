@@ -1,0 +1,114 @@
+[
+  {
+    "objectID": "project.html",
+    "href": "project.html",
+    "title": "The OpenDengue project",
+    "section": "",
+    "text": "OpenDengue is a project run by researchers at the London School of Hygiene and Tropical Medicine that aims to address a key gap health data analytics for dengue."
+  },
+  {
+    "objectID": "project.html#our-goal",
+    "href": "project.html#our-goal",
+    "title": "The OpenDengue project",
+    "section": "Our goal",
+    "text": "Our goal\nTo build and maintain a freely available globally comprehensive database of historical and current dengue case data at the highest spatial and temporal resolution possible."
+  },
+  {
+    "objectID": "project.html#the-challenge",
+    "href": "project.html#the-challenge",
+    "title": "The OpenDengue project",
+    "section": "The challenge",
+    "text": "The challenge\nWhile many countries regularly publish dengue case statistics, they can often be difficult to find and no single database aggregates data from multiple countries to assess trends at the global level. While important progress has been made with platforms like project TYCHO and the PAHO PLISA system, such databases only cover specific countries or do not include the historical data that is so important for understanding long term trends. Locating, extracting, processing and standardising data all takes time but is essential to enable re-use and re-analysis"
+  },
+  {
+    "objectID": "project.html#how-you-can-help",
+    "href": "project.html#how-you-can-help",
+    "title": "The OpenDengue project",
+    "section": "How you can help",
+    "text": "How you can help\nWe are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please contribute or get in touch."
+  },
+  {
+    "objectID": "project.html#team",
+    "href": "project.html#team",
+    "title": "The OpenDengue project",
+    "section": "Team",
+    "text": "Team\nOpenDengue is run the Dengue Mapping and Modelling Group at LSHTM. We are a group of modellers, epidemiologists and public health practitioners who use data to give new insights into the burden, spread and containment of mosquito-transmitted diseases. We are part of the Centre for Mathematical Modelling of Infectious Diseases.\nKey individuals include:\n\nDr Joe Clarke (data acquisition)\nDr Ahyoung Lim (data processing and modelling)\nAssociate Professor Oliver Brady (director)"
+  },
+  {
+    "objectID": "project.html#funders",
+    "href": "project.html#funders",
+    "title": "The OpenDengue project",
+    "section": "Funders",
+    "text": "Funders\nThe OpenDengue project is supported by a research grant from the UK Medical Research Council UK Medical Research Council (Grant number: MR/V031112/1)."
+  },
+  {
+    "objectID": "index.html#access-the-data",
+    "href": "index.html#access-the-data",
+    "title": "OpenDengue",
+    "section": "Access the data",
+    "text": "Access the data\nPlease visit our Data page for download options, database details, definitions and limitations.\nSuggested citation:\nThe preferred citation for OpenDengue is the citation of our research paper in addition to the Figshare repository link to the specific version of the dataset used:\n“Clarke J, Lim A, Gupte P, Pigott DM, van Panhuis WG, Brady OJ. A global dataset of publicly available dengue case count data. Sci Data. 2024 Mar 14;11(1):296.”\n“Clarke J, Lim A, Gupte P, Pigott DM, van Panhuis WG, Brady OJ. OpenDengue: data from the OpenDengue database. Version [1.3]. figshare; 2025. Available from: https://doi.org/10.6084/m9.figshare.24259573.”"
+  },
+  {
+    "objectID": "index.html#about-opendengue",
+    "href": "index.html#about-opendengue",
+    "title": "OpenDengue",
+    "section": "About OpenDengue",
+    "text": "About OpenDengue\n  The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990 or earlier. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases. Learn more about the project or our methods.\nThe database will continue to be developed over the coming years in different versions. The current release (Version 1.2) adds case definitions as well as addressing some double case counting bugs. We are currently finalising a manuscript that details all the work done on OpenDengue so far. Future versions will add disaggregate dengue case counts by severity, method of confirmation, age and serotype where such data are available.\nWe are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please contribute or get in touch."
+  },
+  {
+    "objectID": "index.html#potential-uses",
+    "href": "index.html#potential-uses",
+    "title": "OpenDengue",
+    "section": "Potential uses",
+    "text": "Potential uses\nOpenDengue draws together and standardises data from multiple sources that enable new analyses at global and regional scales. Examples include:\n\nIdentifying worst affected areas and years\nUnderstanding drivers of transmission such as climate factors and interventions\nPredicting future trends and outbreak risk"
+  },
+  {
+    "objectID": "index.html#summary-of-data-coverage",
+    "href": "index.html#summary-of-data-coverage",
+    "title": "OpenDengue",
+    "section": "Summary of data coverage",
+    "text": "Summary of data coverage\n\n\nSelect Version: \n\n\nSelect Region:  PAHO SEARO WPRO EMRO AFRO EURO \n\n\nHeatmap Shows:  Temporal Resolution Spatial Resolution \n\n\n\n\n\n\n\n\nOur goal at the OpenDengue project is to fill as many of these gaps as we can. If you know of any publicly available data sources for any of the grey or light coloured countries or years in the above figures please contribute or get in touch."
+  },
+  {
+    "objectID": "contribute.html",
+    "href": "contribute.html",
+    "title": "Contribute",
+    "section": "",
+    "text": "Step 1: Finding an appropriate source\n    Take a look at the visual summaries of our data coverage and if you are aware of a data source for a country or time period that we have not included please get in touch. The data source must be publicly accessible (e.g. on a ministry of health website) and denominator based (e.g. 10 cases from a defined population over a defined period of time) but can be in any format (graph, table, etc) and any language. Please see our Methods page for further details on the types of data we can and cannot include.\n\n\nStep 2: Raise a new issue on the OpenDengue Github page\n   Adding new data by raising a Github issue improves transparency of the data gathering process and allows us to easily track progress in filling data gaps. Please include a web link to the original data source and a brief description of the area and time period of the data gap to be filled.\nIf you are unsure how to raise a Github issue take a look at this guide.\n\n\nStep 3: See the improvement\n    A member of the OpenDengue team will regularly review submissions and update the global database accordingly. When issues are closed you can expect to see new updates to the database. Tracking submissions by Github allows us to identify and credit all contributors for their efforts.\nThe above outlines our preferred process for contributing to OpenDengue, but if you would prefer to contact us directly, please do get in touch via email."
+  },
+  {
+    "objectID": "data.html",
+    "href": "data.html",
+    "title": "Data Explorer",
+    "section": "",
+    "text": "Download data for specific countries and date ranges\n\nData Type  Select National-level data Highest temporal resolution data Highest spatial resolution data \n\n\nRegion  Select Pan-American Region South-East Asia Region Western Pacific Region African Region Eastern Mediterranean Region European Region \n\n\nCountry \n\n\nStart Date:  End Date: \n\n\nPreview Filtered Data\n\n\nDownload Filtered CSV\n\n\n\n\n\n\n\nLoading data, please wait…\n\n\n\n\nPreview Table\n\n\n\n\nData Visualisations\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDownload global data\nDownload the latest OpenDengue global national, highest temporal and highest spatial data or visit our Github repository and Figshare repository for previous versions and more information.\n\n\n\n\n Download global national data\n\n\n\n\n Download global highest spatial resolution data\n\n\n\n\n Download global highest temporal resolution data\n\n\n\n\n\n\nSuggested citation\nThe preferred citation for OpenDengue is the citation of our research paper in addition to the Figshare repository link to the specific version of the dataset used:\n“Clarke J, Lim A, Gupte P, Pigott DM, van Panhuis WG, Brady OJ. A global dataset of publicly available dengue case count data. Sci Data. 2024 Mar 14;11(1):296.”\n“Clarke J, Lim A, Gupte P, Pigott DM, van Panhuis WG, Brady OJ. OpenDengue: data from the OpenDengue database. Version [1.3]. figshare; 2025. Available from: https://doi.org/10.6084/m9.figshare.24259573.”\n\n\nData definitions\nThe OpenDengue dataset contains reported total case counts with each row corresponds to a unique location and time.\nWhere reported, we include dengue cases at all levels of severity (dengue, dengue with/without warning signs, severe dengue, dengue haemorhaggic fever, dengue shock syndrome, dengue deaths) and methods of confirmation (suspected, probable, clinically confirmed, laboratory confirmed) in the variable dengue_total. The specific case definition used for a particular data point will depend on the original data source and can be identified by looking up the record case_definition_original in the sourcedata_V1.2.csv file which can be found in the OpenDengue Github repo. This will include a URL reference to the original public data source. Future versions of the OpenDengue data set will dissaggregate data by severity and method of confirmation where reported.\nLocation is encoded by text name at national (adm_0_name) and sub-national (adm_1_name and adm_2_name) level. Records are matched to Global Administrative Unit Layers (GAUL, see UN FAO website) codes (FAO_GAUL_code, Admin0-2) and Natural Earth shapefiles (downloadable via the rnaturalearth R package) using ISO alpha-3 (admin0) and ISO 3166-2 (admin1) standards.\nTime periods are recorded using a start date (calendar_start_date) and end date (calendar_end_date) with the format YYYY-mm-dd.\n\n\nLimitations\n\nDengue surveillance, reporting and accessibility of data varies between countries, sources and, sometimes, over time which can make comparisons invalid. Please check the consistency of original sources if making comparisons.\nIn all countries reported cases are likely to only be a small subset of total dengue infections due to many asymptomatic and sub-clinical infections."
+  },
+  {
+    "objectID": "overview.html",
+    "href": "overview.html",
+    "title": "Methods",
+    "section": "",
+    "text": "OpenDengue combines data from a variety of existing databases, ministry of health reports and other sources and conducts a series of extraction, geopositioning, standardisation and error checking protocols. Each step of our analysis is accompanied by detailed sourcedata to ensure case counts can be tracked back to their original reporting source. A summary and detailed workflow diagram are presented below with more detail on specific sub-protocols. An accompanying manuscript detailing all protocols, imputation performance checking and data summaries is under preparation."
+  },
+  {
+    "objectID": "overview.html#overview",
+    "href": "overview.html#overview",
+    "title": "Methods",
+    "section": "",
+    "text": "OpenDengue combines data from a variety of existing databases, ministry of health reports and other sources and conducts a series of extraction, geopositioning, standardisation and error checking protocols. Each step of our analysis is accompanied by detailed sourcedata to ensure case counts can be tracked back to their original reporting source. A summary and detailed workflow diagram are presented below with more detail on specific sub-protocols. An accompanying manuscript detailing all protocols, imputation performance checking and data summaries is under preparation."
+  },
+  {
+    "objectID": "overview.html#summary-work-flow",
+    "href": "overview.html#summary-work-flow",
+    "title": "Methods",
+    "section": "Summary work flow",
+    "text": "Summary work flow\n\n\n\n\n\n\n\n\n\n\nDouble count values sub-protocol\nSometimes multiple different sources will report different case counts for the same location and time period. Where this occurred sources were prioritised in the following order (highest priority to lowest): Ministry of Health report / Regional health body report / other sources.\n\n\nDengue classification sub-protocol\nSome sources dissaggregate dengue cases by severity or other attributes that may or may not be mutually exclusive, making the total number of dengue cases reported unclear. We therefore use the following protocol to systematically measure total cases under these circumstances.\n\n\n\n\n\n\n\n\n\n\n\nCumulative cases to incident cases sub-protocol\nSome data sources, in particular the Pan American Health Organization, report case counts as cumulative values since the beginning of the calendar year. Converting cumulative counts to incident counts can be difficult when there are gaps in the middle or end of the time series.\nFor gaps at the end of the time series, missing weeks’ values were imputed with the value 0 if alternative sources confirmed that the annual total cases matched the final reported cumulative case count. For short (6 weeks of less) gaps in the middle of the time series we use spline-based imputation to estimate the distribution of values over missing weeks. For gaps longer than 6 weeks all values are assigned missing values (NA).\n\n\n\n\n\n\n\n\n\nAn example application of this protocol for Guatemala:\n\n\n\n\n\n\n\n\n\nSummary of imputation across the PAHO dataset:\n\n\n\n\n\n\n\n\n\n\n\nError checking sub-protocol\nWe use the anomalize R package to detect anomalous values after de-trending the data. All identified anomalies were manually checked for extraction errors."
+  },
+  {
+    "objectID": "overview.html#detailed-protocol",
+    "href": "overview.html#detailed-protocol",
+    "title": "Methods",
+    "section": "Detailed protocol",
+    "text": "Detailed protocol"
+  }
+]

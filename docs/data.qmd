@@ -1,0 +1,181 @@
+---
+title: "Data Explorer"
+format:
+  html:
+    self-contained: false
+    code-fold: false
+    theme: flatly
+    css: styles.css
+    toc: true
+resources:
+  - script.js
+  - styles.css
+---
+
+::: {.form-section}
+
+### Download data for specific countries and date ranges
+
+<div class="form-group">
+  <label for="dataTypeSelect">Data Type</label>
+  <select id="dataTypeSelect" class="form-control">
+    <option value="" disabled selected>Select</option>
+    <option value="National">National-level data</option>
+    <option value="Temporal">Highest temporal resolution data</option>
+    <option value="Spatial">Highest spatial resolution data</option>
+  </select>
+</div>
+
+<div class="form-group">
+  <label for="regionSelect">Region</label>
+  <select id="regionSelect" class="form-control">
+    <option value="" disabled selected>Select</option>
+    <option value="PAHO">Pan-American Region</option>
+    <option value="SEARO">South-East Asia Region</option>
+    <option value="WPRO">Western Pacific Region</option>
+    <option value="AFRO">African Region</option>
+    <option value="EMRO">Eastern Mediterranean Region</option>
+    <option value="EURO">European Region</option>
+  </select>
+</div>
+
+<div class="form-group">
+  <label for="countrySelect">Country</label>
+  <select id="countrySelect" multiple="multiple" style="width: 100%;"></select>
+</div>
+
+<div class="date-range-container">
+  <label for="startDate">Start Date:</label>
+  <input type="date" id="startDate" name="startDate" />
+  <label for="endDate">End Date:</label>
+  <input type="date" id="endDate" name="endDate" />
+</div>
+
+
+<button id="filterBtn" class="btn btn-primary mt-2">Preview Filtered Data</button>
+<button id="downloadBtn" class="btn btn-success mt-2">Download Filtered CSV</button>
+
+:::
+
+<div id="loadingIndicator" style="display: none; text-align: center; margin: 20px;">
+  <div class="spinner" style="
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+  "></div>
+  <p style="margin-top: 10px; color: #666;">Loading data, please wait...</p>
+</div>
+
+<style>
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+
+#### Preview Table
+
+<table id="previewTable" class="display" style="width:100%"></table>
+
+#### Data Visualisations
+<div id="plot-weekly" style="width:100%;height:300px; margin-top: 30px;"></div>
+<div id="plot-monthly" style="width:100%;height:300px; margin-top: 30px;"></div>
+<div id="plot-yearly" style="width:100%;height:300px; margin-top: 30px;"></div>
+
+
+```{=html}
+<!-- Required Libraries -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/datatables.net/js/jquery.dataTables.min.js" defer></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-dt/css/jquery.dataTables.min.css"/>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
+<!-- Main script -->
+<script src="script.js" defer></script>
+```
+
+### Download global data
+
+Download the latest OpenDengue global national, highest temporal and highest spatial data or visit our [Github repository](https://github.com/OpenDengue/master-repo/tree/6d55d8158dbd70d03ddb2f39c18ba560bab4b163/data/releases) and [Figshare repository](https://doi.org/10.6084/m9.figshare.24259573) for previous versions and more information.
+<div id="global-download-buttons">
+
+```{r }
+#| echo: false
+#| message: false
+#| warning: false
+require(here)
+require(dplyr)
+require(downloadthis)
+# download button
+
+download_link(
+  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.3/National_extract_V1_3.zip",
+  button_label = "Download global national data",
+  button_type = "info",
+  has_icon = TRUE,
+  icon = "fa fa-save",
+  self_contained = FALSE
+)
+
+download_link(
+  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.3/Spatial_extract_V1_3.zip",
+  button_label = "Download global highest spatial resolution data",
+  button_type = "info",
+  has_icon = TRUE,
+  icon = "fa fa-save",
+  self_contained = FALSE
+)
+
+download_link(
+  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.3/Temporal_extract_V1_3.zip",
+  button_label = "Download global highest temporal resolution data",
+  button_type = "info",
+  has_icon = TRUE,
+  icon = "fa fa-save",
+  self_contained = FALSE
+)
+```
+</div>
+
+
+
+
+### Suggested citation
+
+The preferred citation for OpenDengue is the citation of our [research paper](https://doi.org/10.1038/s41597-024-03120-7) in addition to the Figshare repository link to the specific version of the dataset used:
+
+"Clarke J, Lim A, Gupte P, Pigott DM, van Panhuis WG, Brady OJ. A global dataset of publicly available dengue case count data. Sci Data. 2024 Mar 14;11(1):296."
+
+"Clarke J, Lim A, Gupte P, Pigott DM, van Panhuis WG, Brady OJ. OpenDengue: data from the OpenDengue database. Version [1.3]. figshare; 2025. Available from:  https://doi.org/10.6084/m9.figshare.24259573."
+
+
+
+
+### Data definitions
+The OpenDengue dataset contains reported total case counts with each row corresponds to a unique location and time.
+
+Where reported, we include dengue cases at all levels of severity (dengue, dengue with/without warning signs, severe dengue, dengue haemorhaggic fever, dengue shock syndrome, dengue deaths) and methods of confirmation (suspected, probable, clinically confirmed, laboratory confirmed) in the variable `dengue_total`. The specific case definition used for a particular data point will depend on the original data source and can be identified by looking up the record  `case_definition_original` in the `sourcedata_V1.2.csv` file which can be found in the [OpenDengue Github repo](https://github.com/OpenDengue/master-repo/data/raw_data). This will include a URL reference to the original public data source. Future versions of the OpenDengue data set will dissaggregate data by severity and method of confirmation where reported.
+
+Location is encoded by text name at national (`adm_0_name`) and sub-national (`adm_1_name` and `adm_2_name`) level. Records are matched to Global Administrative Unit Layers (GAUL, see [UN FAO website](https://data.apps.fao.org/catalog/dataset/gaul-codes)) codes (`FAO_GAUL_code`, Admin0-2) and [Natural Earth](https://www.naturalearthdata.com) shapefiles (downloadable via the `rnaturalearth` [R package](https://github.com/ropensci/rnaturalearth)) using [ISO alpha-3](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes) (admin0) and [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) (admin1) standards.
+
+Time periods are recorded using a start date (`calendar_start_date`) and end date (`calendar_end_date`) with the format `YYYY-mm-dd`.
+
+
+
+
+### Limitations
+* Dengue surveillance, reporting and accessibility of data varies between countries, sources and, sometimes, over time which can make comparisons invalid. Please check the consistency  of original sources if making comparisons.
+* In all countries reported cases are likely to only be a small subset of total dengue infections due to many asymptomatic and sub-clinical infections.
+
+
+

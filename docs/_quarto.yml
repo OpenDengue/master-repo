@@ -1,0 +1,43 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "*.qmd" # This tells Quarto to render all .qmd files directly in the root folder
+  resources:
+    - heatmap.csv
+    - assets/**
+
+
+
+website:
+  title: "OpenDengue"
+  favicon: "assets/logo/favicon_v2.ico"
+  page-footer:
+    center: |
+      © Copyright 2025 the OpenDengue project<br>
+      The Dengue Mapping and Modelling Group<br>
+      LSHTM, London UK<br>
+      <br>
+      Content licensed under <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+
+  navbar:
+    logo: "assets/logo/logo3_v2.png"
+    logo-href: "https://opendengue.org/index.html"
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Data"
+        href: data.qmd
+      - text: "Project"
+        href: project.qmd
+      - text: "Methods"
+        href: overview.qmd
+      - text: "Contribute"
+        href: contribute.qmd
+      - icon: github
+        href: "https://github.com/OpenDengue/master-repo"
+
+format:
+  html:
+    theme: flatly
+    css: styles.css

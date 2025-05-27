@@ -1,0 +1,262 @@
+/* --- 1. Font Imports --- */
+/* Ensure Merriweather and Open Sans are imported with necessary weights */
+@import url('https://fonts.googleapis.com/css?family=Merriweather:400,700|Open+Sans:400,600,700&display=swap');
+
+/* --- 2. General Body and Container Styles --- */
+body {
+    font-family: "Open Sans", sans-serif; /* Open Sans for all body text */
+    line-height: 1.6; /* Improves readability */
+    color: #333; /* Darker, but soft black for main text */
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa; /* Flatly's light background */
+}
+
+/* --- 3. Headings & Typography --- */
+/* Merriweather for main headings */
+h1, h2, h3 {
+    font-family: "Merriweather", serif; /* Merriweather for main headings */
+    font-weight: 700; /* Bold for strong headlines */
+    color: #2c3e50; /* A dark blue-grey from Flatly's palette for headings */
+    margin-top: 1.8em;
+    margin-bottom: 0.8em;
+}
+
+/* Open Sans for sub-headings (h4-h6) */
+h4, h5, h6 {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600; /* Semi-bold for clear distinction */
+    color: #444;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+p {
+    margin-bottom: 1em;
+}
+
+/* --- 4. Navbar Styles --- */
+.navbar {
+    padding: 10px 10px;
+    background-color: #065D10; /* Your primary brand green */
+    font-size: 17px;
+    font-family: "Open Sans", sans-serif; /* Open Sans for navbar text */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Distribute space between brand and nav items */
+}
+
+
+/* Logo/Brand in Navbar */
+.navbar-brand img {
+    max-height: 25px; /* Adjust this value for your logo size (e.g., 25px, 30px, 40px) */
+    margin-right: 15px; /* Space between logo and nav items */
+    display: block;
+    display: inline-block; /* Change from 'block' to 'inline-block' */
+    vertical-align: middle; /* Vertically align image with surrounding inline content */
+    position: relative;
+    top: 12px; /*Adjust this value (positive or negative) to nudge it up/down */
+    box-shadow: none;
+
+}
+
+/* Hide the website text title in the navbar */
+.navbar-brand .navbar-title {
+    display: none;
+}
+
+
+/* Navbar links */
+.nav-link {
+    font-family: "Open Sans", sans-serif;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+    transition: color 0.3s ease;
+    padding: 0.5em 1.5em;
+
+}
+.nav-link:hover {
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+
+/* --- 5. Image & Figure Presentation --- */
+img {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin-bottom: 1.5em;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* NEW: Rule to remove shadow for images with a specific class */
+img.no-shadow {
+    box-shadow: none;
+    /* Optional: Add a very subtle border instead to define the edge */
+    border: 1px solid rgba(0,0,0,0.08); /* A very light, almost invisible border */
+    /* You could also use a fixed color like #DDD */
+}
+
+
+/* --- 6. Call to Action (CTA) Buttons --- */
+.btn {
+    display: inline-block;
+    padding: 12px 25px; /* Generous padding for a clear button */
+    margin-top: 1.5em; /* Space above button */
+    background-color: #065D10; /* Your primary brand green for buttons */
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 8px; /* Rounded corners for buttons */
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover and click effect */
+    cursor: pointer;
+}
+.btn:hover {
+    background-color: #044a0c; /* Slightly darker green on hover */
+    transform: translateY(-2px); /* Subtle lift effect */
+    text-decoration: none;
+}
+.btn:active {
+    transform: translateY(0); /* "Press down" effect */
+}
+
+#global-download-buttons .btn {
+  font-size: 1rem !important;
+  padding: 0.25rem 0.5rem !important;
+  min-width: 120px !important;
+  height: auto !important;
+  line-height: 1.2 !important;
+  background-color: #06365d; /* Your primary brand green for buttons */
+}
+
+
+
+/* --- Footer Styles --- */
+/* Target the main footer container */
+div.nav-footer {
+    color: #333;
+    background-color: #E9ECEF;
+    padding: 20px 20px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    line-height: 1.4;
+    text-align: center; /
+}
+
+/* Styles for links within the footer */
+.nav-footer a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.nav-footer a:hover {
+    text-decoration: underline;
+    color: #70A37F;
+}
+
+.parent-container {
+  display: flex;
+  gap: 5rem; /* space between flex children */
+}
+
+.toc {
+  margin-left: 10rem; /* 160px */
+  border: 2px solid red; /* temporary to see the box */
+}
+
+/* --- 8. Font Awesome Icons (General Styling) --- */
+
+/* Quarto automatically includes Font Awesome 6 */
+.fa-brands, .fa-solid { /* Target common Font Awesome icon types */
+    font-size: 1.5em; /* Larger icons */
+    padding: 0 5px; /* Padding around icons */
+    color: rgba(255, 255, 255, 0.8); /* Light color for icons in navbar/footer */
+    transition: color 0.3s ease;
+}
+.fa-brands:hover, .fa-solid:hover {
+    color: #FFFFFF; /* White on hover */
+}
+
+/* --- 9. Mobile Responsiveness (Basic) --- */
+/* Flatly's theme handles most of this. If you need specific overrides,
+   you'd target Quarto's mobile menu classes, e.g., for the hamburger menu.
+   This example hides the text title on small screens if it were not already hidden by .navbar-title {display:none;} */
+@media screen and (max-width: 768px) {
+    /* You might need to inspect Quarto's mobile menu to customize here */
+    .navbar-brand .navbar-title {
+        /* Ensure it's hidden on small screens if not already */
+        display: none;
+    }
+}
+
+input[type="date"] {
+  padding: 6px 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 120px; /* consistent width */
+  box-sizing: border-box;
+}
+
+#startDate {
+  margin-right: 20px; /* Adjust spacing between start input and "End Date:" label */
+}
+
+/* --- Data visualisations  --- */
+#plot-weekly, #plot-monthly, #plot-yearly {
+  height: 300px;
+  margin-bottom: 20px; /* reduce vertical gap between plots */
+}
+
+.daterange-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 200px;
+  margin-bottom: 1rem;
+  max-width: 280px; /* or 100% for fluid layout */
+}
+
+
+.daterange-wrapper label {
+  margin-right: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+
+@media (max-width: 480px) {
+  .daterange-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .daterange-wrapper input[type="date"] {
+    width: 100%;
+  }
+}
+
+#previewTable td, #previewTable th {
+  font-size: 14px;
+}
+
+/* Info text below the table */
+#previewTable_info {
+  font-size: 12px;  /* smaller size */
+}
+
+/* Pagination controls */
+#previewTable_paginate {
+  font-size: 12px;  /* smaller size */
+}
+
+

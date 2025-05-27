@@ -1,0 +1,631 @@
+---
+title: "OpenDengue"
+description: "A global database of publicly available dengue case data"
+format: html
+site-url: opendengue.org
+image: "https://raw.githubusercontent.com/OpenDengue/master-repo/main/docs/logo/thumbnail.png"
+image-alt: "OpenDengue Logo"
+twitter-card: summary_large_image
+twitter-creator: "@OliverBrady1"
+og-type: website
+---
+```{r}
+#| label: header
+#| echo: false
+#| results: hide
+#| message: false
+#| warning: false
+
+require(here)
+require(dplyr)
+require(stringr)
+require(lubridate)
+
+pacman::p_load("dplyr", "tidyr", "tidyverse", "knitr")
+```
+
+<div id="globalCoverageMap" style="width: 100%; height: 500px; margin-top: 10px; margin-bottom: 30px; background-color: transparent;"></div>
+<script>
+const nameToIsoMap = {
+    "Afghanistan": "AFG", "Albania": "ALB", "Algeria": "DZA", "American Samoa": "ASM",
+    "Angola": "AGO", "Anguilla": "AIA", "Antigua and Barbuda": "ATG", "Argentina": "ARG",
+    "Aruba": "ABW", "Australia": "AUS", "Austria": "AUT", "Bahamas": "BHS",
+    "Bangladesh": "BGD", "Barbados": "BRB", "Belgium": "BEL", "Belize": "BLZ",
+    "Benin": "BEN", "Bermuda": "BMU", "Bhutan": "BTN", "Bolivia": "BOL",
+    "Bonaire, Saint Eustatius and Saba": "BES", "Brazil": "BRA", "Brunei Darussalam": "BRN",
+    "Burkina Faso": "BFA", "Cabo Verde": "CPV", "Cambodia": "KHM", "Cameroon": "CMR",
+    "Canada": "CAN", "Cayman Islands": "CYM", "Central African Republic": "CAF",
+    "Chad": "TCD", "Chile": "CHL", "China": "CHN", "Colombia": "COL",
+    "Cook Islands": "COK", "Costa Rica": "CRI", "Cote D'ivoire": "CIV",
+    "Cuba": "CUB", "Curacao": "CUW", "Democratic Republic of Congo": "COD",
+    "Denmark": "DNK", "Dominica": "DMA", "Dominican Republic": "DOM", "Ecuador": "ECU",
+    "Egypt": "EGY", "El Salvador": "SLV", "Eritrea": "ERI", "Ethiopia": "ETH",
+    "Fiji": "FJI", "France": "FRA", "French Guiana": "GUF", "French Polynesia": "PYF",
+    "Germany": "DEU", "Ghana": "GHA", "Greece": "GRC", "Grenada": "GRD",
+    "Guadeloupe": "GLP", "Guam": "GUM", "Guatemala": "GTM", "Guinea": "GIN",
+    "Guyana": "GUY", "Haiti": "HTI", "Honduras": "HND", "Hong Kong": "HKG",
+    "India": "IND", "Indonesia": "IDN", "Iran": "IRN",
+    "Iraq": "IRQ", "Ireland": "IRL", "Israel": "ISR", "Italy": "ITA", "Jamaica": "JAM",
+    "Japan": "JPN", "Jordan": "JOR", "Kazakhstan": "KAZ", "Kenya": "KEN", "Kiribati": "KIR",
+    "Kuwait": "KWT", "Lao People's Democratic Republic": "LAO", "Lebanon": "LBN",
+    "Liberia": "LBR", "Libya": "LBY", "Macau": "MAC", "Madagascar": "MDG", "Malawi": "MWI",
+    "Malaysia": "MYS", "Maldives": "MDV", "Mali": "MLI", "Marshall Islands": "MHL",
+    "Martinique": "MTQ", "Mauritania": "MRT", "Mauritius": "MUS", "Mayotte": "MYT",
+    "Mexico": "MEX", "Micronesia (Federated States of)": "FSM", "Mongolia": "MNG", "Montserrat": "MSR",
+    "Morocco": "MAR", "Mozambique": "MOZ", "Myanmar": "MMR", "Namibia": "NAM", "Nauru": "NRU",
+    "Nepal": "NPL", "Netherlands": "NLD", "New Caledonia": "NCL", "New Zealand": "NZL",
+    "Nicaragua": "NIC", "Niger": "NER", "Nigeria": "NGA", "Niue": "NIU",
+    "North Korea": "PRK", "Northern Mariana Islands": "MNP", "Norway": "NOR", "Oman": "OMN", "Pakistan": "PAK",
+    "Palau": "PLW", "Panama": "PAN", "Papua New Guinea": "PNG", "Paraguay": "PRY",
+    "Peru": "PER", "Philippines": "PHL", "Pitcairn": "PCN", "Poland": "POL",
+    "Portugal": "PRT", "Puerto Rico": "PRI", "Qatar": "QAT", "Republic of Congo": "COG",
+    "Reunion": "REU", "Romania": "ROU", "Russia": "RUS", "Rwanda": "RWA", "Saint Barthelemy": "BLM",
+    "Saint Kitts and Nevis": "KNA", "Saint Lucia": "LCA", "Saint Martin": "MAF",
+    "Saint Vincent and the Grenadines": "VCT", "Samoa": "WSM",
+    "Sao Tome and Principe": "STP", "Saudi Arabia": "SAU", "Senegal": "SEN",
+    "Serbia": "SRB", "Seychelles": "SYC", "Sierra Leone": "SLE", "Singapore": "SGP",
+    "Sint Maarten": "SXM", "Slovakia": "SVK", "Solomon Islands": "SLB", "Somalia": "SOM",
+    "South Africa": "ZAF", "South Korea": "KOR", "South Sudan": "SSD", "Spain": "ESP", "Sri Lanka": "LKA",
+    "Sudan": "SDN", "Suriname": "SUR", "Sweden": "SWE", "Switzerland": "CHE", "Syria": "SYR",
+    "Taiwan": "TWN", "Thailand": "THA", "Timor-Leste": "TLS", "Togo": "TGO", "Tokelau": "TKL",
+    "Tonga": "TON", "Trinidad and Tobago": "TTO", "Tunisia": "TUN", "Turkey": "TUR",
+    "Turks and Caicos Islands": "TCA", "Tuvalu": "TUV", "Uganda": "UGA", "Ukraine": "UKR",
+    "United Arab Emirates": "ARE", "United Kingdom": "GBR",
+    "United Republic of Tanzania": "TZA", "United States of America": "USA",
+    "Uruguay": "URY", "Uzbekistan": "UZB", "Vanuatu": "VUT",
+    "Venezuela": "VEN", "Viet Nam": "VNM", "Virgin Islands (UK)": "VGB", "Virgin Islands (US)": "VIR",
+    "Wallis and Futuna": "WLF", "Yemen": "YEM", "Zambia": "ZMB", "Zimbabwe": "ZWE"
+  };
+
+  // --- Lists of At-Risk Countries (Illustrative - YOU NEED TO CURATE THESE) ---
+  // Provide ISO3 codes for countries you identify as "at risk but not in OpenDengue"
+  const dengueRiskAfricanCountries_ISO3 = [
+    "BDI", "COD", "COM", "COG", "DJI", "EGY", "GNQ", "SWZ", "GAB", "GMB", "GNB", "LBR",
+    "MDG", "MWI", "MOZ", "NAM", "NGA", "RWA", "SLE", "SOM", "SSD", "UGA",
+    "ZMB", "ZWE"
+    // Add/remove based on your criteria and the master list
+  ];
+  const dengueRiskAsianCountries_ISO3 = [
+    "BHR", "CYP",  "IRN", "IRQ",  "KWT", "LBN",
+    "QAT", "SYR",
+    // Add/remove based on your criteria
+  ];
+  const atRiskCountries_ISO3 = [...new Set([...dengueRiskAfricanCountries_ISO3, ...dengueRiskAsianCountries_ISO3])];
+
+
+  function displayMapMessage(text, type = 'info') { /* ... same as before ... */ }
+  function hideMapMessage() { /* ... same as before ... */ }
+
+  function createGlobalPresenceMap(csvData, masterCountryListData) {
+    const mapDiv = document.getElementById('globalCoverageMap');
+    if (!mapDiv) { console.error("Global Map: globalCoverageMap div not found!"); return; }
+    Plotly.purge(mapDiv);
+    hideMapMessage();
+
+    if (!masterCountryListData || masterCountryListData.length === 0) {
+        displayMapMessage("Global Map: Master country list not available.", "error"); return;
+    }
+    csvData = Array.isArray(csvData) ? csvData : []; // Ensure csvData is an array
+
+    const targetVersion = "V1_3";
+    const versionData = csvData.filter(row => row && String(row.version) === targetVersion);
+    console.log(`Global Map: Found ${versionData.length} rows in CSV for version ${targetVersion}.`);
+
+    const csvDataByIso3 = {};
+    versionData.forEach(row => {
+        if (row.adm_0_name) {
+            const isoCode = nameToIsoMap[row.adm_0_name];
+            if (isoCode) {
+                if (!csvDataByIso3[isoCode]) {
+                    csvDataByIso3[isoCode] = { has_any_meaningful_data: false, name_from_csv: row.adm_0_name };
+                }
+                const current_T_res = row.T_res_nm ? String(row.T_res_nm).trim() : "";
+                const current_S_res = row.S_res_nm ? String(row.S_res_nm).trim() : "";
+                const noDataStrings = ["NA", ""];
+                const hasTemporalDataThisRow = !noDataStrings.includes(current_T_res);
+                const hasSpatialDataThisRow = !noDataStrings.includes(current_S_res);
+                if (hasTemporalDataThisRow || hasSpatialDataThisRow) {
+                    csvDataByIso3[isoCode].has_any_meaningful_data = true;
+                }
+            } else {
+                console.warn(`Global Map: CSV country name "${row.adm_0_name}" not found in nameToIsoMap for V1_3.`);
+            }
+        }
+    });
+
+    const mapLocationsISO3 = [];
+    const mapZValues = [];
+    const mapHoverText = [];
+
+    masterCountryListData.forEach(masterCountry => {
+        const isoCode = masterCountry["alpha-3"];
+        const displayName = masterCountry.name;
+        if (!isoCode) return;
+
+        mapLocationsISO3.push(isoCode);
+        let zValue = 0; // Default: Beige #F1E4E1 (in master list, but no meaningful data or not in V1_3 CSV)
+        let hoverStatus = "Not in V1_3 CSV / NA or Blank";
+
+        if (csvDataByIso3[isoCode]) { // Country is in V1_3 CSV
+            if (csvDataByIso3[isoCode].has_any_meaningful_data) {
+                zValue = 2; // Dark Green
+                hoverStatus = "Available in V1_3";
+            } else {
+                zValue = 0; // Beige #F1E4E1 (In V1_3 CSV but all NA/Blank)
+                hoverStatus = "NA";
+            }
+        } else { // Country from master list is NOT in V1_3 CSV
+            if (atRiskCountries_ISO3.includes(isoCode)) {
+                zValue = 1; // New Color #D1DAD0 (Potential risk, not in V1_3 CSV with data)
+                hoverStatus = "Potential Risk (not available in OpenDengue)";
+            } else {
+                zValue = 0; // Beige #F1E4E1 (Not in V1_3 CSV and not marked as special risk)
+                hoverStatus = "NA";
+            }
+        }
+        mapZValues.push(zValue);
+        mapHoverText.push(`<b>${displayName}</b><br>${hoverStatus}`);
+    });
+
+    console.log("Global Map - Unique Z Values being sent to Plotly:", [...new Set(mapZValues)]);
+
+    const mapDataTrace = [{
+        type: 'choropleth', locations: mapLocationsISO3, z: mapZValues,
+        locationmode: 'ISO-3', text: mapHoverText, hoverinfo: 'text',
+        colorscale: [ // Normalized: 0 for z=0, 0.5 for z=1, 1 for z=2
+            [0.0, '#F1E4E1'],       // Corresponds to z = 0
+            [0.5, '#D1DAD0'],       // Corresponds to z = 1
+            [1.0, '#517749']        // Corresponds to z = 2
+        ],
+        showscale: false, // Show the scale to see all 3 categories
+        colorbar: {
+            title: 'Data Status (V1_3)',
+            tickvals: [0, 1, 2], // Actual z values
+            ticktext: ['No/NA Data in CSV or Not in CSV', 'Potential Risk (No Data in CSV)', 'Data Present in CSV']
+        },
+        zmin: 0, // Explicitly set zmin and zmax for the colorscale mapping
+        zmax: 2
+    }];
+
+    const mapLayout = { /* ... same as before, ensure title is appropriate ... */
+        title: ``,
+        geo: {
+            scope: 'world', projection: { type: 'robinson' },
+            showland: true, landcolor: '#F8F9FA',
+            bgcolor: 'rgba(255, 255, 255, 0)',
+            showcountries: true, countrywidth: 0.5, countrycolor: 'rgb(100, 100, 100)'
+        },
+        height: 500, // Adjusted from your last snippet's 500 to give more space
+        margin: {"r":0,"t":50,"l":0,"b":0},
+        paper_bgcolor: '#F8F9FA'
+    };
+
+    Plotly.newPlot('globalCoverageMap', mapDataTrace, mapLayout, {responsive: true});
+  }
+
+  function initializeGlobalMap() {
+    // ... (Promise.all to fetch heatmap.csv and countryListUrl as before) ...
+    const countryListUrl = 'https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.json';
+    Promise.all([ /* ... fetch heatmap.csv ... */ /* ... fetch countryListUrl ... */ ])
+    // ... (rest of initializeGlobalMap from previous correct version)
+    // Make sure createGlobalPresenceMap(csvData, masterCountryListData) is called in .then()
+  }
+  // --- Ensure the full initializeGlobalMap and DOMContentLoaded from last good version is here ---
+  // This is a placeholder for the full fetch logic from the previous answer
+  function initializeGlobalMap() {
+    displayMapMessage("Global Map: Loading data...", "info");
+    const countryListUrl = 'https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.json';
+
+    Promise.all([
+        fetch("heatmap.csv").then(res => {
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status} fetching heatmap.csv`);
+            return res.text();
+        }).then(csvText => {
+            return new Promise((resolve, reject) => {
+                Papa.parse(csvText, {
+                    header: true, dynamicTyping: true, skipEmptyLines: true,
+                    complete: results => {
+                        if (results.errors.length) reject(new Error("CSV Parsing Error")); else resolve(results.data);
+                    },
+                    error: err => reject(err)
+                });
+            });
+        }),
+        fetch(countryListUrl).then(res => {
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status} fetching country list`);
+            return res.json();
+        })
+    ])
+    .then(([csvData, masterCountryListData]) => {
+        hideMapMessage();
+        console.log("Global Map: Both CSV and Master Country List fetched.");
+        const allDataFromCSV = Array.isArray(csvData) ? csvData : [];
+        const masterList = Array.isArray(masterCountryListData) ? masterCountryListData : [];
+
+        if (masterList.length === 0) {
+            displayMapMessage("Global Map: Failed to load master country list.", "error"); return;
+        }
+        createGlobalPresenceMap(allDataFromCSV, masterList);
+    })
+    .catch(error => {
+        console.error("Global Map: Error fetching or processing data:", error);
+        displayMapMessage(`Global Map: Error loading data - ${error.message}. Check console.`, "error");
+        // Attempt to draw map with master list even if CSV fails, showing all as z=0 or z=1 (risk)
+        const countryListUrlFallback = 'https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.json';
+        fetch(countryListUrlFallback).then(r => r.json())
+            .then(masterList => {
+                if (masterList && masterList.length > 0) createGlobalPresenceMap([], masterList);
+            }).catch(e => console.error("Failed to load master list for fallback map.", e));
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('globalCoverageMap')) {
+        initializeGlobalMap();
+    }
+  });
+</script>
+
+
+
+## Access the data
+
+Please visit our [Data](https://opendengue.github.io/master-repo/data.html) page for download options, database details, definitions and limitations.
+
+Suggested citation:
+
+The preferred citation for OpenDengue is the citation of our [research paper](https://doi.org/10.1038/s41597-024-03120-7) in addition to the Figshare repository link to the specific version of the dataset used:
+
+"Clarke J, Lim A, Gupte P, Pigott DM, van Panhuis WG, Brady OJ. A global dataset of publicly available dengue case count data. Sci Data. 2024 Mar 14;11(1):296."
+
+"Clarke J, Lim A, Gupte P, Pigott DM, van Panhuis WG, Brady OJ. OpenDengue: data from the OpenDengue database. Version [1.3]. figshare; 2025. Available from:  https://doi.org/10.6084/m9.figshare.24259573."
+
+
+## About OpenDengue
+
+![](assets/figure/OpenDengue_logo.jpg)
+<br>
+The OpenDengue project aims to build and maintain a database of dengue case counts for every dengue-affected country worldwide since 1990 or earlier. We collate data from a range of publicly available sources including ministry of health websites, peer-reviewed publications and other disease databases. Learn more about the [project](https://opendengue.org/project.html) or our [methods](https://opendengue.org/overview.html).
+
+The database will continue to be developed over the coming years in different versions. The current release (Version 1.2) adds case definitions as well as addressing some double case counting bugs. We are currently finalising a manuscript that details all the work done on OpenDengue so far. Future versions will add disaggregate dengue case counts by severity, method of confirmation, age and serotype where such data are available.
+
+We are continually adding new data to the OpenDengue repository. If you are aware of publicly available data that we have not yet found, please [contribute](https://opendengue.org/contribute.html) or [get in touch](mailto:contribute@opendengue.org).
+
+![](assets/figure/Sum_icons.png)
+
+
+## Potential uses
+OpenDengue draws together and standardises data from multiple sources that enable new analyses at global and regional scales. Examples include:
+
+- Identifying worst affected areas and years
+- Understanding drivers of transmission such as climate factors and interventions
+- Predicting future trends and outbreak risk
+
+## Summary of data coverage
+::: {style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; justify-content: center;"}
+<div>
+  <label for="versionFilterSelect" class="text-sm font-medium text-slate-700 mb-1">Select Version:</label><br>
+  <select id="versionFilterSelect" class="p-2 border border-slate-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></select>
+</div>
+
+<div>
+  <label for="regionFilterSelect" class="text-sm font-medium text-slate-700 mb-1">Select Region:</label><br>
+  <select id="regionFilterSelect" class="p-2 border border-slate-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+    <option value="PAHO">PAHO</option>
+    <option value="SEARO">SEARO</option>
+    <option value="WPRO">WPRO</option>
+    <option value="EMRO">EMRO</option>
+    <option value="AFRO">AFRO</option>
+    <option value="EURO">EURO</option>
+  </select>
+</div>
+
+<div>
+  <label for="resolutionTypeSelect" class="text-sm font-medium text-slate-700 mb-1">Heatmap Shows:</label><br>
+  <select id="resolutionTypeSelect" class="p-2 border border-slate-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+    <option value="Temporal">Temporal Resolution</option>
+    <option value="Spatial">Spatial Resolution</option>
+  </select>
+</div>
+:::
+
+<div id="heatmap" style="width: 100%; height: 780px;"></div> <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+<script>
+  let fullCsvData = [];
+  let allVersionsCache = [];
+
+  const YEAR_MIN_FILTER = 1990;
+  const YEAR_MAX_FILTER = 2024;
+
+  const TEMPORAL_LEVELS = { "NA": 0, "Yearly": 1, "Monthly": 2, "Weekly": 3 };
+  const TEMPORAL_TEXT = { 0: "NA", 1: "Yearly", 2: "Monthly", 3: "Weekly" };
+  const TEMPORAL_COLORSCALE = [
+      [0.0, '#E5E7EB'], [0.25, '#E5E7EB'],   // NA (value 0)
+      [0.25, '#BAE6FD'], [0.5, '#BAE6FD'],  // Yearly (value 1)
+      [0.5, '#A7F3D0'], [0.75, '#A7F3D0'],  // Monthly (value 2)
+      [0.75, '#34D399'], [1.0, '#34D399']    // Weekly (value 3)
+  ];
+
+  const SPATIAL_LEVELS = { "NA": 0, "Admin0": 1, "Admin1": 2, "Admin2": 3 };
+  const SPATIAL_TEXT = { 0: "NA", 1: "Admin0", 2: "Admin1", 3: "Admin2" };
+  const SPATIAL_COLORSCALE = [
+      [0.0,  '#E5E7EB'], [0.25, '#E5E7EB'],  // NA (value 0)
+      [0.25, '#FCE7F3'], [0.50, '#FCE7F3'], // Admin0 (value 1)
+      [0.50, '#F9A8D4'], [0.75, '#F9A8D4'], // Admin1 (value 2)
+      [0.75, '#EC4899'], [1.0,  '#EC4899']   // Admin2 (value 3)
+  ];
+
+  console.log("Script loaded. Constants defined.");
+
+  function populateVersionDropdown(data) {
+    // ... (same as your last version) ...
+    const versionDropdown = document.getElementById('versionFilterSelect');
+    versionDropdown.innerHTML = '';
+    if (!data || data.length === 0) {
+        versionDropdown.disabled = true; allVersionsCache = [];
+        console.warn("No data available to populate version dropdown."); return;
+    }
+    const versions = data.map(d => d && String(d.version)).filter(Boolean);
+    allVersionsCache = [...new Set(versions)].sort((a, b) => {
+        const [aMajor, aMinor] = String(a).replace('V','').split('_').map(Number);
+        const [bMajor, bMinor] = String(b).replace('V','').split('_').map(Number);
+        if (aMajor !== bMajor) return aMajor - bMajor;
+        return aMinor - bMinor;
+    });
+    allVersionsCache.forEach(v => versionDropdown.add(new Option(v, v)));
+    if (allVersionsCache.length > 0) {
+        versionDropdown.value = allVersionsCache[allVersionsCache.length - 1];
+        versionDropdown.disabled = false;
+        console.log("Version dropdown populated. Selected:", versionDropdown.value);
+    } else {
+        versionDropdown.disabled = true; console.warn("No versions found for dropdown.");
+    }
+  }
+
+  function plotHeatmap(filteredData, selectedRegion, selectedVersion, selectedResolutionType) {
+    const heatmapDiv = document.getElementById('heatmap');
+    if (!heatmapDiv) { console.error("Heatmap div not found!"); return; }
+    Plotly.purge(heatmapDiv);
+    heatmapDiv.innerHTML = ''; // Clear any previous messages
+
+    console.log(`Plotting for Region: ${selectedRegion}, Version: ${selectedVersion}, Resolution: ${selectedResolutionType}. Filtered rows: ${filteredData.length}`);
+
+    if (!filteredData || filteredData.length === 0) {
+      console.warn(`No data to plot for selected filters.`);
+      heatmapDiv.innerHTML = `No data to plot for selected filters.`;
+      return;
+    }
+
+    const uniqueYears = [...new Set(filteredData.map(d => d.Year))].sort((a, b) => a - b);
+    const uniqueCountries = [...new Set(filteredData.map(d => d.adm_0_name))].sort();
+
+    if (uniqueYears.length === 0 || uniqueCountries.length === 0) {
+        console.warn("Not enough distinct years or countries.");
+        heatmapDiv.innerHTML = "Not enough distinct data for heatmap.";
+        return;
+    }
+
+    const activeLevels = selectedResolutionType === "Temporal" ? TEMPORAL_LEVELS : SPATIAL_LEVELS;
+    const activeColorscale = selectedResolutionType === "Temporal" ? TEMPORAL_COLORSCALE : SPATIAL_COLORSCALE;
+    const activeResNmColumn = selectedResolutionType === "Temporal" ? "T_res_nm" : "S_res_nm";
+    const colorbarTitle = selectedResolutionType === "Temporal" ? "" : "";
+    const activeTextMap = selectedResolutionType === "Temporal" ? TEMPORAL_TEXT : SPATIAL_TEXT;
+
+    const zMatrix = uniqueCountries.map(country =>
+      uniqueYears.map(year => {
+        const match = filteredData.find(d => d.adm_0_name === country && d.Year === year);
+        if (match && match[activeResNmColumn] !== null && match[activeResNmColumn] !== undefined) {
+            const level = activeLevels[match[activeResNmColumn]];
+            return level !== undefined ? level : activeLevels["NA"];
+        }
+        return activeLevels["NA"];
+      })
+    );
+
+    const sortedTickValsColorbar = Object.values(activeLevels).sort((a,b) => a-b);
+    const sortedTickTextHeatmap = sortedTickValsColorbar.map(val => activeTextMap[val]);
+
+    const heatmapPlotData = [{
+      x: uniqueYears,
+      y: uniqueCountries,
+      z: zMatrix,
+      type: 'heatmap',
+      colorscale: activeColorscale,
+      zmin: 0,
+      zmax: Object.keys(activeLevels).length - 1,
+      colorbar: {
+        title: colorbarTitle,
+        tickvals: sortedTickValsColorbar,
+        ticktext: sortedTickTextHeatmap,
+        len: 0.3, y: 0.5, yanchor: 'middle', thickness: 15,
+        tickfont: { family: 'Open Sans', size: 10, color: '#334155'}
+      },
+      xgap: 1, ygap: 1,
+      text: uniqueCountries.map(country =>
+          uniqueYears.map(year => {
+              const match = filteredData.find(d => d.adm_0_name === country && d.Year === year);
+              if (match) {
+                  return `<b>Country:</b> ${match.adm_0_name}<br><b>Year:</b> ${match.Year}<br><b>T.Res:</b> ${match.T_res_nm || "NA"}<br><b>S.Res:</b> ${match.S_res_nm || "NA"}`;
+              }
+              return `<b>Country:</b> ${country}<br><b>Year:</b> ${year}<br><b>Data:</b> NA`;
+          })
+      ),
+      hovertemplate: '%{text}<extra></extra>'
+    }];
+
+    // --- X-axis Tick Configuration ---
+    let xAxisTickValues = [];
+    if (uniqueYears.length > 0) {
+        let lastShownTick = -Infinity; // Ensure the first tick can be shown
+        uniqueYears.forEach((year, index) => {
+            // Rule: Show a tick if it's the first year,
+            // or if it's been at least 2 years since the last shown tick,
+            // or if it's 1990 or 2024 (and present in uniqueYears),
+            // or if it's the last year.
+            let showThisTick = false;
+            if (index === 0) { // Always show first year in data
+                showThisTick = true;
+            } else if (year >= lastShownTick + 2) {
+                showThisTick = true;
+            }
+            if (year === YEAR_MIN_FILTER || year === YEAR_MAX_FILTER) { // Ensure 1990/2024 are shown if they exist
+                showThisTick = true;
+            }
+            if (index === uniqueYears.length - 1) { // Always show last year in data
+                showThisTick = true;
+            }
+
+            if (showThisTick) {
+                xAxisTickValues.push(year);
+                lastShownTick = year;
+            }
+        });
+        // Ensure no duplicates and sorted (though Set logic is more robust for uniqueness)
+        xAxisTickValues = [...new Set(xAxisTickValues)].sort((a,b) => a-b);
+    }
+    console.log("plotHeatmap - xAxisTickValues:", xAxisTickValues);
+    // --- End X-axis Tick Configuration ---
+
+    const resolutionTitlePart = selectedResolutionType === "Temporal" ? "Temporal Resolution" : "Spatial Resolution";
+    const layout = {
+      title: { text: `Best ${resolutionTitlePart} Available - ${selectedRegion} (${selectedVersion})`, x: 0.5, xanchor: 'center', font: { family: 'Open Sans', size: 18, color: '#1e293b'}},
+      autosize: true, height: 780,
+      xaxis: {
+        title: {text: ''},
+        type: 'category',
+        tickmode: 'array',
+        tickvals: xAxisTickValues.length > 0 ? xAxisTickValues : undefined,
+        ticktext: xAxisTickValues.length > 0 ? xAxisTickValues.map(String) : undefined,
+        tickangle: xAxisTickValues.length > 15 ? 45 : 0, // Adjust angle if many ticks
+        tickfont: { family: 'Open Sans', size: 11, color: '#475569'},
+        gridcolor: '#e2e8f0',
+        automargin: true
+      },
+      yaxis: { title: {text: ''}, automargin: true, tickfont: { family: 'Open Sans', size: uniqueCountries.length > 30 ? 9 : 11, color: '#475569'}, gridcolor: '#e2e8f0', type: 'category'},
+      margin: { l: (uniqueCountries.length > 10 ? 150 : 100), b: 80, t: 60, r: 50 },
+      plot_bgcolor: '#F8F9FA', paper_bgcolor: '#F8F9FA', showlegend: false,
+      font: { family: 'Open Sans', size: 12, color: '#334155' }
+    };
+
+    Plotly.newPlot('heatmap', heatmapPlotData, layout, {responsive: true});
+  }
+
+  function loadAndProcessData() {
+    // ... (this function remains exactly the same as your last version)
+    console.log("loadAndProcessData called.");
+    const regionSelect = document.getElementById('regionFilterSelect');
+    const versionDropdown = document.getElementById('versionFilterSelect');
+    const resolutionTypeSelect = document.getElementById('resolutionTypeSelect');
+
+    if (!regionSelect || !versionDropdown || !resolutionTypeSelect) {
+        console.error("loadAndProcessData: One or more select elements not found!");
+        return;
+    }
+
+    const selectedRegion = regionSelect.value;
+    const selectedVersion = versionDropdown.disabled ? null : versionDropdown.value;
+    const selectedResolutionType = resolutionTypeSelect.value;
+
+    console.log(`loadAndProcessData - Filters: Region='${selectedRegion}', Version='${selectedVersion}', Resolution='${selectedResolutionType}'`);
+
+    if (!selectedVersion && !versionDropdown.disabled) {
+        console.warn("loadAndProcessData: No version selected.");
+        Plotly.purge(document.getElementById('heatmap'));
+        document.getElementById('heatmap').innerHTML = "Please select a version.";
+        return;
+    }
+    if (!fullCsvData || fullCsvData.length === 0) {
+        console.warn("loadAndProcessData: fullCsvData is empty or not loaded.");
+        document.getElementById('heatmap').innerHTML = "Data not loaded. Please wait or refresh.";
+        return;
+    }
+
+    const activeData = fullCsvData.filter(row =>
+        row &&
+        row.region === selectedRegion &&
+        (selectedVersion ? String(row.version) === String(selectedVersion) : true) &&
+        row.Year >= YEAR_MIN_FILTER &&
+        row.Year <= YEAR_MAX_FILTER &&
+        row.adm_0_name !== null && row.adm_0_name !== undefined &&
+        row.Year !== null && row.Year !== undefined
+    );
+    console.log("loadAndProcessData - Active data after primary filters (count):", activeData.length);
+    if(activeData.length < 20 && activeData.length > 0) console.log("loadAndProcessData - Active data (sample):", JSON.parse(JSON.stringify(activeData.slice(0,5))));
+
+    plotHeatmap(activeData, selectedRegion, selectedVersion || "N/A", selectedResolutionType);
+  }
+
+  // Initial Data Load (fetch and Papa.parse)
+  // ... (this function remains exactly the same as your last version)
+  console.log("Attempting to fetch heatmap.csv...");
+  fetch("heatmap.csv")
+    .then(response => {
+      if (!response.ok) {
+        console.error(`HTTP error! status: ${response.status} while fetching heatmap.csv`);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(csvText => {
+      Papa.parse(csvText, {
+        header: true, dynamicTyping: true, skipEmptyLines: true,
+        complete: function (results) {
+          console.log("Raw Papaparse results:", results);
+          if (results.errors.length > 0) {
+            console.error("Parsing errors:", results.errors);
+            document.getElementById('heatmap').innerHTML = "Error parsing CSV data. Check console.";
+            return;
+          }
+          fullCsvData = Array.isArray(results.data) ? results.data : [];
+          console.log("Full CSV data stored. Total rows:", fullCsvData.length);
+          if (fullCsvData.length > 0) {
+            populateVersionDropdown(fullCsvData);
+            loadAndProcessData(); // Initial plot
+          } else {
+            console.error("CSV data is empty or could not be loaded correctly.");
+            document.getElementById('heatmap').innerHTML = "CSV data is empty or could not be loaded.";
+            const versionDropdown = document.getElementById('versionFilterSelect');
+            if(versionDropdown) versionDropdown.disabled = true;
+          }
+        }
+      });
+    })
+    .catch(error => {
+      console.error("Error fetching or processing heatmap.csv:", error);
+      const heatmapDiv = document.getElementById('heatmap');
+      if(heatmapDiv) heatmapDiv.innerHTML = `Error loading data: ${error.message}. Check console.`;
+    });
+
+  // DOMContentLoaded listener
+  // ... (this function remains exactly as your last version, ensuring event listeners are attached to all 3 dropdowns)
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOMContentLoaded event fired.");
+    const regionFilterSelect = document.getElementById('regionFilterSelect');
+    const versionFilterSelect = document.getElementById('versionFilterSelect');
+    const resolutionTypeSelect = document.getElementById('resolutionTypeSelect');
+
+    const heatmapDiv = document.getElementById('heatmap');
+    if(heatmapDiv && (!fullCsvData || !fullCsvData.length)) heatmapDiv.innerHTML = "Loading data, please wait...";
+
+    if (regionFilterSelect) {
+        regionFilterSelect.addEventListener('change', loadAndProcessData);
+    } else { console.error("Region filter select dropdown not found."); }
+
+    if (versionFilterSelect) {
+        versionFilterSelect.addEventListener('change', loadAndProcessData);
+    } else { console.error("Version filter select dropdown not found."); }
+
+    if (resolutionTypeSelect) {
+        resolutionTypeSelect.addEventListener('change', loadAndProcessData);
+    } else { console.error("Resolution type select dropdown not found."); }
+    console.log("Event listeners attached.");
+  });
+</script>
+
+
+Our goal at the OpenDengue project is to fill as many of these gaps as we can. If you know of any publicly available data sources for any of the grey or light coloured countries or years in the above figures please [contribute](https://opendengue.github.io/master-repo/contribute.html) or [get in touch](mailto:contribute@opendengue.org).
+
+
+
