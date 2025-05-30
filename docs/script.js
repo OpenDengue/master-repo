@@ -1,4 +1,4 @@
-const baseUrl = "https://ahyoung-lim.github.io/master-repo/assets/";
+const baseUrl = "https://opendengue.org/assets/";
 
 let metadata = [];
 let allData = [];
