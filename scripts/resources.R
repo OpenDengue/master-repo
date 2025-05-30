@@ -1,4 +1,4 @@
-dt_heatmap <- read.csv("src/heatmap.csv")
+dt_heatmap <- read.csv("heatmap.csv")
 
 region_lookup <- dt_heatmap %>%
   select(region, adm_0_name) %>%
@@ -33,7 +33,7 @@ save_by_region <- function(dataType) {
     subset <- data %>% filter(region == !!region)
 
     # Replace spaces with underscores in file names
-    file_name <- paste0("src/assets/", dataType, "_extract_", region, "_V1_3.csv")
+    file_name <- paste0("assets/", dataType, "_extract_", region, "_V1_3.csv")
 
     write.csv(subset, file_name, row.names = FALSE)
   }

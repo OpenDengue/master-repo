@@ -8,7 +8,7 @@
   },
   {
     "adm_0_name": "AMERICAN SAMOA",
-    "region": "PAHO",
+    "region": "WPRO",
     "dataType": "National",
     "start_date": "1955-01-01",
     "end_date": "2024-12-28"
@@ -929,7 +929,7 @@
   },
   {
     "adm_0_name": "AMERICAN SAMOA",
-    "region": "PAHO",
+    "region": "WPRO",
     "dataType": "Spatial",
     "start_date": "1955-01-01",
     "end_date": "2024-12-28"
@@ -1850,7 +1850,7 @@
   },
   {
     "adm_0_name": "AMERICAN SAMOA",
-    "region": "PAHO",
+    "region": "WPRO",
     "dataType": "Temporal",
     "start_date": "1955-01-01",
     "end_date": "2024-12-28"

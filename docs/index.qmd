@@ -77,7 +77,7 @@ const nameToIsoMap = {
     "Wallis and Futuna": "WLF", "Yemen": "YEM", "Zambia": "ZMB", "Zimbabwe": "ZWE"
   };
 
-  // --- Lists of At-Risk Countries (Illustrative - YOU NEED TO CURATE THESE) ---
+  // --- Lists of At-Risk Countries (Illustrative) ---
   // Provide ISO3 codes for countries you identify as "at risk but not in OpenDengue"
   const dengueRiskAfricanCountries_ISO3 = [
     "BDI", "COD", "COM", "COG", "DJI", "EGY", "GNQ", "SWZ", "GAB", "GMB", "GNB", "LBR",
