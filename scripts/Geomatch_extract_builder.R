@@ -1,23 +1,28 @@
-# styler: off
 rm(list = ls())
 
-dropbox_path = "C:/Users/AhyoungLim/Dropbox/WORK/OpenDengue/11_DENData/"
-git_path = "C:/Users/AhyoungLim/Dropbox/WORK/OpenDengue/master-repo-alim/master-repo/"
-dev_path = "C:/Users/AhyoungLim/Dropbox/WORK/OpenDengue/OpenDengue-Dev/"
+dropbox_path <- "C:/Users/AhyoungLim/Dropbox/WORK/OpenDengue/11_DENData/"
+git_path <- "C:/Users/AhyoungLim/Dropbox/WORK/OpenDengue/master-repo-alim/master-repo/"
+dev_path <- "C:/Users/AhyoungLim/Dropbox/WORK/OpenDengue/OpenDengue-Dev/"
 
-today = gsub("-", "_", Sys.Date())
-version = "V1.3"
-release = TRUE
+# Snapshot date stamped onto every input/output filename for this run.
+# Set this ONCE per data snapshot so that running different sections on
+# different calendar days keeps ALL files on the SAME date (previously
+# `today` was recomputed from Sys.Date() each run, scattering filenames
+# across dates). Leave run_date = "" to fall back to the current system date.
+run_date <- "2026_07_29" # must match the masterDB_<run_date>.csv on disk
+today <- if (nzchar(run_date)) run_date else gsub("-", "_", Sys.Date())
+version <- "V1.3"
+release <- FALSE
 
 if (release) {
-  filename_fd = paste0(
+  filename_fd <- paste0(
     dev_path,
     "archive/filingDB_allV_",
     version,
     ".xlsx"
   )
-  filename_sd = paste0(git_path, "data/raw_data/sourcedata_", version, ".csv")
-  filename_md = paste0(git_path, "data/raw_data/masterDB_", version, ".csv")
+  filename_sd <- paste0(git_path, "data/raw_data/sourcedata_", version, ".csv")
+  filename_md <- paste0(git_path, "data/raw_data/masterDB_", version, ".csv")
 
   # Define the path for the new subdirectory
   dir <- paste0(git_path, "data/releases/", version)
@@ -30,13 +35,12 @@ if (release) {
     cat("directory already exists at:", dir, "\n")
   }
 } else {
-  filename_fd = paste0(git_path, "data/archive/filingDB_allV_", today, ".xlsx")
-  filename_sd = paste0(git_path, "data/raw_data/sourcedata_", today, ".csv")
-  filename_md = paste0(git_path, "data/raw_data/masterDB_", today, ".csv")
+  filename_fd <- paste0(dev_path, "archive/filingDB_allV_", today, ".xlsx")
+  filename_sd <- paste0(git_path, "data/raw_data/sourcedata_", today, ".csv")
+  filename_md <- paste0(git_path, "data/raw_data/masterDB_", today, ".csv")
 }
 
 
-# setwd("/Users/eideobra/Dropbox/11_DENData")
 require(stringi)
 require(stringr)
 require(stringdist)
@@ -44,13 +48,13 @@ require(sf)
 require(lubridate)
 require(rnaturalearth)
 require(dplyr)
-# remotes::install_github("epicentre-msf/hmatch")
 require(hmatch)
 require(countrycode)
 require(mapview)
 require(readxl)
-library(tidyr)
-library(ggplot2)
+require(tidyr)
+require(ggplot2)
+require(EpiWeek)
 
 # load in master openDengue file
 message("Loading in master opendengue file: ", filename_md)
@@ -65,8 +69,8 @@ summary(is.na(od))
 # basic standardisation first
 
 # remove accents
-od$adm_1_name = stri_trans_general(od$adm_1_name, "Latin-ASCII")
-od$adm_2_name = stri_trans_general(od$adm_2_name, "Latin-ASCII")
+od$adm_1_name <- stri_trans_general(od$adm_1_name, "Latin-ASCII")
+od$adm_2_name <- stri_trans_general(od$adm_2_name, "Latin-ASCII")
 
 # for some reason some latin accents need to be changed manually (colombia, guatemala)
 unique(od$adm_1_name[grepl("�", od$adm_1_name)])
@@ -139,21 +143,21 @@ unique(od$adm_2_name[od$adm_0_name == "Guatemala"])
 
 
 # convert all to upper case
-od$adm_0_name = toupper(od$adm_0_name)
-od$adm_1_name = toupper(od$adm_1_name)
-od$adm_2_name = toupper(od$adm_2_name)
+od$adm_0_name <- toupper(od$adm_0_name)
+od$adm_1_name <- toupper(od$adm_1_name)
+od$adm_2_name <- toupper(od$adm_2_name)
 
 # remove any double spacing
-od$adm_0_name = gsub("  ", " ", od$adm_0_name)
-od$adm_1_name = gsub("  ", " ", od$adm_1_name)
-od$adm_2_name = gsub("  ", " ", od$adm_2_name)
+od$adm_0_name <- gsub("  ", " ", od$adm_0_name)
+od$adm_1_name <- gsub("  ", " ", od$adm_1_name)
+od$adm_2_name <- gsub("  ", " ", od$adm_2_name)
 
 # trim trailing space
-od$adm_0_name = trimws(od$adm_0_name)
-od$adm_1_name = trimws(od$adm_1_name)
-od$adm_2_name = trimws(od$adm_2_name)
+od$adm_0_name <- trimws(od$adm_0_name)
+od$adm_1_name <- trimws(od$adm_1_name)
+od$adm_2_name <- trimws(od$adm_2_name)
 
-od$adm_2_name[od$adm_2_name == ""] = NA
+od$adm_2_name[od$adm_2_name == ""] <- NA
 
 
 # function that returns a table of most similar links within a list of county
@@ -162,8 +166,8 @@ find_similar <- function(a1c) {
   # unique names
   ua1n <- sort(unique(a1c))
   # similar matches
-  distmatrix <- stringdist::stringdistmatrix(ua1n, ua1n, method = 'jw')
-  diag(distmatrix) = NA # excludes direct matches
+  distmatrix <- stringdist::stringdistmatrix(ua1n, ua1n, method = "jw")
+  diag(distmatrix) <- NA # excludes direct matches
   best_fit <- apply(distmatrix, 1, which.min) # best match
   similarity <- apply(distmatrix, 1, min, na.rm = T) # match value
 
@@ -174,7 +178,7 @@ find_similar <- function(a1c) {
     distance = similarity
   )
   # sort table most to least similar
-  match_tab = match_tab[order(match_tab$distance, decreasing = F), ]
+  match_tab <- match_tab[order(match_tab$distance, decreasing = F), ]
   return(match_tab)
 }
 
@@ -210,7 +214,7 @@ a1c <- apply(ad_a1[, c("adm_0_name", "adm_1_name")], 1, paste, collapse = "/")
 a1_match <- find_similar(a1c)
 # manually inspect for duplication
 head(a1_match, n = 20)
-#! "PANAMA/VERGAUAS" -> "PANAMA/VERAGUAS"
+# ! "PANAMA/VERGAUAS" -> "PANAMA/VERAGUAS"
 
 # C) admin 2 level
 ad_a2 <- od[!is.na(od$adm_2_code), ]
@@ -220,9 +224,44 @@ a2c <- apply(ad_a2[, c("adm_1_name", "adm_2_name")], 1, paste, collapse = "/")
 a2_match <- find_similar(a2c)
 # manually inspect for duplication
 head(a2_match, n = 20)
-#! no obvious mismatches
-od$adm_2_name[which(od$adm_1_name == "ENTRE RIOS" & od$adm_2_name == "FEDERAL")] = "FEDERACION"
+# ! no obvious mismatches
+od$adm_2_name[which(od$adm_1_name == "ENTRE RIOS" & od$adm_2_name == "FEDERAL")] <- "FEDERACION"
 # od$adm_2_name[which(od$adm_0_name == "COLOMBIA")] <- gsub(" \\(CD\\)", "", od$adm_2_name[od$adm_0_name == "COLOMBIA"])
+
+# Fill province (adm_1) for Nepal district-only rows: some sources report the
+# district in adm_2_name with adm_1_name (province) blank -> otherwise these get
+# mislabelled Admin1. Build a district->province lookup from the Nepal rows that
+# are already correctly formed (adm_1 & adm_2 both present) and backfill.
+np_prov <- od %>%
+  filter(adm_0_name == "NEPAL", !is.na(adm_1_name), adm_1_name != "", !is.na(adm_2_name)) %>%
+  count(district = adm_2_name, province = adm_1_name) %>%
+  group_by(district) %>%
+  slice_max(n, n = 1, with_ties = FALSE) %>%
+  ungroup()
+
+np_spell <- c(
+  KAPILVASTU = "KAPILBASTU", MAKAWANPUR = "MAKWANPUR",
+  CHITWAN = "CHITAWAN", KAVRE = "KAVREPALANCHOK"
+)
+
+np_i <- which(od$adm_0_name == "NEPAL" &
+  (is.na(od$adm_1_name) | od$adm_1_name == "") & !is.na(od$adm_2_name))
+np_d <- ifelse(od$adm_2_name[np_i] %in% names(np_spell),
+  np_spell[od$adm_2_name[np_i]], od$adm_2_name[np_i]
+)
+np_m <- match(np_d, np_prov$district)
+np_ok <- np_i[!is.na(np_m)]
+od$adm_2_name[np_ok] <- np_d[!is.na(np_m)]
+od$adm_1_name[np_ok] <- np_prov$province[np_m[!is.na(np_m)]]
+
+# RUKUM and NAWALPARASI were reported as single (pre-split) districts in 2016 but
+# were later split across two provinces. Assign each to the province holding the
+# larger/original part (Rukum -> Karnali: 74% of pop + old HQ Musikot; Nawalparasi
+# -> Lumbini: old HQ Parasi + lowland Terai where dengue occurs).
+od$adm_1_name[od$adm_0_name == "NEPAL" &
+  (is.na(od$adm_1_name) | od$adm_1_name == "") & od$adm_2_name == "RUKUM"] <- "KARNALI PROVINCE"
+od$adm_1_name[od$adm_0_name == "NEPAL" &
+  (is.na(od$adm_1_name) | od$adm_1_name == "") & od$adm_2_name == "NAWALPARASI"] <- "LUMBINI PROVINCE"
 
 # identify spatial and temporal resolution
 od$S_res <- apply(
@@ -230,16 +269,16 @@ od$S_res <- apply(
   1,
   function(x) c("Admin2", "Admin1", "Admin0")[sum(is.na(x)) + 1]
 )
-od$S_res = factor(od$S_res, levels = c("Admin2", "Admin1", "Admin0"))
+od$S_res <- factor(od$S_res, levels = c("Admin2", "Admin1", "Admin0"))
 
 od$T_res <- as.numeric(
   as.Date(od$calendar_end_date) - as.Date(od$calendar_start_date)
 )
-od$T_res[od$T_res < 8] = 1
-od$T_res[(od$T_res > 1) & (od$T_res < 300)] = 2
-od$T_res[od$T_res >= 300] = 3
-od$T_res = c("Week", "Month", "Year")[od$T_res]
-od$T_res = factor(od$T_res, levels = c("Week", "Month", "Year"))
+od$T_res[od$T_res < 8] <- 1
+od$T_res[(od$T_res > 1) & (od$T_res < 300)] <- 2
+od$T_res[od$T_res >= 300] <- 3
+od$T_res <- c("Week", "Month", "Year")[od$T_res]
+od$T_res <- factor(od$T_res, levels = c("Week", "Month", "Year"))
 
 # check calendar dates for weekly data
 od_week <- od %>% filter(T_res == "Week")
@@ -249,15 +288,20 @@ summary(is.na(od_week$calendar_start_date))
 od_dates <- od_week %>%
   distinct(adm_0_name, UUID, calendar_start_date, calendar_end_date) %>%
   mutate(
-    year = year(calendar_start_date),
+    year = NA,
     month = month(calendar_start_date),
-    week = epiweek(calendar_start_date),
+    week = NA,
     date = paste0(calendar_start_date, "_", calendar_end_date)
   ) %>%
   mutate(year = ifelse(month == 12 & week == 1, year + 1, year))
 
-start_year = year(min(as.Date(od_dates$calendar_start_date)))
-end_year = year(max(as.Date(od_dates$calendar_start_date)))
+for (i in 1:nrow(od_dates)) {
+  od_dates$year[i] <- dateToEpiweek(od_dates$calendar_start_date[i])$year
+  od_dates$week[i] <- dateToEpiweek(od_dates$calendar_start_date[i])$weekno
+}
+
+start_year <- year(min(as.Date(od_dates$calendar_start_date)))
+end_year <- year(max(as.Date(od_dates$calendar_start_date)))
 source(paste0(git_path, "scripts/Standard_weekly_dates.R"))
 std_dates <- get_std_wdates(start_year, end_year)
 
@@ -270,9 +314,14 @@ od_dates <- merge(
 
 # check any errors in dates
 od_dates <- od_dates[(od_dates$date != od_dates$std_date), ]
+nrow(od_dates)
+
+# fix Taiwan dates error
+od <- od %>%
+  mutate(calendar_end_date = ifelse(adm_0_name == "TAIWAN" & T_res == "Week", as.character(ymd(calendar_start_date) + 6), calendar_end_date))
 
 # add year column
-od$Year = year(as.Date(od$calendar_start_date))
+od$Year <- year(as.Date(od$calendar_start_date))
 
 
 # add single location identifier
@@ -286,8 +335,8 @@ od$full_name <- apply(
 # geomatching ---------------------------------------------
 
 # quick ISO country code addition
-od$ISO_A0 = countrycode::countrycode(od$adm_0_name, "country.name", "iso3c")
-od$ISO_A0[od$adm_0_name == "SAINT MARTIN"] = "MAF"
+od$ISO_A0 <- countrycode::countrycode(od$adm_0_name, "country.name", "iso3c")
+od$ISO_A0[od$adm_0_name == "SAINT MARTIN"] <- "MAF"
 
 
 # load in FAO GAUL shapefiles
@@ -317,77 +366,77 @@ unique(error_countries$COUNTRY_ID)
 
 
 # A) processing GAUL codes ===========================================================================
-GAUL_adm0$NAME_A0 = GAUL_adm0$COUNTRY_ID
-GAUL_adm0$NAME_A1 = NA
-GAUL_adm0$NAME_A2 = NA
-GAUL_adm1$NAME_A0 = GAUL_adm0$COUNTRY_ID[match(
+GAUL_adm0$NAME_A0 <- GAUL_adm0$COUNTRY_ID
+GAUL_adm0$NAME_A1 <- NA
+GAUL_adm0$NAME_A2 <- NA
+GAUL_adm1$NAME_A0 <- GAUL_adm0$COUNTRY_ID[match(
   GAUL_adm1$PARENT_ID,
   GAUL_adm0$GAUL_CODE
 )]
-GAUL_adm1$NAME_A1 = GAUL_adm1$NAME
-GAUL_adm1$NAME_A2 = NA
-GAUL_adm2$NAME_A0 = GAUL_adm1$NAME_A0[match(
+GAUL_adm1$NAME_A1 <- GAUL_adm1$NAME
+GAUL_adm1$NAME_A2 <- NA
+GAUL_adm2$NAME_A0 <- GAUL_adm1$NAME_A0[match(
   GAUL_adm2$PARENT_ID,
   GAUL_adm1$GAUL_CODE
 )]
-GAUL_adm2$NAME_A1 = GAUL_adm1$NAME[match(
+GAUL_adm2$NAME_A1 <- GAUL_adm1$NAME[match(
   GAUL_adm2$PARENT_ID,
   GAUL_adm1$GAUL_CODE
 )]
-GAUL_adm2$NAME_A2 = GAUL_adm2$NAME
+GAUL_adm2$NAME_A2 <- GAUL_adm2$NAME
 
 
 CN <- c("NAME_A0", "NAME_A1", "NAME_A2", "GAUL_CODE")
-GAUL_all = rbind(GAUL_adm0[, CN], GAUL_adm1[, CN], GAUL_adm2[, CN])
+GAUL_all <- rbind(GAUL_adm0[, CN], GAUL_adm1[, CN], GAUL_adm2[, CN])
 # standardise to upper case
 
-GAUL_all$NAME_A1 = iconv(GAUL_all$NAME_A1, "UTF-8", "ISO-8859-1")
-GAUL_all$NAME_A2 = iconv(GAUL_all$NAME_A2, "UTF-8", "ISO-8859-1")
-GAUL_all$NAME_A1 = stri_trans_general(
+GAUL_all$NAME_A1 <- iconv(GAUL_all$NAME_A1, "UTF-8", "ISO-8859-1")
+GAUL_all$NAME_A2 <- iconv(GAUL_all$NAME_A2, "UTF-8", "ISO-8859-1")
+GAUL_all$NAME_A1 <- stri_trans_general(
   str = GAUL_all$NAME_A1,
   id = "Latin-ASCII"
 )
-GAUL_all$NAME_A2 = stri_trans_general(
+GAUL_all$NAME_A2 <- stri_trans_general(
   str = GAUL_all$NAME_A2,
   id = "Latin-ASCII"
 )
-GAUL_all[, 1:3] = apply(GAUL_all[, 1:3], 2, toupper)
+GAUL_all[, 1:3] <- apply(GAUL_all[, 1:3], 2, toupper)
 
-od_match = od[, c("ISO_A0", "adm_1_name", "adm_2_name", "full_name")]
-colnames(od_match) = c("NAME_A0", "NAME_A1", "NAME_A2", "description")
+od_match <- od[, c("ISO_A0", "adm_1_name", "adm_2_name", "full_name")]
+colnames(od_match) <- c("NAME_A0", "NAME_A1", "NAME_A2", "description")
 
 # manually edited exceptions
 
 # Argentina
 od_match$NAME_A1[
   od_match$description == "ARGENTINA, FORMOSA, GRL. JOSE DE SAN MARTIN"
-] = "SALTA"
+] <- "SALTA"
 od_match$NAME_A2[
   od_match$description == "ARGENTINA, FORMOSA, GRL. JOSE DE SAN MARTIN"
-] = "GENERAL JOSE DE SAN MARTI"
+] <- "GENERAL JOSE DE SAN MARTI"
 od_match$NAME_A2[
   od_match$NAME_A2 == "GRL. JOSE DE SAN MARTIN"
-] = "GENERAL JOSE DE SAN MARTI"
+] <- "GENERAL JOSE DE SAN MARTI"
 
 # Australia
-od_match$NAME_A1[od_match$description == "AUSTRALIA, TAS"] = "TASMANIA"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, NT"] = "NORTHERN TERRITORY"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, SA"] = "SOUTH AUSTRALIA"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, NSW"] = "NEW SOUTH WALES"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, ACT"] = "AUSTRALIAN CAPITAL TERRITORY"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, VIC"] = "VICTORIA"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, QLD"] = "QUEENSLAND"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, WA"] = "WESTERN AUSTRALIA"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, TAS"] <- "TASMANIA"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, NT"] <- "NORTHERN TERRITORY"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, SA"] <- "SOUTH AUSTRALIA"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, NSW"] <- "NEW SOUTH WALES"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, ACT"] <- "AUSTRALIAN CAPITAL TERRITORY"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, VIC"] <- "VICTORIA"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, QLD"] <- "QUEENSLAND"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, WA"] <- "WESTERN AUSTRALIA"
 
 # Bhutan
 od_match$NAME_A1[
   od_match$description == "BHUTAN, SAMDRUPJONGKHAR"
-] = "SAMDRUP-JONKHA"
+] <- "SAMDRUP-JONKHA"
 
 # Brunei
-od_match$NAME_A1[od_match$description == "BRUNEI DARUSSALAM, BRUNEI MUARA DISTRICT"] = "BRUNEI AND MUARA"
+od_match$NAME_A1[od_match$description == "BRUNEI DARUSSALAM, BRUNEI MUARA DISTRICT"] <- "BRUNEI AND MUARA"
 
-od_match$NAME_A1[od_match$NAME_A0 == "BRN" & !is.na(od_match$NAME_A1)] = gsub(
+od_match$NAME_A1[od_match$NAME_A0 == "BRN" & !is.na(od_match$NAME_A1)] <- gsub(
   " DISTRICT",
   "",
   od_match$NAME_A1[od_match$NAME_A0 == "BRN" & !is.na(od_match$NAME_A1)]
@@ -396,32 +445,32 @@ od_match$NAME_A1[od_match$NAME_A0 == "BRN" & !is.na(od_match$NAME_A1)] = gsub(
 # Cambodia
 od_match$NAME_A1[
   od_match$description == "CAMBODIA, PREAH SIHANOUK"
-] = "SIHANOUKVILLE"
+] <- "SIHANOUKVILLE"
 
 # China adm1
 # unique(od_match$NAME_A1[od_match$NAME_A0 == "CHN" & !grepl("SHENG|SHI", od_match$NAME_A1, ignore.case=TRUE)])
-od_match$NAME_A1[od_match$description == "CHINA, SHANGHAI"] = "SHANGHAI SHI"
-od_match$NAME_A1[od_match$description == "CHINA, BEIJING"] = "BEIJING SHI"
-od_match$NAME_A1[od_match$description == "CHINA, CHONGQING"] = "CHONGQING SHI"
+od_match$NAME_A1[od_match$description == "CHINA, SHANGHAI"] <- "SHANGHAI SHI"
+od_match$NAME_A1[od_match$description == "CHINA, BEIJING"] <- "BEIJING SHI"
+od_match$NAME_A1[od_match$description == "CHINA, CHONGQING"] <- "CHONGQING SHI"
 
-od_match$NAME_A1[od_match$description == "CHINA, ANHUI"] = "ANHUI SHENG"
-od_match$NAME_A1[od_match$description == "CHINA, FUJIAN"] = "FUJIAN SHENG"
-od_match$NAME_A1[od_match$description == "CHINA, GUANGDONG"] = "GUANGDONG SHENG"
-od_match$NAME_A1[od_match$description == "CHINA, HAINAN"] = "HAINAN SHENG"
-od_match$NAME_A1[od_match$description == "CHINA, HUNAN"] = "HUNAN SHENG"
-od_match$NAME_A1[od_match$description == "CHINA, HENAN"] = "HENEN SHENG"
-od_match$NAME_A1[od_match$description == "CHINA, HUBEI"] = "HUBEI SHENG"
-od_match$NAME_A1[od_match$description == "CHINA, JIANGSU"] = "JIANGSU SHENG"
-od_match$NAME_A1[od_match$description == "CHINA, JIANGXI"] = "JIANGXI SHENG"
-od_match$NAME_A1[od_match$description == "CHINA, SICHUAN"] = "SICHUAN SHENG"
-od_match$NAME_A1[od_match$description == "CHINA, SHANDONG"] = "SHANDONG SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, ANHUI"] <- "ANHUI SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, FUJIAN"] <- "FUJIAN SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, GUANGDONG"] <- "GUANGDONG SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, HAINAN"] <- "HAINAN SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, HUNAN"] <- "HUNAN SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, HENAN"] <- "HENEN SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, HUBEI"] <- "HUBEI SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, JIANGSU"] <- "JIANGSU SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, JIANGXI"] <- "JIANGXI SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, SICHUAN"] <- "SICHUAN SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, SHANDONG"] <- "SHANDONG SHENG"
 
-od_match$NAME_A1[od_match$description == "CHINA, YUNNAN"] = "YUNNAN SHENG"
-od_match$NAME_A1[od_match$description == "CHINA, ZHEJIANG"] = "ZHEJIANG SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, YUNNAN"] <- "YUNNAN SHENG"
+od_match$NAME_A1[od_match$description == "CHINA, ZHEJIANG"] <- "ZHEJIANG SHENG"
 
 od_match$NAME_A1[
   od_match$description %in% c("CHINA, GUNAGXI", "CHINA, GUANGXI")
-] = "GUANGXI ZHUANGZU ZIZHIQU"
+] <- "GUANGXI ZHUANGZU ZIZHIQU"
 
 
 # Colombia
@@ -460,268 +509,269 @@ col_adm2 <- GAUL_all[GAUL_all$NAME_A0 == "COL" & !is.na(GAUL_all$NAME_A2), ]
 
 od_match$NAME_A1[
   od_match$NAME_A1 == "NORTE SANTANDER" & od_match$NAME_A0 == "COL"
-] = "NORTE DE SANTANDER"
+] <- "NORTE DE SANTANDER"
 od_match$NAME_A1[
   od_match$NAME_A1 == "VALLE" & od_match$NAME_A0 == "COL"
-] = "VALLE DEL CAUCA"
+] <- "VALLE DEL CAUCA"
 od_match$NAME_A1[
   od_match$NAME_A1 == "SAN ANDRES" & od_match$NAME_A0 == "COL"
-] = "SAN ANDRES Y PROVIDENCIA"
+] <- "SAN ANDRES Y PROVIDENCIA"
 od_match$NAME_A2[
   od_match$description == "COLOMBIA, SAN ANDRES, SAN ANDRES"
-] = "SAN ANDRES Y PROVIDENCIA"
+] <- "SAN ANDRES Y PROVIDENCIA"
 
 od_match$NAME_A2[
   od_match$description == "COLOMBIA, ATLANTICO, BARRANQUILLA"
-] = "BARRANQUILLA  (DIST.PORT."
+] <- "BARRANQUILLA  (DIST.PORT."
 od_match$NAME_A2[
   od_match$description == "COLOMBIA, MAGDALENA, SANTA MARTA (DIST. ESP)"
-] = "SANTA MARTA (DIST. ESP.)" # !!!!!!!
+] <- "SANTA MARTA (DIST. ESP.)" # !!!!!!!
 
 
 
-colombia_admin <- read.csv(paste0(dropbox_path,
+colombia_admin <- read.csv(paste0(
+  dropbox_path,
   "/04_Reference_data/Colombia_adm2_GAUL_lookup.csv"
 )) %>%
   filter(!GAUL_admin2 == "")
 
 
 for (i in 1:nrow(colombia_admin)) {
-  ind = (od_match$NAME_A0 == "COL") &
+  ind <- (od_match$NAME_A0 == "COL") &
     (od_match$NAME_A1 == colombia_admin$OD_admin1[i]) &
     (od_match$NAME_A2 == colombia_admin$OD_admin2[i])
   if (any(ind, na.rm = T)) {
-    od_match$NAME_A2[ind] = colombia_admin$GAUL_admin2[i]
+    od_match$NAME_A2[ind] <- colombia_admin$GAUL_admin2[i]
   }
 }
 
 # Costa Rica
 od_match$NAME_A2[
   od_match$description == "COSTA RICA, SAN JOSE, CORONADO"
-] = "VASQUEZ DE CORONADO"
+] <- "VASQUEZ DE CORONADO"
 
 
 # Dominican republic
 od_match$NAME_A1[
   od_match$description == "DOMINICAN REPUBLIC, HERMANAS MIRABAL"
-] = "SALCEDO"
+] <- "SALCEDO"
 
 
 # Ecuador
-od_match$NAME_A1[od_match$description == "ECUADOR, SANTA ELENA"] = "GUAYAS"
+od_match$NAME_A1[od_match$description == "ECUADOR, SANTA ELENA"] <- "GUAYAS"
 od_match$NAME_A1[
   od_match$description == "ECUADOR, SANTO DOMINGO DE LOS TSACHILAS"
-] = "PICHINCHA"
+] <- "PICHINCHA"
 
 
 # Guatemala
-od_match$NAME_A1[od_match$description == "GUATEMALA, EL QUICHE"] = "QUICHE"
+od_match$NAME_A1[od_match$description == "GUATEMALA, EL QUICHE"] <- "QUICHE"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, GUATEMALA CENTRAL"
-] = "GUATEMALA"
+] <- "GUATEMALA"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, GUATEMALA NOR OCCIDENTE"
-] = "GUATEMALA"
+] <- "GUATEMALA"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, GUATEMALA NOROCCIDENTE"
-] = "GUATEMALA"
+] <- "GUATEMALA"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, GUATEMALA NORORIENTE"
-] = "GUATEMALA"
+] <- "GUATEMALA"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, GUATEMALA NOR ORIENTE"
-] = "GUATEMALA"
+] <- "GUATEMALA"
 
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, GUATEMALA SUR"
-] = "GUATEMALA"
-od_match$NAME_A1[od_match$description == "GUATEMALA, IXCAN"] = "QUICHE"
-od_match$NAME_A1[od_match$description == "GUATEMALA, IXIL"] = "QUICHE"
-od_match$NAME_A1[od_match$description == "GUATEMALA, PETEN NORTE"] = "PETEN"
+] <- "GUATEMALA"
+od_match$NAME_A1[od_match$description == "GUATEMALA, IXCAN"] <- "QUICHE"
+od_match$NAME_A1[od_match$description == "GUATEMALA, IXIL"] <- "QUICHE"
+od_match$NAME_A1[od_match$description == "GUATEMALA, PETEN NORTE"] <- "PETEN"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, PETEN SUR OCCIDENTAL"
-] = "PETEN"
+] <- "PETEN"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, PETEN SUR ORIENTAL"
-] = "PETEN"
+] <- "PETEN"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, PETEN SUROCCIDENTAL"
-] = "PETEN"
+] <- "PETEN"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, PETEN SURORIENTAL"
-] = "PETEN"
+] <- "PETEN"
 
 
 # India
 od_match$NAME_A1[
   od_match$description == "INDIA, J & K"
-] = "ADMINISTRATIVE UNIT NOT AVAILABLE" # !!!!- will match multiple GAUL codes
-od_match$NAME_A1[od_match$description == "INDIA, PONDICHERRY"] = "PUDUCHERRY"
-od_match$NAME_A1[od_match$description == "INDIA, TELANGANA"] = "ANDHRA PRADESH"
+] <- "ADMINISTRATIVE UNIT NOT AVAILABLE" # !!!!- will match multiple GAUL codes
+od_match$NAME_A1[od_match$description == "INDIA, PONDICHERRY"] <- "PUDUCHERRY"
+od_match$NAME_A1[od_match$description == "INDIA, TELANGANA"] <- "ANDHRA PRADESH"
 od_match$NAME_A1[
   od_match$description == "INDIA, D&N HAVELI"
-] = "DADRA AND NAGAR HAVELI"
+] <- "DADRA AND NAGAR HAVELI"
 od_match$NAME_A1[
   od_match$description == "INDIA, D & N HAVELI"
-] = "DADRA AND NAGAR HAVELI"
+] <- "DADRA AND NAGAR HAVELI"
 od_match$NAME_A1[
   od_match$description == "INDIA, A&N ISLAND"
-] = "ANDAMAN AND NICOBAR"
+] <- "ANDAMAN AND NICOBAR"
 od_match$NAME_A1[
   od_match$description == "INDIA, A & N ISLAND"
-] = "ANDAMAN AND NICOBAR"
-od_match$NAME_A1[od_match$description == "INDIA, ODISHA"] = "ORISSA"
-od_match$NAME_A1[od_match$description == "INDIA, DAMAN & DIU"] = "DAMAN AND DIU"
+] <- "ANDAMAN AND NICOBAR"
+od_match$NAME_A1[od_match$description == "INDIA, ODISHA"] <- "ORISSA"
+od_match$NAME_A1[od_match$description == "INDIA, DAMAN & DIU"] <- "DAMAN AND DIU"
 
 # Indonesia
-od_match$NAME_A1[od_match$description == "INDONESIA, ACEH"] = "NANGGROE ACEH DARUSALAM"
-od_match$NAME_A1[od_match$description %in% c("INDONESIA, DAERAH ISTIMEWA YOGYAKARTA", "INDONESIA, D.I YOGYA")] = "DI YOGYAKARTA"
-od_match$NAME_A1[od_match$description == "INDONESIA, KALIMANTAN UTARA"] = "KALIMANTAN TIMUR"
-od_match$NAME_A1[od_match$description == "INDONESIA, NANGROE ACEH DARUSSALAM"] = "NANGGROE ACEH DARUSALAM" # !!!!
-od_match$NAME_A1[od_match$description %in% c("INDONESIA, BABEL", "INDONESIA, KEPULAUAN BANGKA BELITUNG")] = "BANGKA BELITUNG"
-od_match$NAME_A1[od_match$description %in% c("INDONESIA, PAPUA BARAT DAYA", "INDONESIA, PAPUA SELATAN")] = "PAPUA BARAT"
-od_match$NAME_A1[od_match$description %in% c("INDONESIA, PAPUA TENGAH", "INDONESIA, PAPUA PEGUNUNGAN")] = "PAPUA"
+od_match$NAME_A1[od_match$description == "INDONESIA, ACEH"] <- "NANGGROE ACEH DARUSALAM"
+od_match$NAME_A1[od_match$description %in% c("INDONESIA, DAERAH ISTIMEWA YOGYAKARTA", "INDONESIA, D.I YOGYA")] <- "DI YOGYAKARTA"
+od_match$NAME_A1[od_match$description == "INDONESIA, KALIMANTAN UTARA"] <- "KALIMANTAN TIMUR"
+od_match$NAME_A1[od_match$description == "INDONESIA, NANGROE ACEH DARUSSALAM"] <- "NANGGROE ACEH DARUSALAM" # !!!!
+od_match$NAME_A1[od_match$description %in% c("INDONESIA, BABEL", "INDONESIA, KEPULAUAN BANGKA BELITUNG")] <- "BANGKA BELITUNG"
+od_match$NAME_A1[od_match$description %in% c("INDONESIA, PAPUA BARAT DAYA", "INDONESIA, PAPUA SELATAN")] <- "PAPUA BARAT"
+od_match$NAME_A1[od_match$description %in% c("INDONESIA, PAPUA TENGAH", "INDONESIA, PAPUA PEGUNUNGAN")] <- "PAPUA"
 
 
 # Lao
 od_match$NAME_A1[
   od_match$description ==
     "LAO PEOPLE'S DEMOCRATIC REPUBLIC, VIENTIANE CAPITAL [PREFECTURE]"
-] = "VIENTIANE CAPITAL"
+] <- "VIENTIANE CAPITAL"
 od_match$NAME_A1[
   od_match$description == "LAO PEOPLE'S DEMOCRATIC REPUBLIC, XAISOMBOUN"
-] = "VIENTIANE"
+] <- "VIENTIANE"
 
 # JAPAN
-od_match$NAME_A1[od_match$description == "JAPAN, KOCHI"] = "KOOTI"
-od_match$NAME_A1[od_match$description == "JAPAN, YAMAGUCHI"] = "YAMAGUTI"
-od_match$NAME_A1[od_match$description == "JAPAN, TOKYO"] = "TOOKYOO"
+od_match$NAME_A1[od_match$description == "JAPAN, KOCHI"] <- "KOOTI"
+od_match$NAME_A1[od_match$description == "JAPAN, YAMAGUCHI"] <- "YAMAGUTI"
+od_match$NAME_A1[od_match$description == "JAPAN, TOKYO"] <- "TOOKYOO"
 
-od_match$NAME_A1[od_match$description == "JAPAN, AICHI"] = "AITI"
-od_match$NAME_A1[od_match$description == "JAPAN, CHIBA"] = "TIBA"
-od_match$NAME_A1[od_match$description == "JAPAN, TOCHIGI"] = "TOTIGI"
-od_match$NAME_A1[od_match$description == "JAPAN, FUKUSHIMA"] = "HUKUSIMA"
+od_match$NAME_A1[od_match$description == "JAPAN, AICHI"] <- "AITI"
+od_match$NAME_A1[od_match$description == "JAPAN, CHIBA"] <- "TIBA"
+od_match$NAME_A1[od_match$description == "JAPAN, TOCHIGI"] <- "TOTIGI"
+od_match$NAME_A1[od_match$description == "JAPAN, FUKUSHIMA"] <- "HUKUSIMA"
 
 # Malaysia
 od_match$NAME_A1[
   od_match$description == "MALAYSIA, W.P KUALA LUMPUR"
-] = "KUALA LUMPUR"
+] <- "KUALA LUMPUR"
 od_match$NAME_A1[
   od_match$description == "MALAYSIA, W.P. KUALA LUMPUR"
-] = "KUALA LUMPUR"
-od_match$NAME_A1[od_match$description == "MALAYSIA, W.P. LABUAN"] = "LABUAN"
-od_match$NAME_A1[od_match$description == "MALAYSIA, WP LABUAN"] = "LABUAN"
-od_match$NAME_A1[od_match$description == "MALAYSIA, SAN=BAH"] = "SABAH"
+] <- "KUALA LUMPUR"
+od_match$NAME_A1[od_match$description == "MALAYSIA, W.P. LABUAN"] <- "LABUAN"
+od_match$NAME_A1[od_match$description == "MALAYSIA, WP LABUAN"] <- "LABUAN"
+od_match$NAME_A1[od_match$description == "MALAYSIA, SAN=BAH"] <- "SABAH"
 
 
 # Mexico
-od_match$NAME_A1[od_match$description == "MEXICO, COAHUILA"] = "COAHUILA DE ZARAGOZA"
-od_match$NAME_A1[od_match$description == "MEXICO, MICHOACAN"] = "MICHOACAN DE OCAMPO"
-od_match$NAME_A1[od_match$description == "MEXICO, VERACRUZ"] = "VERACRUZ DE IGNACIO DE LA LLAVE"
+od_match$NAME_A1[od_match$description == "MEXICO, COAHUILA"] <- "COAHUILA DE ZARAGOZA"
+od_match$NAME_A1[od_match$description == "MEXICO, MICHOACAN"] <- "MICHOACAN DE OCAMPO"
+od_match$NAME_A1[od_match$description == "MEXICO, VERACRUZ"] <- "VERACRUZ DE IGNACIO DE LA LLAVE"
 
 
 # Myanmar
-od_match$NAME_A1[od_match$description %in% c("MYANMAR, BAGO (E)", "MYANMAR, BAGO (EAST)")] = "BAGO EAST DIVISION"
-od_match$NAME_A1[od_match$description %in% c("MYANMAR, BAGO (W" ,"MYANMAR, BAGO (WEST)")] = "BAGO WEST DIVISION"
-od_match$NAME_A1[od_match$description == "MYANMAR, CHIN"] = "CHIN STATE"
-od_match$NAME_A1[od_match$description == "MYANMAR, KACHIN"] = "KACHIN STATE"
-od_match$NAME_A1[od_match$description == "MYANMAR, KAYAH"] = "KAYAH STATE"
-od_match$NAME_A1[od_match$description == "MYANMAR, KAYIN"] = "KAYIN STATE"
-od_match$NAME_A1[od_match$description == "MYANMAR, MAGWAY"] = "MAGWAY DIVISION"
-od_match$NAME_A1[od_match$description == "MYANMAR, MANDALAY"] = "MANDALAY DIVISION"
-od_match$NAME_A1[od_match$description %in% c("MYANMAR, MONGAR","MYANMAR, MON") ] = "MON STATE"
-od_match$NAME_A1[od_match$description == "MYANMAR, RAKHINE"] = "RAKHINE STATE"
-od_match$NAME_A1[od_match$description == "MYANMAR, SAGAING"] = "SAGAING DIVISION"
+od_match$NAME_A1[od_match$description %in% c("MYANMAR, BAGO (E)", "MYANMAR, BAGO (EAST)")] <- "BAGO EAST DIVISION"
+od_match$NAME_A1[od_match$description %in% c("MYANMAR, BAGO (W", "MYANMAR, BAGO (WEST)")] <- "BAGO WEST DIVISION"
+od_match$NAME_A1[od_match$description == "MYANMAR, CHIN"] <- "CHIN STATE"
+od_match$NAME_A1[od_match$description == "MYANMAR, KACHIN"] <- "KACHIN STATE"
+od_match$NAME_A1[od_match$description == "MYANMAR, KAYAH"] <- "KAYAH STATE"
+od_match$NAME_A1[od_match$description == "MYANMAR, KAYIN"] <- "KAYIN STATE"
+od_match$NAME_A1[od_match$description == "MYANMAR, MAGWAY"] <- "MAGWAY DIVISION"
+od_match$NAME_A1[od_match$description == "MYANMAR, MANDALAY"] <- "MANDALAY DIVISION"
+od_match$NAME_A1[od_match$description %in% c("MYANMAR, MONGAR", "MYANMAR, MON")] <- "MON STATE"
+od_match$NAME_A1[od_match$description == "MYANMAR, RAKHINE"] <- "RAKHINE STATE"
+od_match$NAME_A1[od_match$description == "MYANMAR, SAGAING"] <- "SAGAING DIVISION"
 od_match$NAME_A1[
-  od_match$description %in% c("MYANMAR, SHAN (N)", "MYANMAR, SHAN (NORTH)")] = "SHAN STATE (NORTH)"
-od_match$NAME_A1[od_match$description %in% c("MYANMAR, SHAN (S)", "MYANMAR, SHAN (SOUTH)")] = "SHAN STATE (SOUTH)"
-od_match$NAME_A1[od_match$description %in% c("MYANMAR, SHAN (EAST)")] = "SHAN STATE (EAST)"
+  od_match$description %in% c("MYANMAR, SHAN (N)", "MYANMAR, SHAN (NORTH)")
+] <- "SHAN STATE (NORTH)"
+od_match$NAME_A1[od_match$description %in% c("MYANMAR, SHAN (S)", "MYANMAR, SHAN (SOUTH)")] <- "SHAN STATE (SOUTH)"
+od_match$NAME_A1[od_match$description %in% c("MYANMAR, SHAN (EAST)")] <- "SHAN STATE (EAST)"
 
-od_match$NAME_A1[od_match$description == "MYANMAR, TANINTHARYI"] = "TANINTHARYI DIVISION"
-od_match$NAME_A1[od_match$description == "MYANMAR, YANGON"] = "YANGON DIVISION"
-od_match$NAME_A1[od_match$description %in% c("MYANMAR, AYAYARWADDY", "MYANMAR, AYEYARWADY")] = "AYEYARWADY DIVISION"
+od_match$NAME_A1[od_match$description == "MYANMAR, TANINTHARYI"] <- "TANINTHARYI DIVISION"
+od_match$NAME_A1[od_match$description == "MYANMAR, YANGON"] <- "YANGON DIVISION"
+od_match$NAME_A1[od_match$description %in% c("MYANMAR, AYAYARWADDY", "MYANMAR, AYEYARWADY")] <- "AYEYARWADY DIVISION"
 
-od_match$NAME_A1[od_match$description %in% c("MYANMAR, NAYPYITAW", "MYANMAR, NAY PYI TAW")] = "MANDALAY DIVISION"
+od_match$NAME_A1[od_match$description %in% c("MYANMAR, NAYPYITAW", "MYANMAR, NAY PYI TAW")] <- "MANDALAY DIVISION"
 
 
 # Nepal
 # load in lookup table
-# nepal_admin <- read.csv("/Users/eideobra/Dropbox/11_DENData/04_Reference_data/Nepal_district_GAUL_lookup.csv")
 nepal_admin <- read.csv(paste0(dropbox_path, "04_Reference_data/Nepal_district_GAUL_lookup.csv"))
-nepal_admin$OD_admin2 = toupper(nepal_admin$OD_admin2)
-nepal_admin$GAUL_admin2 = toupper(nepal_admin$GAUL_admin2)
+nepal_admin$OD_admin2 <- toupper(nepal_admin$OD_admin2)
+nepal_admin$GAUL_admin2 <- toupper(nepal_admin$GAUL_admin2)
 
 # some manual edits
-nepal_admin$OD_admin2[nepal_admin$OD_admin2 == "MAKWANPUR"] = "MAKAWANPUR"
-nepal_admin$OD_admin2[nepal_admin$OD_admin2 == "NAWALPARASI(W)"] = "NAWALPARASI"
-nepal_admin$OD_admin2[nepal_admin$OD_admin2 == "KAPILBASTU"] = "KAPILVASTU"
-nepal_admin$OD_admin2[nepal_admin$OD_admin2 == "KAVREPALANCHOK"] = "KAVRE"
-nepal_admin$OD_admin2[nepal_admin$OD_admin2 == "RUKUM(W)"] = "RUKUM"
+nepal_admin$OD_admin2[nepal_admin$OD_admin2 == "MAKWANPUR"] <- "MAKAWANPUR"
+nepal_admin$OD_admin2[nepal_admin$OD_admin2 == "NAWALPARASI(W)"] <- "NAWALPARASI"
+nepal_admin$OD_admin2[nepal_admin$OD_admin2 == "KAPILBASTU"] <- "KAPILVASTU"
+nepal_admin$OD_admin2[nepal_admin$OD_admin2 == "KAVREPALANCHOK"] <- "KAVRE"
+nepal_admin$OD_admin2[nepal_admin$OD_admin2 == "RUKUM(W)"] <- "RUKUM"
 
 
 for (i in 1:nrow(nepal_admin)) {
-  ind = (od_match$NAME_A0 == "NPL") &
+  ind <- (od_match$NAME_A0 == "NPL") &
     (od_match$NAME_A2 == nepal_admin$OD_admin2[i])
   if (any(ind, na.rm = T)) {
-    od_match$NAME_A2[ind] = nepal_admin$GAUL_admin2[i]
+    od_match$NAME_A2[ind] <- nepal_admin$GAUL_admin2[i]
   }
 }
 
-od_match$NAME_A2[grepl("NEPAL, KATHMANDU", od_match$description)] = "BAGMATI"
-od_match$NAME_A2[grepl("NEPAL, LALITPUR", od_match$description)] = "BAGMATI"
-od_match$NAME_A1[grepl("NEPAL, PROVINCE 1", od_match$description)] = "EASTERN"
-od_match$NAME_A2[grepl("NEPAL, PROVINCE 1", od_match$description)] = "KOSHI"
-od_match$NAME_A1[grepl("NEPAL, BAGMATI", od_match$description)] = "CENTRAL"
-od_match$NAME_A2[grepl("NEPAL, BAGMATI", od_match$description)] = "BAGMATI"
-od_match$NAME_A1[grepl("NEPAL, KARNALI", od_match$description)] = "MID WESTERN"
-od_match$NAME_A2[grepl("NEPAL, KARNALI", od_match$description)] = "KARNALI"
-od_match$NAME_A1[grepl("NEPAL, GANDAKI", od_match$description)] = "WESTERN"
-od_match$NAME_A2[grepl("NEPAL, GANDAKI", od_match$description)] = "GANDAKI"
-od_match$NAME_A1[grepl("NEPAL, LUMBINI", od_match$description)] = "WESTERN"
-od_match$NAME_A2[grepl("NEPAL, LUMBINI", od_match$description)] = "LUMBINI"
-od_match$NAME_A1[grepl("NEPAL, MADHESH", od_match$description)] = "CENTRAL" # capital city of Madhesh Province
-od_match$NAME_A2[grepl("NEPAL, MADHESH", od_match$description)] = "JANAKPUR" # capital city of Madhesh Province
-od_match$NAME_A1[grepl("NEPAL, SUDURPASCHIM|NEPAL, SUDUR PASHCHIM PROVINCE", od_match$description)] = "FAR WESTERN"
-od_match$NAME_A2[grepl("NEPAL, SUDURPASCHIM|NEPAL, SUDUR PASHCHIM PROVINCE", od_match$description)] = "MAHAKALI"
-od_match$NAME_A1[grepl("NEPAL, KOSHI", od_match$description)] = "EASTERN"
-od_match$NAME_A2[grepl("NEPAL, KOSHI", od_match$description)] = "KOSHI"
+od_match$NAME_A2[grepl("NEPAL, KATHMANDU", od_match$description)] <- "BAGMATI"
+od_match$NAME_A2[grepl("NEPAL, LALITPUR", od_match$description)] <- "BAGMATI"
+od_match$NAME_A1[grepl("NEPAL, PROVINCE 1", od_match$description)] <- "EASTERN"
+od_match$NAME_A2[grepl("NEPAL, PROVINCE 1", od_match$description)] <- "KOSHI"
+od_match$NAME_A1[grepl("NEPAL, BAGMATI", od_match$description)] <- "CENTRAL"
+od_match$NAME_A2[grepl("NEPAL, BAGMATI", od_match$description)] <- "BAGMATI"
+od_match$NAME_A1[grepl("NEPAL, KARNALI", od_match$description)] <- "MID WESTERN"
+od_match$NAME_A2[grepl("NEPAL, KARNALI", od_match$description)] <- "KARNALI"
+od_match$NAME_A1[grepl("NEPAL, GANDAKI", od_match$description)] <- "WESTERN"
+od_match$NAME_A2[grepl("NEPAL, GANDAKI", od_match$description)] <- "GANDAKI"
+od_match$NAME_A1[grepl("NEPAL, LUMBINI", od_match$description)] <- "WESTERN"
+od_match$NAME_A2[grepl("NEPAL, LUMBINI", od_match$description)] <- "LUMBINI"
+od_match$NAME_A1[grepl("NEPAL, MADHESH", od_match$description)] <- "CENTRAL" # capital city of Madhesh Province
+od_match$NAME_A2[grepl("NEPAL, MADHESH", od_match$description)] <- "JANAKPUR" # capital city of Madhesh Province
+od_match$NAME_A1[grepl("NEPAL, SUDURPASCHIM|NEPAL, SUDUR PASHCHIM PROVINCE", od_match$description)] <- "FAR WESTERN"
+od_match$NAME_A2[grepl("NEPAL, SUDURPASCHIM|NEPAL, SUDUR PASHCHIM PROVINCE", od_match$description)] <- "MAHAKALI"
+od_match$NAME_A1[grepl("NEPAL, KOSHI", od_match$description)] <- "EASTERN"
+od_match$NAME_A2[grepl("NEPAL, KOSHI", od_match$description)] <- "KOSHI"
 
 
 
 # Nicaragua
-od_match$NAME_A1[od_match$NAME_A1 == "BILWI"] = "ATLANTICO NORTE"
+od_match$NAME_A1[od_match$NAME_A1 == "BILWI"] <- "ATLANTICO NORTE"
 od_match$NAME_A1[
   od_match$NAME_A1 == "REGION AUTONOMA DEL ATLANTICO SUR"
-] = "ATLANTICO SUR"
-od_match$NAME_A1[od_match$NAME_A1 == "ZELAYA CENTRAL"] = "ATLANTICO SUR"
+] <- "ATLANTICO SUR"
+od_match$NAME_A1[od_match$NAME_A1 == "ZELAYA CENTRAL"] <- "ATLANTICO SUR"
 
 # Panama
-od_match$NAME_A1[od_match$NAME_A1 == "KUNA YALA"] = "COMARCA DE SAN BLAS"
-od_match$NAME_A1[od_match$NAME_A1 == "NGOBE BUGLE"] = "BOCAS DEL TORO"
+od_match$NAME_A1[od_match$NAME_A1 == "KUNA YALA"] <- "COMARCA DE SAN BLAS"
+od_match$NAME_A1[od_match$NAME_A1 == "NGOBE BUGLE"] <- "BOCAS DEL TORO"
 
 
 # Pakistan
-od_match$NAME_A1[od_match$description == "PAKISTAN, KPK"] = "NWFP"
-od_match$NAME_A1[od_match$description == "PAKISTAN, TDS-KP"] = "FATA" #Tribal Districts KP
-od_match$NAME_A1[od_match$description == "PAKISTAN, BALUCH"] = "BALOCHISTAN"
-od_match$NAME_A1[od_match$description == "PAKISTAN, ICT"] = "ISLAMABAD"
-od_match$NAME_A1[od_match$description == "PAKISTAN, KHYBER PAKTHUNK"] = "NWFP"
-od_match$NAME_A1[od_match$description == "PAKISTAN, AJK"] = "NWFP"
+od_match$NAME_A1[od_match$description == "PAKISTAN, KPK"] <- "NWFP"
+od_match$NAME_A1[od_match$description == "PAKISTAN, TDS-KP"] <- "FATA" # Tribal Districts KP
+od_match$NAME_A1[od_match$description == "PAKISTAN, BALUCH"] <- "BALOCHISTAN"
+od_match$NAME_A1[od_match$description == "PAKISTAN, ICT"] <- "ISLAMABAD"
+od_match$NAME_A1[od_match$description == "PAKISTAN, KHYBER PAKTHUNK"] <- "NWFP"
+od_match$NAME_A1[od_match$description == "PAKISTAN, AJK"] <- "NWFP"
 
-od_match$NAME_A2[od_match$description == "PAKISTAN, SINDH, KARACHI MALIR"] = "MALIR"
-od_match$NAME_A2[od_match$description == "PAKISTAN, SINDH, KARWEST"] = "KARACHI WEST"
-od_match$NAME_A2[od_match$description == "PAKISTAN, SINDH, QAMBER"] = "LARKANA"
-od_match$NAME_A2[od_match$description == "PAKISTAN, SINDH, KAMBER"] = "LARKANA"
-od_match$NAME_A2[od_match$description == "PAKISTAN, BALOCHISTAN, NASEERABAD"] = "NASIRABAD"
+od_match$NAME_A2[od_match$description == "PAKISTAN, SINDH, KARACHI MALIR"] <- "MALIR"
+od_match$NAME_A2[od_match$description == "PAKISTAN, SINDH, KARWEST"] <- "KARACHI WEST"
+od_match$NAME_A2[od_match$description == "PAKISTAN, SINDH, QAMBER"] <- "LARKANA"
+od_match$NAME_A2[od_match$description == "PAKISTAN, SINDH, KAMBER"] <- "LARKANA"
+od_match$NAME_A2[od_match$description == "PAKISTAN, BALOCHISTAN, NASEERABAD"] <- "NASIRABAD"
 
-od_match$NAME_A1[grepl("PAKISTAN, KHYBER PAKHTUNKHWA,",od_match$description)] <- "NWFP"
-od_match$NAME_A2[od_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, LAKKIMARWAT"] = "LAKKI MARAWAT"
-od_match$NAME_A1[od_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, LAKKIMARWAT"] = "NWFP"
+od_match$NAME_A1[grepl("PAKISTAN, KHYBER PAKHTUNKHWA,", od_match$description)] <- "NWFP"
+od_match$NAME_A2[od_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, LAKKIMARWAT"] <- "LAKKI MARAWAT"
+od_match$NAME_A1[od_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, LAKKIMARWAT"] <- "NWFP"
 
-od_match$NAME_A2[od_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, KHYBER"] = "KHYBER AGENCY"
-od_match$NAME_A1[od_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, KHYBER"] = "FATA"
+od_match$NAME_A2[od_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, KHYBER"] <- "KHYBER AGENCY"
+od_match$NAME_A1[od_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, KHYBER"] <- "FATA"
 
-od_match$NAME_A2[od_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, MALAKAND"] = "MALAKAND PA"
+od_match$NAME_A2[od_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, MALAKAND"] <- "MALAKAND PA"
 
 
 # Palau
@@ -730,28 +780,28 @@ od_match$NAME_A1[
 ] <- "ADMINISTRATIVE UNIT NOT AVAILABLE"
 
 # Peru
-od_match$NAME_A1[od_match$description == "PERU, CHANKA"] = "LIMA"
-od_match$NAME_A1[od_match$description == "PERU, CHOTA"] = "CAJAMARACA"
-od_match$NAME_A1[od_match$description == "PERU, CUTERVO"] = "CAJAMARCA"
-od_match$NAME_A1[od_match$description == "PERU, JAEN"] = "CAJAMARCA"
-od_match$NAME_A1[od_match$description == "PERU, LIMA CIUDAD"] = "LIMA"
-od_match$NAME_A1[od_match$description == "PERU, LIMA ESTE"] = "LIMA"
-od_match$NAME_A1[od_match$description == "PERU, LIMA NORTE"] = "LIMA"
-od_match$NAME_A1[od_match$description == "PERU, LIMA SUR"] = "LIMA"
-od_match$NAME_A1[od_match$description == "PERU, PIURA I"] = "PIURA"
-od_match$NAME_A1[od_match$description == "PERU, PIURA II"] = "PIURA"
-od_match$NAME_A2[od_match$description == "PERU, AMAZONAS, RODRIGUEZ DE MENDOZA"] = "RODRIGUEZ DE MENDO"
-od_match$NAME_A2[od_match$description == "PERU, LORETO, DATEM DEL MARANON"] = "ALTO AMAZONAS"
-od_match$NAME_A2[od_match$description == "PERU, LORETO, MARISCAL RAMON CASTILLA"] = "MARISCAL RAMON CASTI"
-od_match$NAME_A2[od_match$description == "PERU, LORETO, PUTUMAYO"] = "MAYNAS"
+od_match$NAME_A1[od_match$description == "PERU, CHANKA"] <- "LIMA"
+od_match$NAME_A1[od_match$description == "PERU, CHOTA"] <- "CAJAMARACA"
+od_match$NAME_A1[od_match$description == "PERU, CUTERVO"] <- "CAJAMARCA"
+od_match$NAME_A1[od_match$description == "PERU, JAEN"] <- "CAJAMARCA"
+od_match$NAME_A1[od_match$description == "PERU, LIMA CIUDAD"] <- "LIMA"
+od_match$NAME_A1[od_match$description == "PERU, LIMA ESTE"] <- "LIMA"
+od_match$NAME_A1[od_match$description == "PERU, LIMA NORTE"] <- "LIMA"
+od_match$NAME_A1[od_match$description == "PERU, LIMA SUR"] <- "LIMA"
+od_match$NAME_A1[od_match$description == "PERU, PIURA I"] <- "PIURA"
+od_match$NAME_A1[od_match$description == "PERU, PIURA II"] <- "PIURA"
+od_match$NAME_A2[od_match$description == "PERU, AMAZONAS, RODRIGUEZ DE MENDOZA"] <- "RODRIGUEZ DE MENDO"
+od_match$NAME_A2[od_match$description == "PERU, LORETO, DATEM DEL MARANON"] <- "ALTO AMAZONAS"
+od_match$NAME_A2[od_match$description == "PERU, LORETO, MARISCAL RAMON CASTILLA"] <- "MARISCAL RAMON CASTI"
+od_match$NAME_A2[od_match$description == "PERU, LORETO, PUTUMAYO"] <- "MAYNAS"
 
 
 
 # Philippines
 # remove "PROVINCE OF" in Admin2 name
-od_match$NAME_A2 = gsub("PROVINCE OF ", "", od_match$NAME_A2)
+od_match$NAME_A2 <- gsub("PROVINCE OF ", "", od_match$NAME_A2)
 # reverse admin1 region number and name
-P_region_reverse = data.frame(
+P_region_reverse <- data.frame(
   num_first = c(
     "Region I (Ilocos region)",
     "Region II (Cagayan Valley)",
@@ -785,81 +835,81 @@ P_region_reverse = data.frame(
     "Caraga (Region XIII)"
   )
 )
-P_region_reverse$num_first = toupper(P_region_reverse$num_first)
-P_region_reverse$name_first = toupper(P_region_reverse$name_first)
+P_region_reverse$num_first <- toupper(P_region_reverse$num_first)
+P_region_reverse$name_first <- toupper(P_region_reverse$name_first)
 
 for (i in 1:nrow(P_region_reverse)) {
   if (P_region_reverse$name_first[i] %in% od_match$NAME_A1) {
     od_match$NAME_A1[
       od_match$NAME_A1 == P_region_reverse$name_first[i]
-    ] = P_region_reverse$num_first[i]
+    ] <- P_region_reverse$num_first[i]
   }
 }
 
 od_match$NAME_A2[
   od_match$description == "PHILIPPINES, DAVAO (REGION XI), COMPOSTELA VALLEY"
-] = "COMPOSTELA"
+] <- "COMPOSTELA"
 od_match$NAME_A2[
   od_match$description ==
     "PHILIPPINES, SOCCSKSARGEN (REGION XII), PROVINCE OF COTABATO"
-] = "NORTH COTABATO"
+] <- "NORTH COTABATO"
 
 od_match$NAME_A1[
   od_match$description ==
     "PHILIPPINES, BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM)"
-] = "AUTONOMOUS REGION IN MUSLIM MINDANAO (ARMM)"
+] <- "AUTONOMOUS REGION IN MUSLIM MINDANAO (ARMM)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, A.R.M.M"
-] = "AUTONOMOUS REGION IN MUSLIM MINDANAO (ARMM)"
+] <- "AUTONOMOUS REGION IN MUSLIM MINDANAO (ARMM)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, C.A.R"
-] = "CORDILLERA ADMINISTRATIVE REGION (CAR)"
+] <- "CORDILLERA ADMINISTRATIVE REGION (CAR)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, NAT. CAP. REGION"
-] = "NATIONAL CAPITAL REGION (NCR)"
+] <- "NATIONAL CAPITAL REGION (NCR)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 1"
-] = "REGION I (ILOCOS REGION)"
+] <- "REGION I (ILOCOS REGION)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 2"
-] = "REGION II (CAGAYAN VALLEY)"
+] <- "REGION II (CAGAYAN VALLEY)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 3"
-] = "REGION III (CENTRAL LUZON)"
+] <- "REGION III (CENTRAL LUZON)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 4"
-] = "REGION IV-A (CALABARZON)"
+] <- "REGION IV-A (CALABARZON)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 5"
-] = "REGION V (BICOL REGION)"
+] <- "REGION V (BICOL REGION)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 6"
-] = "REGION VI (WESTERN VISAYAS)"
+] <- "REGION VI (WESTERN VISAYAS)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 7"
-] = "REGION VII (CENTRAL VISAYAS)"
+] <- "REGION VII (CENTRAL VISAYAS)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 8"
-] = "REGION VIII (EASTERN VISAYAS)"
+] <- "REGION VIII (EASTERN VISAYAS)"
 
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 9"
-] = "REGION IX (ZAMBOANGA PENINSULA)"
+] <- "REGION IX (ZAMBOANGA PENINSULA)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 10"
-] = "REGION X (NORTHERN MINDANAO)"
+] <- "REGION X (NORTHERN MINDANAO)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 11"
-] = "REGION XI (DAVAO REGION)"
+] <- "REGION XI (DAVAO REGION)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION 12"
-] = "REGION XII (SOCCSKSARGEN)"
+] <- "REGION XII (SOCCSKSARGEN)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, REGION CARAGA (CARAGA)"
-] = "REGION XIII (CARAGA)"
+] <- "REGION XIII (CARAGA)"
 od_match$NAME_A1[
   od_match$description == "PHILIPPINES, CARAGA"
-] = "REGION XIII (CARAGA)"
+] <- "REGION XIII (CARAGA)"
 
 
 # Saudi Arabia
@@ -867,13 +917,13 @@ od_match$NAME_A1[
 SAU_admin <- read.csv(paste0(dropbox_path, "04_Reference_data/SAU_adm1_RNE_lookup.csv"))
 
 for (i in 1:nrow(SAU_admin)) {
-  ind = (od_match$NAME_A0 == "SAU") & (od_match$NAME_A1 == SAU_admin$OD_adm2[i])
+  ind <- (od_match$NAME_A0 == "SAU") & (od_match$NAME_A1 == SAU_admin$OD_adm2[i])
   if (any(ind, na.rm = T)) {
-    od_match$NAME_A1[ind] = SAU_admin$GAUL_adm1[i]
+    od_match$NAME_A1[ind] <- SAU_admin$GAUL_adm1[i]
   }
 }
-od_match$NAME_A1[od_match$description == "SAUDI ARABIA, AL-BAHAH"] = "BAHA"
-od_match$NAME_A1[od_match$description == "SAUDI ARABIA, AL-BAHAH"] = "NORTHERN FRONTIER"
+od_match$NAME_A1[od_match$description == "SAUDI ARABIA, AL-BAHAH"] <- "BAHA"
+od_match$NAME_A1[od_match$description == "SAUDI ARABIA, AL-BAHAH"] <- "NORTHERN FRONTIER"
 
 od_match$NAME_A2[
   od_match$NAME_A0 == "SAU" & !is.na(od_match$NAME_A1)
@@ -883,58 +933,58 @@ od_match$NAME_A2[
 # Solomon islands
 od_match$NAME_A1[
   od_match$description == "SOLOMON ISLANDS, CENTRAL ISLANDS"
-] = "CENTRAL"
+] <- "CENTRAL"
 od_match$NAME_A1[
   od_match$description == "SOLOMON ISLANDS, MAKIRA"
-] = "MAKIRA AND ULAWA"
+] <- "MAKIRA AND ULAWA"
 
 # Taiwan
 od_match$NAME_A0[grepl(
   "TAIWAN",
   od_match$description,
   ignore.case = TRUE
-)] = "CHN"
+)] <- "CHN"
 od_match$NAME_A1[grepl(
   "TAIWAN",
   od_match$description,
   ignore.case = TRUE
-)] = "TAIWAN SHENG"
+)] <- "TAIWAN SHENG"
 
 # Thailand
-od_match$NAME_A2[od_match$description == "THAILAND, BUNGKAN"] = "BUNG KAN"
-od_match$NAME_A1[od_match$description == "THAILAND, BUNGKAN"] = "NONG KHAI"
+od_match$NAME_A2[od_match$description == "THAILAND, BUNGKAN"] <- "BUNG KAN"
+od_match$NAME_A1[od_match$description == "THAILAND, BUNGKAN"] <- "NONG KHAI"
 od_match$NAME_A1[
   od_match$description == "THAILAND, P.NAKHON S.AYUTTHAYA"
-] = "PHRA NAKHON SI AYUDHYA"
+] <- "PHRA NAKHON SI AYUDHYA"
 od_match$NAME_A1[
   od_match$description == "THAILAND, PRACHIN BURI"
-] = "PHACHINBURI"
+] <- "PHACHINBURI"
 od_match$NAME_A1[
   od_match$description == "THAILAND, PRACHUAP KHIRI KHAN"
-] = "PRACHUAP KHILIKHAN"
+] <- "PRACHUAP KHILIKHAN"
 
 # Vietnam
-od_match$NAME_A1[od_match$description == "VIET NAM, CAN THO CITY"] = "CAN THO"
-od_match$NAME_A1[od_match$description == "VIET NAM, DA NANG CITY"] = "DA NANG"
+od_match$NAME_A1[od_match$description == "VIET NAM, CAN THO CITY"] <- "CAN THO"
+od_match$NAME_A1[od_match$description == "VIET NAM, DA NANG CITY"] <- "DA NANG"
 od_match$NAME_A1[
   od_match$description == "VIET NAM, DIEN BIEN"
-] = "DIEN BIEN PHU"
-od_match$NAME_A1[od_match$description == "VIET NAM, HA NOI CITY"] = "HA NOI"
+] <- "DIEN BIEN PHU"
+od_match$NAME_A1[od_match$description == "VIET NAM, HA NOI CITY"] <- "HA NOI"
 od_match$NAME_A1[
   od_match$description == "VIET NAM, HAI PHONG CITY"
-] = "HAI PHONG"
+] <- "HAI PHONG"
 od_match$NAME_A1[
   od_match$description == "VIET NAM, HO CHI MINH CITY"
-] = "HO CHI MINH"
+] <- "HO CHI MINH"
 
 # national level
 od_match$NAME_A0[
   od_match$description == "BONAIRE, SAINT EUSTATIUS AND SABA"
-] = "ANT"
-od_match$NAME_A0[od_match$description == "SINT MAARTEN"] = "ANT"
-od_match$NAME_A0[od_match$description == "CURACAO"] = "ANT"
-od_match$NAME_A0[od_match$description == "SAINT BARTHELEMY"] = "GLP"
-od_match$NAME_A0[od_match$description == "SAINT MARTIN"] = "GLP"
+] <- "ANT"
+od_match$NAME_A0[od_match$description == "SINT MAARTEN"] <- "ANT"
+od_match$NAME_A0[od_match$description == "CURACAO"] <- "ANT"
+od_match$NAME_A0[od_match$description == "SAINT BARTHELEMY"] <- "GLP"
+od_match$NAME_A0[od_match$description == "SAINT MARTIN"] <- "GLP"
 
 
 GAUL_match <- hmatch_composite(
@@ -969,21 +1019,21 @@ twn_adm1_exc <- paste(
 GAUL_match$GAUL_CODE[
   grepl(twn_adm1_inc, GAUL_match$description, ignore.case = TRUE) &
     !grepl("NEW TAIPEI", GAUL_match$description, ignore.case = TRUE)
-] = 13276
+] <- 13276
 
 GAUL_match$GAUL_CODE[grepl(
   twn_adm1_exc,
   GAUL_match$description,
   ignore.case = TRUE
-)] = 13277
+)] <- 13277
 
 # China adm2
 china_admin_ext <- read.csv(paste0(dropbox_path, "04_Reference_data/China_adm2_GAUL_extract.csv"))
 
-china_admin_ext$ADM2_EN = toupper(china_admin_ext$ADM2_EN)
+china_admin_ext$ADM2_EN <- toupper(china_admin_ext$ADM2_EN)
 china_admin_ext$ADM2_EN[
   china_admin_ext$ADM2_EN == toupper("Xishuangbanna Dai Autonomous Prefecture")
-] = "JINGHONG"
+] <- "JINGHONG"
 
 GAUL_match$GAUL_CODE[
   GAUL_match$NAME_A1 %in% c("GUANGDONG", "ZHEJIANG", "YUNNAN")
@@ -995,23 +1045,24 @@ GAUL_match$GAUL_CODE[
 )]
 
 # Colombia adm2
-col_admin_ext <- read.csv(paste0(dropbox_path,
+col_admin_ext <- read.csv(paste0(
+  dropbox_path,
   "04_Reference_data/Colombia_adm2_GAUL_extract.csv"
 )) %>%
   rename(NAME_A1 = ADM1_EN, NAME_A2 = ADM2_EN) %>%
   mutate(NAME_A0 = "COL") %>%
   dplyr::select(NAME_A0, NAME_A1, NAME_A2, GAUL_CODE)
 
-col_admin_ext$NAME_A1 = stri_trans_general(
+col_admin_ext$NAME_A1 <- stri_trans_general(
   str = col_admin_ext$NAME_A1,
   id = "Latin-ASCII"
 )
-col_admin_ext$NAME_A2 = stri_trans_general(
+col_admin_ext$NAME_A2 <- stri_trans_general(
   str = col_admin_ext$NAME_A2,
   id = "Latin-ASCII"
 )
-col_admin_ext$NAME_A1 = toupper(col_admin_ext$NAME_A1)
-col_admin_ext$NAME_A2 = toupper(col_admin_ext$NAME_A2)
+col_admin_ext$NAME_A1 <- toupper(col_admin_ext$NAME_A1)
+col_admin_ext$NAME_A2 <- toupper(col_admin_ext$NAME_A2)
 
 col_admin_ext$description <- apply(
   col_admin_ext[, c("NAME_A0", "NAME_A1", "NAME_A2")],
@@ -1025,16 +1076,16 @@ od_col <- GAUL_match[
 ]
 od_col$NAME_A2 <- gsub(" )", "", gsub("\\([^)]+", "", od_col$NAME_A2))
 
-col_admin_ext$NAME_A2[col_admin_ext$NAME_A2 == "BOGOTA, D.C."] = "BOGOTA"
-col_admin_ext$NAME_A2[col_admin_ext$NAME_A2 == "VILLA RICA"] = "VILLARICA"
-col_admin_ext$NAME_A1[col_admin_ext$NAME_A1 == "LA GUAJIRA"] = "GUAJIRA"
+col_admin_ext$NAME_A2[col_admin_ext$NAME_A2 == "BOGOTA, D.C."] <- "BOGOTA"
+col_admin_ext$NAME_A2[col_admin_ext$NAME_A2 == "VILLA RICA"] <- "VILLARICA"
+col_admin_ext$NAME_A1[col_admin_ext$NAME_A1 == "LA GUAJIRA"] <- "GUAJIRA"
 col_admin_ext$NAME_A1[
   col_admin_ext$NAME_A1 ==
     "ARCHIPIELAGO DE SAN ANDRES, PROVIDENCIA Y SANTA CATALINA"
-] = "SAN ANDRES Y PROVIDENCIA"
-col_admin_ext$NAME_A1[col_admin_ext$NAME_A1 == "VALLE"] = "VALLE DEL CAUCA"
-col_admin_ext$NAME_A1[col_admin_ext$NAME_A1 == "BOGOTA, D.C."] = "BOGOTA"
-col_admin_ext$NAME_A2[col_admin_ext$NAME_A1 == "BOGOTA"] = "BOGOTA"
+] <- "SAN ANDRES Y PROVIDENCIA"
+col_admin_ext$NAME_A1[col_admin_ext$NAME_A1 == "VALLE"] <- "VALLE DEL CAUCA"
+col_admin_ext$NAME_A1[col_admin_ext$NAME_A1 == "BOGOTA, D.C."] <- "BOGOTA"
+col_admin_ext$NAME_A2[col_admin_ext$NAME_A1 == "BOGOTA"] <- "BOGOTA"
 
 
 GAUL_match_col <- hmatch_composite(
@@ -1056,27 +1107,27 @@ GAUL_match$GAUL_CODE[
 
 
 # for some reason just won't match
-GAUL_match$GAUL_CODE[GAUL_match$description == "COLOMBIA, MAGDALENA, SANTA MARTA (DIST. ESP)"] = 14028
-GAUL_match$GAUL_CODE[GAUL_match$description == "COLOMBIA, CHOCO, BELEN DE BAJIRA"] = 13803 # area with  territorial dispute
-GAUL_match$GAUL_CODE[GAUL_match$description == "COLOMBIA, VALLE, DARIEN"] = 14375
+GAUL_match$GAUL_CODE[GAUL_match$description == "COLOMBIA, MAGDALENA, SANTA MARTA (DIST. ESP)"] <- 14028
+GAUL_match$GAUL_CODE[GAUL_match$description == "COLOMBIA, CHOCO, BELEN DE BAJIRA"] <- 13803 # area with  territorial dispute
+GAUL_match$GAUL_CODE[GAUL_match$description == "COLOMBIA, VALLE, DARIEN"] <- 14375
 
-GAUL_match$GAUL_CODE[GAUL_match$description == "TONGA, HAAPAI"] = 2976
-GAUL_match$GAUL_CODE[GAUL_match$description == "TONGA, TONGATAPU"] = 2976
-GAUL_match$GAUL_CODE[GAUL_match$description == "TONGA, VAVA'U"] = 2976
+GAUL_match$GAUL_CODE[GAUL_match$description == "TONGA, HAAPAI"] <- 2976
+GAUL_match$GAUL_CODE[GAUL_match$description == "TONGA, TONGATAPU"] <- 2976
+GAUL_match$GAUL_CODE[GAUL_match$description == "TONGA, VAVA'U"] <- 2976
 
-GAUL_match$GAUL_CODE[GAUL_match$description == "PAKISTAN, AJK"] = 40408
-GAUL_match$GAUL_CODE[grepl("PAKISTAN, GILGIT BALTISTAN,",GAUL_match$description)] = 40409
-GAUL_match$GAUL_CODE[GAUL_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, LAKIMARWAT"] = 40341
+GAUL_match$GAUL_CODE[GAUL_match$description == "PAKISTAN, AJK"] <- 40408
+GAUL_match$GAUL_CODE[grepl("PAKISTAN, GILGIT BALTISTAN,", GAUL_match$description)] <- 40409
+GAUL_match$GAUL_CODE[GAUL_match$description == "PAKISTAN, KHYBER PAKHTUNKHWA, LAKIMARWAT"] <- 40341
 
 # more than one admin0 GAUL codes
-GAUL_match$GAUL_CODE[GAUL_match$description == "CHINA"] = 53
-GAUL_match$GAUL_CODE[GAUL_match$description == "JAPAN"] = 126
-GAUL_match$GAUL_CODE[GAUL_match$description == "PAKISTAN"] = 188
-GAUL_match$GAUL_CODE[GAUL_match$description == "UNITED STATES OF AMERICA"] = 259
-GAUL_match$GAUL_CODE[GAUL_match$description == "MALAYSIA"] = 153
-GAUL_match$GAUL_CODE[GAUL_match$description == "PORTUGAL"] = 199
-GAUL_match$GAUL_CODE[GAUL_match$description == "PORTUGAL"] = 199
-GAUL_match$GAUL_CODE[GAUL_match$description == "INDIA"] = 115
+GAUL_match$GAUL_CODE[GAUL_match$description == "CHINA"] <- 53
+GAUL_match$GAUL_CODE[GAUL_match$description == "JAPAN"] <- 126
+GAUL_match$GAUL_CODE[GAUL_match$description == "PAKISTAN"] <- 188
+GAUL_match$GAUL_CODE[GAUL_match$description == "UNITED STATES OF AMERICA"] <- 259
+GAUL_match$GAUL_CODE[GAUL_match$description == "MALAYSIA"] <- 153
+GAUL_match$GAUL_CODE[GAUL_match$description == "PORTUGAL"] <- 199
+GAUL_match$GAUL_CODE[GAUL_match$description == "PORTUGAL"] <- 199
+GAUL_match$GAUL_CODE[GAUL_match$description == "INDIA"] <- 115
 
 
 # check before assign if any NAs in GAUL_CODE
@@ -1107,14 +1158,14 @@ RNE_states$NAME_A1 <- RNE_states$name
 RNE_states$RNE_CODE <- RNE_states$iso_3166_2 # using ISO 3166-2 codes to match
 
 CN <- c("NAME_A0", "NAME_A1", "RNE_CODE")
-RNE_all = rbind(RNE_country[, CN], RNE_states[, CN])
+RNE_all <- rbind(RNE_country[, CN], RNE_states[, CN])
 
-RNE_all$NAME_A1 = stri_trans_general(str = RNE_all$NAME_A1, id = "Latin-ASCII")
+RNE_all$NAME_A1 <- stri_trans_general(str = RNE_all$NAME_A1, id = "Latin-ASCII")
 # standardise to upper case
-RNE_all[, 1:3] = apply(RNE_all[, 1:3], 2, toupper)
+RNE_all[, 1:3] <- apply(RNE_all[, 1:3], 2, toupper)
 
-od_match = od[, c("ISO_A0", "adm_1_name", "full_name")]
-colnames(od_match) = c("NAME_A0", "NAME_A1", "description")
+od_match <- od[, c("ISO_A0", "adm_1_name", "full_name")]
+colnames(od_match) <- c("NAME_A0", "NAME_A1", "description")
 
 # rne_states <- ne_states()
 # rne_states[rne_states$adm0_a3 == "PAK", c("name")]%>% mapview()
@@ -1122,252 +1173,252 @@ colnames(od_match) = c("NAME_A0", "NAME_A1", "description")
 # manually edited exceptions
 
 # Australia
-od_match$NAME_A1[od_match$description == "AUSTRALIA, TAS"] = "TASMANIA"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, NT"] = "NORTHERN TERRITORY"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, SA"] = "SOUTH AUSTRALIA"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, NSW"] = "NEW SOUTH WALES"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, TAS"] <- "TASMANIA"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, NT"] <- "NORTHERN TERRITORY"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, SA"] <- "SOUTH AUSTRALIA"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, NSW"] <- "NEW SOUTH WALES"
 od_match$NAME_A1[
   od_match$description == "AUSTRALIA, ACT"
-] = "AUSTRALIAN CAPITAL TERRITORY"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, VIC"] = "VICTORIA"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, QLD"] = "QUEENSLAND"
-od_match$NAME_A1[od_match$description == "AUSTRALIA, WA"] = "WESTERN AUSTRALIA"
+] <- "AUSTRALIAN CAPITAL TERRITORY"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, VIC"] <- "VICTORIA"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, QLD"] <- "QUEENSLAND"
+od_match$NAME_A1[od_match$description == "AUSTRALIA, WA"] <- "WESTERN AUSTRALIA"
 
 # Bhutan
-od_match$NAME_A1[od_match$description == "BHUTAN, DAGANA"] = "DAGA"
-od_match$NAME_A1[od_match$description == "BHUTAN, LHUNTSE"] = "LHUNTSHI"
+od_match$NAME_A1[od_match$description == "BHUTAN, DAGANA"] <- "DAGA"
+od_match$NAME_A1[od_match$description == "BHUTAN, LHUNTSE"] <- "LHUNTSHI"
 od_match$NAME_A1[
   od_match$description == "BHUTAN, WANGDUEPHODRANG"
-] = "WANGDI PHODRANG"
-od_match$NAME_A1[od_match$description == "BHUTAN, SARPANG"] = "GEYLEGPHUG"
+] <- "WANGDI PHODRANG"
+od_match$NAME_A1[od_match$description == "BHUTAN, SARPANG"] <- "GEYLEGPHUG"
 od_match$NAME_A1[
   od_match$description == "BHUTAN, TRASHIYANGTSE"
-] = "TASHI YANGTSE"
-od_match$NAME_A1[od_match$description == "BHUTAN, TSIRANG"] = "CHIRANG"
-od_match$NAME_A1[od_match$description == "BHUTAN, SAMTSE"] = "SAMCHI"
+] <- "TASHI YANGTSE"
+od_match$NAME_A1[od_match$description == "BHUTAN, TSIRANG"] <- "CHIRANG"
+od_match$NAME_A1[od_match$description == "BHUTAN, SAMTSE"] <- "SAMCHI"
 
 # Brunei
-od_match$NAME_A1 = gsub(" DISTRICT", "", od_match$NAME_A1)
-od_match$NAME_A1[od_match$description == "BRUNEI DARUSSALAM, BRUNEI MUARA DISTRICT"] = "BRUNEI AND MUARA"
+od_match$NAME_A1 <- gsub(" DISTRICT", "", od_match$NAME_A1)
+od_match$NAME_A1[od_match$description == "BRUNEI DARUSSALAM, BRUNEI MUARA DISTRICT"] <- "BRUNEI AND MUARA"
 
 
 # Bolivia
-od_match$NAME_A1[od_match$NAME_A1 == "BENI"] = "EL BENI"
+od_match$NAME_A1[od_match$NAME_A1 == "BENI"] <- "EL BENI"
 
 # China
 # remove "SHENG" and "SHI" from admin1
-od_match$NAME_A1 = gsub(" SHENG", "", od_match$NAME_A1)
-od_match$NAME_A1 = gsub(" SHI", "", od_match$NAME_A1)
-od_match$NAME_A1[od_match$description == "CHINA, GUANGXI ZHUANGZU ZIZHIQU"] = "GUANGXI"
-od_match$NAME_A1[od_match$description == "CHINA, NEI MONGOL ZIZHIQU"] = "INNER MONGOL"
-od_match$NAME_A1[od_match$description == "CHINA, NINGXIA HUIZU ZIZHIQU"] = "NINGXIA"
-od_match$NAME_A1[od_match$description == "CHINA, XINJIANG UYGUR ZIZHIQU"] = "XINJIANG"
-od_match$NAME_A1[od_match$description == "CHINA, XIZANG ZIZHIQU"] = "XIZANG"
+od_match$NAME_A1 <- gsub(" SHENG", "", od_match$NAME_A1)
+od_match$NAME_A1 <- gsub(" SHI", "", od_match$NAME_A1)
+od_match$NAME_A1[od_match$description == "CHINA, GUANGXI ZHUANGZU ZIZHIQU"] <- "GUANGXI"
+od_match$NAME_A1[od_match$description == "CHINA, NEI MONGOL ZIZHIQU"] <- "INNER MONGOL"
+od_match$NAME_A1[od_match$description == "CHINA, NINGXIA HUIZU ZIZHIQU"] <- "NINGXIA"
+od_match$NAME_A1[od_match$description == "CHINA, XINJIANG UYGUR ZIZHIQU"] <- "XINJIANG"
+od_match$NAME_A1[od_match$description == "CHINA, XIZANG ZIZHIQU"] <- "XIZANG"
 
 # Dominican Republic
-od_match$NAME_A1[od_match$NAME_A1 == "ELIAS PINA"] = "LA ESTRELLETA"
-od_match$NAME_A1[od_match$NAME_A1 == "SALCEDO"] = "HERMANAS"
+od_match$NAME_A1[od_match$NAME_A1 == "ELIAS PINA"] <- "LA ESTRELLETA"
+od_match$NAME_A1[od_match$NAME_A1 == "SALCEDO"] <- "HERMANAS"
 
 # Cambodia
 od_match$NAME_A1[
   od_match$description == "CAMBODIA, KAMPONG SPEU"
-] = "KÂMPÓNG SPŒ"
-od_match$NAME_A1[od_match$description == "CAMBODIA, KRATIE"] = "KRÂCHÉH"
-od_match$NAME_A1[od_match$description == "CAMBODIA, PAILIN"] = "KRONG PAILIN"
-od_match$NAME_A1[od_match$description == "CAMBODIA, PREAH SIHANOUK"] = "KRONG PREAH SIHANOUK"
-od_match$NAME_A1[od_match$description == "CAMBODIA, PURSAT"] = "POUTHISAT"
-od_match$NAME_A1[od_match$description == "CAMBODIA, RATANAK KIRI"] = "RÔTÂNÔKIRI"
-od_match$NAME_A1[od_match$description == "CAMBODIA, SIEM REAP"] = "SIEMRÉAB"
-od_match$NAME_A1[od_match$description == "CAMBODIA, STUNG TRENG"] = "STŒNG TRÊNG"
+] <- "KÂMPÓNG SPŒ"
+od_match$NAME_A1[od_match$description == "CAMBODIA, KRATIE"] <- "KRÂCHÉH"
+od_match$NAME_A1[od_match$description == "CAMBODIA, PAILIN"] <- "KRONG PAILIN"
+od_match$NAME_A1[od_match$description == "CAMBODIA, PREAH SIHANOUK"] <- "KRONG PREAH SIHANOUK"
+od_match$NAME_A1[od_match$description == "CAMBODIA, PURSAT"] <- "POUTHISAT"
+od_match$NAME_A1[od_match$description == "CAMBODIA, RATANAK KIRI"] <- "RÔTÂNÔKIRI"
+od_match$NAME_A1[od_match$description == "CAMBODIA, SIEM REAP"] <- "SIEMRÉAB"
+od_match$NAME_A1[od_match$description == "CAMBODIA, STUNG TRENG"] <- "STŒNG TRÊNG"
 
 # Colombia
-od_match$NAME_A1[od_match$NAME_A1 == "GUAJIRA"] = "LA GUAJIRA"
+od_match$NAME_A1[od_match$NAME_A1 == "GUAJIRA"] <- "LA GUAJIRA"
 od_match$NAME_A1[
   od_match$NAME_A1 == "NORTE SANTANDER" & od_match$NAME_A0 == "COL"
-] = "NORTE DE SANTANDER"
+] <- "NORTE DE SANTANDER"
 od_match$NAME_A1[
   od_match$NAME_A1 == "VALLE" & od_match$NAME_A0 == "COL"
-] = "VALLE DEL CAUCA"
+] <- "VALLE DEL CAUCA"
 od_match$NAME_A1[
   od_match$NAME_A1 == "SAN ANDRES" & od_match$NAME_A0 == "COL"
-] = "SAN ANDRES Y PROVIDENCIA"
+] <- "SAN ANDRES Y PROVIDENCIA"
 
-od_match$NAME_A1[od_match$description == "COLOMBIA, BARRANQUILLA"] = "ATLANTICO"
+od_match$NAME_A1[od_match$description == "COLOMBIA, BARRANQUILLA"] <- "ATLANTICO"
 od_match$NAME_A1[
   od_match$description == "COLOMBIA, CUNDIMARCA"
-] = "CUNDINAMARCA"
-od_match$NAME_A1[od_match$description == "COLOMBIA, CARTAGENA"] = "BOLIVAR"
-od_match$NAME_A1[od_match$description == "COLOMBIA, SANTA MARTA"] = "MAGDALENA"
+] <- "CUNDINAMARCA"
+od_match$NAME_A1[od_match$description == "COLOMBIA, CARTAGENA"] <- "BOLIVAR"
+od_match$NAME_A1[od_match$description == "COLOMBIA, SANTA MARTA"] <- "MAGDALENA"
 
 
-#Cuba
-od_match$NAME_A1[od_match$NAME_A1 == "LA HABANA"] = "CIUDAD DE LA HABANA"
+# Cuba
+od_match$NAME_A1[od_match$NAME_A1 == "LA HABANA"] <- "CIUDAD DE LA HABANA"
 
 
 # Dominican republic
 od_match$NAME_A1[
   od_match$description == "DOMINICAN REPUBLIC, HERMANAS MIRABAL"
-] = "HERMANAS"
+] <- "HERMANAS"
 
 
 # Guatemala
-od_match$NAME_A1[od_match$description == "GUATEMALA, EL QUICHE"] = "QUICHE"
-od_match$NAME_A1[od_match$description == "GUATEMALA, GUATEMALA CENTRAL"] = "GUATEMALA"
-od_match$NAME_A1[od_match$description == "GUATEMALA, GUATEMALA NOR OCCIDENTE"] = "GUATEMALA"
-od_match$NAME_A1[od_match$description == "GUATEMALA, GUATEMALA NOROCCIDENTE"] = "GUATEMALA"
-od_match$NAME_A1[od_match$description == "GUATEMALA, GUATEMALA NORORIENTE"] = "GUATEMALA"
-od_match$NAME_A1[od_match$description == "GUATEMALA, GUATEMALA NOR ORIENTE"] = "GUATEMALA"
+od_match$NAME_A1[od_match$description == "GUATEMALA, EL QUICHE"] <- "QUICHE"
+od_match$NAME_A1[od_match$description == "GUATEMALA, GUATEMALA CENTRAL"] <- "GUATEMALA"
+od_match$NAME_A1[od_match$description == "GUATEMALA, GUATEMALA NOR OCCIDENTE"] <- "GUATEMALA"
+od_match$NAME_A1[od_match$description == "GUATEMALA, GUATEMALA NOROCCIDENTE"] <- "GUATEMALA"
+od_match$NAME_A1[od_match$description == "GUATEMALA, GUATEMALA NORORIENTE"] <- "GUATEMALA"
+od_match$NAME_A1[od_match$description == "GUATEMALA, GUATEMALA NOR ORIENTE"] <- "GUATEMALA"
 
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, GUATEMALA SUR"
-] = "GUATEMALA"
-od_match$NAME_A1[od_match$description == "GUATEMALA, IXCAN"] = "QUICHE"
-od_match$NAME_A1[od_match$description == "GUATEMALA, IXIL"] = "QUICHE"
-od_match$NAME_A1[od_match$description == "GUATEMALA, PETEN NORTE"] = "PETEN"
+] <- "GUATEMALA"
+od_match$NAME_A1[od_match$description == "GUATEMALA, IXCAN"] <- "QUICHE"
+od_match$NAME_A1[od_match$description == "GUATEMALA, IXIL"] <- "QUICHE"
+od_match$NAME_A1[od_match$description == "GUATEMALA, PETEN NORTE"] <- "PETEN"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, PETEN SUR OCCIDENTAL"
-] = "PETEN"
+] <- "PETEN"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, PETEN SUR ORIENTAL"
-] = "PETEN"
+] <- "PETEN"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, PETEN SUROCCIDENTAL"
-] = "PETEN"
+] <- "PETEN"
 od_match$NAME_A1[
   od_match$description == "GUATEMALA, PETEN SURORIENTAL"
-] = "PETEN"
+] <- "PETEN"
 
 # India
 od_match$NAME_A1[
   od_match$description == "INDIA, DADRA AND NAGAR HAVELI"
-] = "DADRA AND NAGAR HAVELI AND DAMAN AND DIU"
+] <- "DADRA AND NAGAR HAVELI AND DAMAN AND DIU"
 od_match$NAME_A1[
   od_match$description == "INDIA, DAMAN AND DIU"
-] = "DADRA AND NAGAR HAVELI AND DAMAN AND DIU"
-od_match$NAME_A1[od_match$description == "INDIA, J & K"] = "JAMMU AND KASHMIR"
-od_match$NAME_A1[od_match$description == "INDIA, ORISSA"] = "ODISHA"
+] <- "DADRA AND NAGAR HAVELI AND DAMAN AND DIU"
+od_match$NAME_A1[od_match$description == "INDIA, J & K"] <- "JAMMU AND KASHMIR"
+od_match$NAME_A1[od_match$description == "INDIA, ORISSA"] <- "ODISHA"
 
-od_match$NAME_A1[od_match$description == "INDIA, PONDICHERRY"] = "PUDUCHERRY"
-od_match$NAME_A1[od_match$description == "INDIA, TELANGANA"] = "ANDHRA PRADESH"
+od_match$NAME_A1[od_match$description == "INDIA, PONDICHERRY"] <- "PUDUCHERRY"
+od_match$NAME_A1[od_match$description == "INDIA, TELANGANA"] <- "ANDHRA PRADESH"
 od_match$NAME_A1[
   od_match$description == "INDIA, D&N HAVELI"
-] = "DADRA AND NAGAR HAVELI AND DAMAN AND DIU"
+] <- "DADRA AND NAGAR HAVELI AND DAMAN AND DIU"
 od_match$NAME_A1[
   od_match$description == "INDIA, A&N ISLAND"
-] = "ANDAMAN AND NICOBAR"
+] <- "ANDAMAN AND NICOBAR"
 od_match$NAME_A1[
   od_match$description == "INDIA, D & N HAVELI"
-] = "DADRA AND NAGAR HAVELI AND DAMAN AND DIU"
+] <- "DADRA AND NAGAR HAVELI AND DAMAN AND DIU"
 od_match$NAME_A1[
   od_match$description == "INDIA, A & N ISLAND"
-] = "ANDAMAN AND NICOBAR"
+] <- "ANDAMAN AND NICOBAR"
 od_match$NAME_A1[
   od_match$description == "INDIA, DAMAN & DIU"
-] = "DADRA AND NAGAR HAVELI AND DAMAN AND DIU"
+] <- "DADRA AND NAGAR HAVELI AND DAMAN AND DIU"
 
 # Indonesia
 od_match$NAME_A1[
   od_match$description == "INDONESIA, DAERAH ISTIMEWA YOGYAKARTA"
-] = "YOGYAKARTA"
+] <- "YOGYAKARTA"
 od_match$NAME_A1[
   od_match$description == "INDONESIA, DKI JAKARTA"
-] = "JAKARTA RAYA"
+] <- "JAKARTA RAYA"
 od_match$NAME_A1[
   od_match$description == "INDONESIA, KALIMANTAN UTARA"
-] = "KALIMANTAN TIMUR"
-od_match$NAME_A1[od_match$description == "INDONESIA, NANGROE ACEH DARUSSALAM"] = "ACEH"
-od_match$NAME_A1[od_match$description == "INDONESIA, NANGGROE ACEH DARUSSALAM"] = "ACEH"
-od_match$NAME_A1[od_match$description == "INDONESIA, DI YOGYAKARTA"] = "YOGYAKARTA"
-od_match$NAME_A1[od_match$description %in% c("INDONESIA, D.I YOGYA")] = "YOGYAKARTA"
-od_match$NAME_A1[od_match$description == "INDONESIA, KEPULAUAN BANGKA BELITUNG"] = "BANGKA-BELITUNG"
+] <- "KALIMANTAN TIMUR"
+od_match$NAME_A1[od_match$description == "INDONESIA, NANGROE ACEH DARUSSALAM"] <- "ACEH"
+od_match$NAME_A1[od_match$description == "INDONESIA, NANGGROE ACEH DARUSSALAM"] <- "ACEH"
+od_match$NAME_A1[od_match$description == "INDONESIA, DI YOGYAKARTA"] <- "YOGYAKARTA"
+od_match$NAME_A1[od_match$description %in% c("INDONESIA, D.I YOGYA")] <- "YOGYAKARTA"
+od_match$NAME_A1[od_match$description == "INDONESIA, KEPULAUAN BANGKA BELITUNG"] <- "BANGKA-BELITUNG"
 
 # Indonesia
 
-od_match$NAME_A1[od_match$description == "INDONESIA, KALIMANTAN UTARA"] = "KALIMANTAN TIMUR"
-od_match$NAME_A1[od_match$description %in% c("INDONESIA, BABEL")] = "BANGKA BELITUNG"
-od_match$NAME_A1[od_match$description %in% c("INDONESIA, PAPUA BARAT DAYA", "INDONESIA, PAPUA SELATAN")] = "PAPUA BARAT"
-od_match$NAME_A1[od_match$description %in% c("INDONESIA, PAPUA TENGAH", "INDONESIA, PAPUA PEGUNUNGAN")] = "PAPUA"
+od_match$NAME_A1[od_match$description == "INDONESIA, KALIMANTAN UTARA"] <- "KALIMANTAN TIMUR"
+od_match$NAME_A1[od_match$description %in% c("INDONESIA, BABEL")] <- "BANGKA BELITUNG"
+od_match$NAME_A1[od_match$description %in% c("INDONESIA, PAPUA BARAT DAYA", "INDONESIA, PAPUA SELATAN")] <- "PAPUA BARAT"
+od_match$NAME_A1[od_match$description %in% c("INDONESIA, PAPUA TENGAH", "INDONESIA, PAPUA PEGUNUNGAN")] <- "PAPUA"
 
 # Lao
 od_match$NAME_A1[
   od_match$description == "LAO PEOPLE'S DEMOCRATIC REPUBLIC, VIENTIANE CAPITAL"
-] = "VIENTIANE [PREFECTURE]"
+] <- "VIENTIANE [PREFECTURE]"
 od_match$NAME_A1[
   od_match$description ==
     "LAO PEOPLE'S DEMOCRATIC REPUBLIC, VIENTIANE CAPITAL [PREFECTURE]"
-] = "VIENTIANE [PREFECTURE]"
+] <- "VIENTIANE [PREFECTURE]"
 od_match$NAME_A1[
   od_match$description == "LAO PEOPLE'S DEMOCRATIC REPUBLIC, XAISOMBOUN"
-] = "VIENTIANE"
+] <- "VIENTIANE"
 
 # Malaysia
 od_match$NAME_A1[
   od_match$description == "MALAYSIA, W.P KUALA LUMPUR"
-] = "KUALA LUMPUR"
+] <- "KUALA LUMPUR"
 od_match$NAME_A1[
   od_match$description == "MALAYSIA, W.P. KUALA LUMPUR"
-] = "KUALA LUMPUR"
-od_match$NAME_A1[od_match$description == "MALAYSIA, W.P. LABUAN"] = "LABUAN"
-od_match$NAME_A1[od_match$description == "MALAYSIA, WP LABUAN"] = "LABUAN"
-od_match$NAME_A1[od_match$description == "MALAYSIA, SAN=BAH"] = "SABAH"
+] <- "KUALA LUMPUR"
+od_match$NAME_A1[od_match$description == "MALAYSIA, W.P. LABUAN"] <- "LABUAN"
+od_match$NAME_A1[od_match$description == "MALAYSIA, WP LABUAN"] <- "LABUAN"
+od_match$NAME_A1[od_match$description == "MALAYSIA, SAN=BAH"] <- "SABAH"
 
-#Myanmar
-od_match$NAME_A1[od_match$description %in% c("MYANMAR, SHAN (N)", "MYANMAR, SHAN (S)", "MYANMAR, SHAN (EAST)", "MYANMAR, SHAN (NORTH)", "MYANMAR, SHAN (SOUTH)")] = "SHAN"
-od_match$NAME_A1[od_match$description %in% c("MYANMAR, BAGO (W", "MYANMAR, BAGO (E)", "MYANMAR, BAGO (EAST)", "MYANMAR, BAGO (WEST)")] = "BAGO"
-od_match$NAME_A1[od_match$description == "MYANMAR, MONGAR"] = "MON"
-od_match$NAME_A1[od_match$description == "MYANMAR, AYAYARWADDY"] = "AYEYARWADY"
-od_match$NAME_A1[od_match$description %in% c("MYANMAR, NAYPYITAW", "MYANMAR, NAY PYI TAW")] = "MANDALAY"
+# Myanmar
+od_match$NAME_A1[od_match$description %in% c("MYANMAR, SHAN (N)", "MYANMAR, SHAN (S)", "MYANMAR, SHAN (EAST)", "MYANMAR, SHAN (NORTH)", "MYANMAR, SHAN (SOUTH)")] <- "SHAN"
+od_match$NAME_A1[od_match$description %in% c("MYANMAR, BAGO (W", "MYANMAR, BAGO (E)", "MYANMAR, BAGO (EAST)", "MYANMAR, BAGO (WEST)")] <- "BAGO"
+od_match$NAME_A1[od_match$description == "MYANMAR, MONGAR"] <- "MON"
+od_match$NAME_A1[od_match$description == "MYANMAR, AYAYARWADDY"] <- "AYEYARWADY"
+od_match$NAME_A1[od_match$description %in% c("MYANMAR, NAYPYITAW", "MYANMAR, NAY PYI TAW")] <- "MANDALAY"
 
 # Nepal - new constitution since 2015 but RNE shapefiles do not match with the current divisions. Largest cities/capital cities matched to the former adm1 division
 
 
-od_match$NAME_A1[grepl("NEPAL, PROVINCE 1", od_match$description) ] = "BHOJPUR"
-od_match$NAME_A1[grepl("NEPAL, MADHESH", od_match$description)] = "JANAKPUR"
-od_match$NAME_A1[grepl("NEPAL, SUDURPASCHIM|NEPAL, SUDUR PASHCHIM PROVINCE", od_match$description)] = "MAHAKALI"
-od_match$NAME_A1[grepl("NEPAL, KOSHI", od_match$description)] = "BHOJPUR"
+od_match$NAME_A1[grepl("NEPAL, PROVINCE 1", od_match$description)] <- "BHOJPUR"
+od_match$NAME_A1[grepl("NEPAL, MADHESH", od_match$description)] <- "JANAKPUR"
+od_match$NAME_A1[grepl("NEPAL, SUDURPASCHIM|NEPAL, SUDUR PASHCHIM PROVINCE", od_match$description)] <- "MAHAKALI"
+od_match$NAME_A1[grepl("NEPAL, KOSHI", od_match$description)] <- "BHOJPUR"
 
 # remove "PROVINCE" from NAME_A1
 od_match$NAME_A1[grepl("NEPAL", od_match$description) & grepl("PROVINCE", od_match$NAME_A1)] <- gsub(" PROVINCE", "", od_match$NAME_A1[grepl("NEPAL", od_match$description) & grepl("PROVINCE", od_match$NAME_A1)])
 
 # Nicaragua
-od_match$NAME_A1[od_match$NAME_A1 == "BILWI"] = "ATLANTICO NORTE"
+od_match$NAME_A1[od_match$NAME_A1 == "BILWI"] <- "ATLANTICO NORTE"
 od_match$NAME_A1[
   od_match$NAME_A1 == "REGION AUTONOMA DEL ATLANTICO SUR"
-] = "ATLANTICO SUR"
-od_match$NAME_A1[od_match$NAME_A1 == "ZELAYA CENTRAL"] = "ATLANTICO SUR"
+] <- "ATLANTICO SUR"
+od_match$NAME_A1[od_match$NAME_A1 == "ZELAYA CENTRAL"] <- "ATLANTICO SUR"
 
 # Pakistan
-od_match$NAME_A1[od_match$description == "PAKISTAN, KPK"] = "K.P."
-od_match$NAME_A1[od_match$description == "PAKISTAN, TDS-KP"] = "F.A.T.A."
-od_match$NAME_A1[od_match$description == "PAKISTAN, BALUCH"] = "BALUCHISTAN"
-od_match$NAME_A1[od_match$description == "PAKISTAN, AJK"] = "AZAD KASHMIR"
-od_match$NAME_A1[od_match$description == "PAKISTAN, ICT"] = "F.C.T."
-od_match$NAME_A1[od_match$description == "PAKISTAN, KHYBER PAKTHUNK"] = "K.P."
+od_match$NAME_A1[od_match$description == "PAKISTAN, KPK"] <- "K.P."
+od_match$NAME_A1[od_match$description == "PAKISTAN, TDS-KP"] <- "F.A.T.A."
+od_match$NAME_A1[od_match$description == "PAKISTAN, BALUCH"] <- "BALUCHISTAN"
+od_match$NAME_A1[od_match$description == "PAKISTAN, AJK"] <- "AZAD KASHMIR"
+od_match$NAME_A1[od_match$description == "PAKISTAN, ICT"] <- "F.C.T."
+od_match$NAME_A1[od_match$description == "PAKISTAN, KHYBER PAKTHUNK"] <- "K.P."
 
 od_match$NAME_A1[grepl(
   "PAKISTAN, KHYBER PAKTHUNK",
   od_match$description
-)] = "K.P."
+)] <- "K.P."
 od_match$NAME_A1[grepl(
   "PAKISTAN, KHYBER PAKHTUNKHWA",
   od_match$description
-)] = "K.P."
+)] <- "K.P."
 od_match$NAME_A1[grepl(
   "PAKISTAN, GILGIT BALTISTAN",
   od_match$description
-)] = "NORTHERN AREAS"
+)] <- "NORTHERN AREAS"
 
 # Peru
-od_match$NAME_A1[od_match$description == "PERU, CHANKA"] = "LIMA"
-od_match$NAME_A1[od_match$description == "PERU, CHOTA"] = "CAJAMARACA"
-od_match$NAME_A1[od_match$description == "PERU, CUTERVO"] = "CAJAMARCA"
-od_match$NAME_A1[od_match$description == "PERU, JAEN"] = "CAJAMARCA"
-od_match$NAME_A1[od_match$description == "PERU, LIMA CIUDAD"] = "LIMA"
-od_match$NAME_A1[od_match$description == "PERU, LIMA ESTE"] = "LIMA"
-od_match$NAME_A1[od_match$description == "PERU, LIMA NORTE"] = "LIMA"
-od_match$NAME_A1[od_match$description == "PERU, LIMA SUR"] = "LIMA"
-od_match$NAME_A1[od_match$description == "PERU, PIURA I"] = "PIURA"
-od_match$NAME_A1[od_match$description == "PERU, PIURA II"] = "PIURA"
+od_match$NAME_A1[od_match$description == "PERU, CHANKA"] <- "LIMA"
+od_match$NAME_A1[od_match$description == "PERU, CHOTA"] <- "CAJAMARACA"
+od_match$NAME_A1[od_match$description == "PERU, CUTERVO"] <- "CAJAMARCA"
+od_match$NAME_A1[od_match$description == "PERU, JAEN"] <- "CAJAMARCA"
+od_match$NAME_A1[od_match$description == "PERU, LIMA CIUDAD"] <- "LIMA"
+od_match$NAME_A1[od_match$description == "PERU, LIMA ESTE"] <- "LIMA"
+od_match$NAME_A1[od_match$description == "PERU, LIMA NORTE"] <- "LIMA"
+od_match$NAME_A1[od_match$description == "PERU, LIMA SUR"] <- "LIMA"
+od_match$NAME_A1[od_match$description == "PERU, PIURA I"] <- "PIURA"
+od_match$NAME_A1[od_match$description == "PERU, PIURA II"] <- "PIURA"
 
 # Philippines
 # OpenDengue admin1s map to "region" in RNE states shapefiles
@@ -1376,44 +1427,44 @@ RNE_PHL_regions <- data.frame(
   Region = RNE_states$region[RNE_states$adm0_a3 == "PHL"]
 )
 # replace Philippines states with regions in RNE admin file
-RNE_all$NAME_A1[RNE_all$NAME_A0 == "PHL"] = toupper(RNE_PHL_regions$Region[match(  RNE_all$NAME_A1[RNE_all$NAME_A0 == "PHL"], toupper(RNE_PHL_regions$State))])
+RNE_all$NAME_A1[RNE_all$NAME_A0 == "PHL"] <- toupper(RNE_PHL_regions$Region[match(RNE_all$NAME_A1[RNE_all$NAME_A0 == "PHL"], toupper(RNE_PHL_regions$State))])
 
 # manual alignments
-od_match$NAME_A1[od_match$NAME_A1 == "REGION XIII (CARAGA)"] = "DINAGAT ISLANDS (REGION XIII)"
-od_match$NAME_A1[od_match$NAME_A1 == "CARAGA (REGION XIII)"] = "DINAGAT ISLANDS (REGION XIII)"
+od_match$NAME_A1[od_match$NAME_A1 == "REGION XIII (CARAGA)"] <- "DINAGAT ISLANDS (REGION XIII)"
+od_match$NAME_A1[od_match$NAME_A1 == "CARAGA (REGION XIII)"] <- "DINAGAT ISLANDS (REGION XIII)"
 
-od_match$NAME_A1[od_match$description == "PHILIPPINES, NATIONAL CAPITAL REGION (NCR)"] = "NATIONAL CAPITAL REGION"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION I (ILOCOS REGION)"] = "ILOCOS (REGION I)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION X (NORTHERN MINDANAO)"] = "NORTHERN MINDANAO (REGION X)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION XI (DAVAO REGION)"] = "DAVAO (REGION XI)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION XII (SOCCSKSARGEN)"] = "SOCCSKSARGEN (REGION XII)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION II (CAGAYAN VALLEY)"] = "CAGAYAN VALLEY (REGION II)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION III (CENTRAL LUZON)"] = "CENTRAL LUZON (REGION III)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 4"] = "CALABARZON (REGION IV-A)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION V (BICOL REGION)"] = "BICOL (REGION V)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION VI (WESTERN VISAYAS)"] = "WESTERN VISAYAS (REGION VI)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION VII (CENTRAL VISAYAS)"] = "CENTRAL VISAYAS (REGION VII)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION VIII (EASTERN VISAYAS)"] = "EASTERN VISAYAS (REGION VIII)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM)"] = "AUTONOMOUS REGION IN MUSLIM MINDANAO (ARMM)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION IV-A (CALABARZON)"] = "CALABARZON (REGION IV-A)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION CARAGA (CARAGA)"] = "DINAGAT ISLANDS (REGION XIII)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION IV-B (MIMAROPA)"] = "MIMAROPA (REGION IV-B)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION IX (ZAMBOANGA PENINSULA)"] = "ZAMBOANGA PENINSULA (REGION IX)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, A.R.M.M"] = "AUTONOMOUS REGION IN MUSLIM MINDANAO (ARMM)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, C.A.R"] = "CORDILLERA ADMINISTRATIVE REGION (CAR)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, NAT. CAP. REGION"] = "NATIONAL CAPITAL REGION"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 1"] = "ILOCOS (REGION I)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 2"] = "CAGAYAN VALLEY (REGION II)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 3"] = "CENTRAL LUZON (REGION III)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 5"] = "BICOL (REGION V)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 6"] = "WESTERN VISAYAS (REGION VI)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 7"] = "CENTRAL VISAYAS (REGION VII)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 8"] = "EASTERN VISAYAS (REGION VIII)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 9"] = "ZAMBOANGA PENINSULA (REGION IX)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 10"] = "NORTHERN MINDANAO (REGION X)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 11"] = "DAVAO (REGION XI)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 12"] = "SOCCSKSARGEN (REGION XII)"
-od_match$NAME_A1[od_match$description == "PHILIPPINES, CARAGA"] = "DINAGAT ISLANDS (REGION XIII)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, NATIONAL CAPITAL REGION (NCR)"] <- "NATIONAL CAPITAL REGION"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION I (ILOCOS REGION)"] <- "ILOCOS (REGION I)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION X (NORTHERN MINDANAO)"] <- "NORTHERN MINDANAO (REGION X)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION XI (DAVAO REGION)"] <- "DAVAO (REGION XI)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION XII (SOCCSKSARGEN)"] <- "SOCCSKSARGEN (REGION XII)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION II (CAGAYAN VALLEY)"] <- "CAGAYAN VALLEY (REGION II)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION III (CENTRAL LUZON)"] <- "CENTRAL LUZON (REGION III)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 4"] <- "CALABARZON (REGION IV-A)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION V (BICOL REGION)"] <- "BICOL (REGION V)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION VI (WESTERN VISAYAS)"] <- "WESTERN VISAYAS (REGION VI)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION VII (CENTRAL VISAYAS)"] <- "CENTRAL VISAYAS (REGION VII)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION VIII (EASTERN VISAYAS)"] <- "EASTERN VISAYAS (REGION VIII)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM)"] <- "AUTONOMOUS REGION IN MUSLIM MINDANAO (ARMM)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION IV-A (CALABARZON)"] <- "CALABARZON (REGION IV-A)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION CARAGA (CARAGA)"] <- "DINAGAT ISLANDS (REGION XIII)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION IV-B (MIMAROPA)"] <- "MIMAROPA (REGION IV-B)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION IX (ZAMBOANGA PENINSULA)"] <- "ZAMBOANGA PENINSULA (REGION IX)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, A.R.M.M"] <- "AUTONOMOUS REGION IN MUSLIM MINDANAO (ARMM)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, C.A.R"] <- "CORDILLERA ADMINISTRATIVE REGION (CAR)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, NAT. CAP. REGION"] <- "NATIONAL CAPITAL REGION"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 1"] <- "ILOCOS (REGION I)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 2"] <- "CAGAYAN VALLEY (REGION II)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 3"] <- "CENTRAL LUZON (REGION III)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 5"] <- "BICOL (REGION V)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 6"] <- "WESTERN VISAYAS (REGION VI)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 7"] <- "CENTRAL VISAYAS (REGION VII)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 8"] <- "EASTERN VISAYAS (REGION VIII)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 9"] <- "ZAMBOANGA PENINSULA (REGION IX)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 10"] <- "NORTHERN MINDANAO (REGION X)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 11"] <- "DAVAO (REGION XI)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, REGION 12"] <- "SOCCSKSARGEN (REGION XII)"
+od_match$NAME_A1[od_match$description == "PHILIPPINES, CARAGA"] <- "DINAGAT ISLANDS (REGION XIII)"
 
 # Saudi Arabia
 
@@ -1423,33 +1474,36 @@ SAU_admin <- read.csv(paste0(dropbox_path, "04_Reference_data/SAU_adm1_RNE_looku
 
 
 for (i in 1:nrow(SAU_admin)) {
-  ind = (od_match$NAME_A0 == "SAU") & (od_match$NAME_A1 == SAU_admin$OD_adm2[i])
+  ind <- (od_match$NAME_A0 == "SAU") & (od_match$NAME_A1 == SAU_admin$OD_adm2[i])
   if (any(ind, na.rm = T)) {
-    od_match$NAME_A1[ind] = SAU_admin$RNE_adm1[i]
+    od_match$NAME_A1[ind] <- SAU_admin$RNE_adm1[i]
   }
 }
 
-od_match$NAME_A1[od_match$description == "SAUDI ARABIA, BAHA"] = "AL BAHAH"
-od_match$NAME_A1[od_match$description == "SAUDI ARABIA, NORTHERN BORDERS"] = "AL HUDUD ASH SHAMALIYAH"
+od_match$NAME_A1[od_match$description == "SAUDI ARABIA, BAHA"] <- "AL BAHAH"
+od_match$NAME_A1[od_match$description == "SAUDI ARABIA, NORTHERN BORDERS"] <- "AL HUDUD ASH SHAMALIYAH"
 
 od_match$NAME_A1[
-  od_match$description == "SAUDI ARABIA, AL-SHAMAL"] = "AL HUDUD ASH SHAMALIYAH"
+  od_match$description == "SAUDI ARABIA, AL-SHAMAL"
+] <- "AL HUDUD ASH SHAMALIYAH"
 
 
 # Solomon islands
 od_match$NAME_A1[
-  od_match$description == "SOLOMON ISLANDS, CENTRAL ISLANDS"] = "CENTRAL"
+  od_match$description == "SOLOMON ISLANDS, CENTRAL ISLANDS"
+] <- "CENTRAL"
 od_match$NAME_A1[
-  od_match$description == "SOLOMON ISLANDS, HONIARA"] = "CAPITAL TERRITORY (HONIARA)"
+  od_match$description == "SOLOMON ISLANDS, HONIARA"
+] <- "CAPITAL TERRITORY (HONIARA)"
 
 
 # Sri Lanka
 # od data is at province levle (n = 9), RNE shapefiles are at district level (n = 25)
 # adminsitrative divisions from here: https://en.wikipedia.org/wiki/Districts_of_Sri_Lanka
-RNE_LKA_regions = data.frame(
+RNE_LKA_regions <- data.frame(
   District = toupper(sort(unique(RNE_all$NAME_A1[RNE_all$NAME_A0 == "LKA"])))
 )
-RNE_LKA_regions$Province = c(
+RNE_LKA_regions$Province <- c(
   "EASTERN",
   "NORTH CENTRAL",
   "UVA",
@@ -1478,7 +1532,7 @@ RNE_LKA_regions$Province = c(
 )
 
 # replace SL districts with provinces in RNE admin file
-RNE_all$NAME_A1[RNE_all$NAME_A0 == "LKA"] = RNE_LKA_regions$Province[match(
+RNE_all$NAME_A1[RNE_all$NAME_A0 == "LKA"] <- RNE_LKA_regions$Province[match(
   RNE_all$NAME_A1[RNE_all$NAME_A0 == "LKA"],
   toupper(RNE_LKA_regions$District)
 )]
@@ -1487,54 +1541,54 @@ RNE_all$NAME_A1[RNE_all$NAME_A0 == "LKA"] = RNE_LKA_regions$Province[match(
 # Thailand
 od_match$NAME_A1[
   od_match$description == "THAILAND, BANGKOK"
-] = "BANGKOK METROPOLIS"
-od_match$NAME_A1[od_match$description == "THAILAND, BUNGKAN"] = "BUENG KAN"
+] <- "BANGKOK METROPOLIS"
+od_match$NAME_A1[od_match$description == "THAILAND, BUNGKAN"] <- "BUENG KAN"
 od_match$NAME_A1[
   od_match$description == "THAILAND, PHRA NAKHON SI AYUDHYA"
-] = "PHRA NAKHON SI AYUTTHAYA"
+] <- "PHRA NAKHON SI AYUTTHAYA"
 od_match$NAME_A1[
   od_match$description == "THAILAND, PHACHINBURI"
-] = "PRACHIN BURI"
+] <- "PRACHIN BURI"
 od_match$NAME_A1[
   od_match$description == "THAILAND, PRACHUAP KHILIKHAN"
-] = "PRACHUAP KHIRI KHAN"
+] <- "PRACHUAP KHIRI KHAN"
 
 # Timor-Leste
-od_match$NAME_A1[od_match$description == "TIMOR-LESTE, OECUSSI"] = "AMBENO"
+od_match$NAME_A1[od_match$description == "TIMOR-LESTE, OECUSSI"] <- "AMBENO"
 
 
 # Vietnam
-od_match$NAME_A1[od_match$description == "VIET NAM, BAC KAN"] = "DONG BAC"
-od_match$NAME_A1[od_match$description == "VIET NAM, CAN THO CITY"] = "CAN THO"
-od_match$NAME_A1[od_match$description == "VIET NAM, DA NANG CITY"] = "ĐÀ NẴNG"
-od_match$NAME_A1[od_match$description == "VIET NAM, DONG NAI"] = "ĐÔNG NAM BỘ"
-od_match$NAME_A1[od_match$description == "VIET NAM, HA NOI CITY"] = "HA NOI"
-od_match$NAME_A1[od_match$description == "VIET NAM, HA TAY"] = "GIA LAI"
+od_match$NAME_A1[od_match$description == "VIET NAM, BAC KAN"] <- "DONG BAC"
+od_match$NAME_A1[od_match$description == "VIET NAM, CAN THO CITY"] <- "CAN THO"
+od_match$NAME_A1[od_match$description == "VIET NAM, DA NANG CITY"] <- "ĐÀ NẴNG"
+od_match$NAME_A1[od_match$description == "VIET NAM, DONG NAI"] <- "ĐÔNG NAM BỘ"
+od_match$NAME_A1[od_match$description == "VIET NAM, HA NOI CITY"] <- "HA NOI"
+od_match$NAME_A1[od_match$description == "VIET NAM, HA TAY"] <- "GIA LAI"
 od_match$NAME_A1[
   od_match$description == "VIET NAM, HAI PHONG CITY"
-] = "HẢI PHÒNG"
+] <- "HẢI PHÒNG"
 od_match$NAME_A1[
   od_match$description == "VIET NAM, HUNG YEN"
-] = "ĐỒNG BẰNG SÔNG HỒNG"
+] <- "ĐỒNG BẰNG SÔNG HỒNG"
 
 # Taiwan
-od_match$NAME_A1[od_match$NAME_A0 == "TWN"] = gsub(
+od_match$NAME_A1[od_match$NAME_A0 == "TWN"] <- gsub(
   " COUNTY",
   "",
   od_match$NAME_A1[od_match$NAME_A0 == "TWN"]
 )
 
-od_match$NAME_A1[grepl("TAIWAN, TAOYUAN", od_match$description)] = "TAOYUAN"
+od_match$NAME_A1[grepl("TAIWAN, TAOYUAN", od_match$description)] <- "TAOYUAN"
 
 
 # national level
 od_match$NAME_A0[
   od_match$description == "BONAIRE, SAINT EUSTATIUS AND SABA"
-] = "NLD"
-od_match$NAME_A0[od_match$description == "FRENCH GUIANA"] = "FRA"
-od_match$NAME_A0[od_match$description == "MARTINIQUE"] = "FRA"
-od_match$NAME_A0[od_match$description == "MAYOTTE"] = "FRA"
-od_match$NAME_A0[od_match$description == "REUNION"] = "FRA"
+] <- "NLD"
+od_match$NAME_A0[od_match$description == "FRENCH GUIANA"] <- "FRA"
+od_match$NAME_A0[od_match$description == "MARTINIQUE"] <- "FRA"
+od_match$NAME_A0[od_match$description == "MAYOTTE"] <- "FRA"
+od_match$NAME_A0[od_match$description == "REUNION"] <- "FRA"
 
 
 
@@ -1552,7 +1606,8 @@ unique(RNE_match$description[is.na(RNE_match$match_type)])
 
 # No RNE CODE available
 RNE_match$RNE_CODE[
-  RNE_match$description == "TAIWAN, LIENCHIANG COUNTY, NANGAN TOWNSHIP"] = "TWN"
+  RNE_match$description == "TAIWAN, LIENCHIANG COUNTY, NANGAN TOWNSHIP"
+] <- "TWN"
 unique(RNE_match$description[is.na(RNE_match$RNE_CODE)])
 
 # check before assign if any NAs in RNE_CODE
@@ -1568,7 +1623,7 @@ od$RNE_iso_code <- RNE_match$RNE_CODE[match(
 od$IBGE_code <- NA
 
 # remove any other administrative codes from od
-od = od[, c(
+od <- od[, c(
   "adm_0_name",
   "adm_1_name",
   "adm_2_name",
@@ -1587,7 +1642,7 @@ od = od[, c(
   "UUID"
 )]
 
-summary(is.na(od)) #457403 obs
+summary(is.na(od)) # 457403 obs
 
 rm(
   list = setdiff(
@@ -1607,7 +1662,7 @@ rm(
   )
 )
 
-write.csv(od, paste0(dev_path, "open_dengue_1.3/output/od_geomatched.csv"), row.names=F)
+write.csv(od, paste0(dev_path, "open_dengue_1.3/output/od_geomatched.csv"), row.names = F)
 gc()
 
 # DOUBLE COUNT PROTOCOL  =============================================================
@@ -1636,7 +1691,8 @@ od <- od %>%
   )
 
 # For original data source names of TYCHO
-tycho <- read.csv(paste0(dropbox_path,
+tycho <- read.csv(paste0(
+  dropbox_path,
   "01_Dengue_data/source_files/original_name/tycho_dengue_allcountries.csv"
 ))
 
@@ -1649,9 +1705,9 @@ tycho_source <- tycho %>%
   select(-n)
 
 # Get source categories (MOH, WHO, TYCHO, etc.)
+# vectorised equivalent of strsplit(UUID, "-")[[1]][1] (was rowwise -> very slow)
 od <- od %>%
-  rowwise() %>%
-  mutate(source_cat = strsplit(UUID, "-")[[1]][1])
+  mutate(source_cat = sub("-.*$", "", UUID))
 
 # 1) check double count cases
 od <- od %>%
@@ -1664,7 +1720,9 @@ dup_tycho <- od %>%
   filter(any(source_cat %in% c("TYCHO")) & !any(source_cat %in% c("MOH"))) %>%
   mutate(dup_tycho = ifelse(n() > 1, TRUE, FALSE))
 
-dup_tycho %>% group_by(dup_tycho) %>% tally() # 3875 records to be inspected
+dup_tycho %>%
+  group_by(dup_tycho) %>%
+  tally() # 3875 records to be inspected
 
 ### get list of countries where tycho source names need to be checked
 tycho_check <- dup_tycho %>%
@@ -1698,7 +1756,7 @@ c_tycho <- unique(tycho_check$adm_0_name[
 
 x <- dup_tycho %>%
   filter(double == TRUE & dup_tycho == TRUE &
-           adm_0_name %in% c_tycho) %>%
+    adm_0_name %in% c_tycho) %>%
   group_by(
     full_name,
     calendar_start_date,
@@ -1710,20 +1768,22 @@ x <- dup_tycho %>%
   print(n = 50)
 
 # Quick visualisation of overlapping data sources
-x %>%
-  # filter(full_name == "THAILAND")%>%
-  ggplot()+
-  geom_line(aes(x=as.Date(calendar_start_date), y = dengue_total, color = source_cat))+
-  geom_point(aes(x=as.Date(calendar_start_date), y = dengue_total, color = source_cat))+
-  facet_wrap(full_name~., scales="free")
+# x %>%
+#   # filter(full_name == "THAILAND")%>%
+#   ggplot() +
+#   geom_line(aes(x = as.Date(calendar_start_date), y = dengue_total, color = source_cat)) +
+#   geom_point(aes(x = as.Date(calendar_start_date), y = dengue_total, color = source_cat)) +
+#   facet_wrap(full_name ~ ., scales = "free")
 
 # MOH is given highest priority (4), followed by WHO (3), TYCHO (2), and Literature (1)
 # If TYCHO data for a country is actually sourced from MOH, treat it with highest priority
 od <- od %>%
   mutate(
     source_cat2 = ifelse(source_cat == "MOH", 4,
-                  ifelse(grepl("WHO", source_cat), 3,
-                  ifelse(source_cat == "LITERATURE", 1, 2)))
+      ifelse(grepl("WHO", source_cat), 3,
+        ifelse(source_cat == "LITERATURE", 1, 2)
+      )
+    )
   )
 
 od$source_cat2[od$source_cat == "TYCHO" & od$adm_0_name %in% c_tycho] <- 4
@@ -1763,11 +1823,6 @@ od <- od %>%
 
 od <- od %>%
   group_by(full_name, calendar_start_date, calendar_end_date) %>%
-  mutate(diff = ifelse(n() > 1, TRUE, FALSE)) %>%
-  ungroup()
-
-od <- od %>%
-  group_by(full_name, calendar_start_date, calendar_end_date) %>%
   mutate(
     dup_count = n(),
     uuid_count = n_distinct(UUID),
@@ -1781,7 +1836,7 @@ od <- od %>%
   select(-dup_count, -uuid_count)
 
 # check if there are any different dengue counts from the same UUID
-unique(od$UUID[od$diff== "same_uuid"])
+unique(od$UUID[od$diff == "same_uuid"])
 
 same_uuid <- od %>%
   filter(diff == "same_uuid")
@@ -1793,28 +1848,30 @@ same_uuid <- od %>%
 # so just ok to take the higher count
 
 # check the difference in dengue counts from different UUIDs
-unique(od$UUID[od$diff== "different_uuid"])
+unique(od$UUID[od$diff == "different_uuid"])
 
 diff_uuid <- od %>%
   filter(diff == "different_uuid") %>%
   group_by(full_name, calendar_start_date, calendar_end_date) %>%
-  mutate(dengue_diff = max(dengue_total, na.rm=T)-min(dengue_total, na.rm=T))%>%
-  filter(dengue_diff>0)
+  mutate(dengue_diff = max(dengue_total, na.rm = T) - min(dengue_total, na.rm = T)) %>%
+  filter(dengue_diff > 0)
 
 problematic_groups <- diff_uuid %>%
   group_by(full_name, T_res, UUID) %>%
   summarise(
     min_date = min(as.Date(calendar_start_date)),
     max_date = max(as.Date(calendar_end_date)),
-   .groups = "drop"
+    .groups = "drop"
   )
 
 # Join with the original data and filter by date range
 summary_by_uuid <- diff_uuid %>%
   mutate(calendar_start_date = as.Date(calendar_start_date)) %>%
   inner_join(problematic_groups, by = c("full_name", "T_res", "UUID")) %>%
-  filter(calendar_start_date >= min_date,
-         calendar_start_date <= max_date) %>%
+  filter(
+    calendar_start_date >= min_date,
+    calendar_start_date <= max_date
+  ) %>%
   group_by(full_name, T_res, UUID, min_date, max_date) %>%
   summarise(
     dengue_sum = sum(dengue_total, na.rm = TRUE),
@@ -1822,15 +1879,15 @@ summary_by_uuid <- diff_uuid %>%
   )
 
 # visualising differences between data sources:
-diff_uuid %>%
-  filter(adm_0_name == "AFGHANISTAN")%>%
-  group_by(adm_0_name, calendar_start_date, UUID)%>%
-  summarise(dengue_total = sum(dengue_total, na.rm=T))%>%
-  ggplot()+
-  geom_line(aes(x= ymd(calendar_start_date), y = dengue_total, color = UUID, group=UUID))+
-  geom_point(aes(x= ymd(calendar_start_date), y = dengue_total, color = UUID, group = UUID))+
-  scale_x_date(date_labels = "%Y-%m")+
-  facet_wrap(adm_0_name~., scales="free")
+# diff_uuid %>%
+#   filter(adm_0_name == "AFGHANISTAN") %>%
+#   group_by(adm_0_name, calendar_start_date, UUID) %>%
+#   summarise(dengue_total = sum(dengue_total, na.rm = T)) %>%
+#   ggplot() +
+#   geom_line(aes(x = ymd(calendar_start_date), y = dengue_total, color = UUID, group = UUID)) +
+#   geom_point(aes(x = ymd(calendar_start_date), y = dengue_total, color = UUID, group = UUID)) +
+#   scale_x_date(date_labels = "%Y-%m") +
+#   facet_wrap(adm_0_name ~ ., scales = "free")
 
 
 # in this part I manually reviewed the records in summary_by_uuid + visualisation and see if the differences between data sources are understandable
@@ -1846,7 +1903,7 @@ to_keep <- od %>%
   filter(diff != "unique") %>%
   group_by(full_name, calendar_start_date, calendar_end_date) %>%
   filter(dengue_total == max(dengue_total, na.rm = TRUE)) %>%
-  slice(1) %>%  # keep just one if there are ties
+  slice(1) %>% # keep just one if there are ties
   ungroup()
 
 # Filter od to keep only those rows
@@ -1865,7 +1922,7 @@ dup4 <- od %>%
   filter(n() > 1 & n_distinct(UUID) > 1) %>%
   filter(source_cat2 < max(source_cat2)) %>%
   arrange(desc(source_cat2), UUID) %>%
-  slice_head(n = 1) %>%  # Take the first row in case of tie
+  slice_head(n = 1) %>% # Take the first row in case of tie
   ungroup()
 
 od <- od %>%
@@ -1895,7 +1952,7 @@ dup6 <- od %>%
   filter(n() > 1 & n_distinct(UUID) > 1) %>%
   filter(source_cat2 < max(source_cat2)) %>%
   arrange(desc(source_cat2), UUID) %>%
-  slice_head(n = 1) %>%  # Take the first row in case of tie
+  slice_head(n = 1) %>% # Take the first row in case of tie
   ungroup()
 
 od <- od %>%
@@ -1926,7 +1983,6 @@ meta_public <- f %>%
     "metadata_url",
     "metadata_steps"
   ) %>%
-
   arrange(desc(source_cat), country, period)
 
 writexl::write_xlsx(f, filename_fd)
@@ -1945,7 +2001,7 @@ write.csv(od, paste0(dev_path, "open_dengue_1.3/output/od_duplicate_removed.csv"
 od <- read.csv(paste0(dev_path, "open_dengue_1.3/output/od_duplicate_removed.csv"))
 unique(od$adm_0_name)
 od <- od %>%
-  filter(!adm_0_name %in% c("CANADA", "MONGOLIA", "NEW ZEALAND"))
+  filter(!adm_0_name %in% c("CANADA", "MONGOLIA", "NEW ZEALAND", "PITCAIRN"))
 unique(od$S_res[od$adm_0_name == "BRAZIL" & grepl("MOH", od$UUID)])
 # od$S_res <- ifelse(
 #   od$adm_0_name == "BRAZIL" & grepl("MOH", od$UUID),
@@ -1960,9 +2016,9 @@ adm0_codes <- od[
   distinct()
 
 adm0_codes %>%
-  group_by(FAO_GAUL_code)%>%
-  mutate(n = n_distinct(adm_0_name))%>%
-  filter(n >1)
+  group_by(FAO_GAUL_code) %>%
+  mutate(n = n_distinct(adm_0_name)) %>%
+  filter(n > 1)
 
 
 # adm0_codes <- rbind(adm0_codes,
@@ -1970,14 +2026,81 @@ adm0_codes %>%
 
 ##### 01 national extract builder  ########
 
-# split by admin levels
-od_adm0 <- od[od$S_res == "Admin0", ]
-od_adm1 <- od[od$S_res == "Admin1", ]
-od_adm2 <- od[od$S_res == "Admin2", ]
+# Combine mixed Admin1 + Admin2 reporting into the national total -----------------
+# Some MOH sources report a country-year at MIXED spatial resolution within a single
+# source (same UUID + T_res): cases with a known department but an UNKNOWN municipality
+# are coded at Admin1 (e.g. "... SIN MUNICIPIO"), while cases with a known municipality
+# are at Admin2. These are COMPLEMENTARY (different cases), so the national total =
+# Admin1 + Admin2. The default "pick the single highest level" builder keeps only one
+# and undercounts. For the confirmed countries below we relabel their Admin2 rows to
+# Admin1 so the Admin1 aggregation sums both levels into the national total.
+#
+# Confirmed to SUM (Admin1 = unknown-sub-geography, complementary):
+#   COLOMBIA, PANAMA, PERU
+# Checked and NOT summed (left as-is):
+#   - PHILIPPINES: Admin1 is NOT complementary here (verified separately) -> keep pick-one
+#   - BHUTAN / MYANMAR / NEPAL: Admin0 + Admin1 where Admin0 ≈ sum(Admin1) = national
+#     rollup (redundant; already handled by picking one level)
+#   - TAIWAN: the Admin0 records are zero placeholders (no effect)
+combine_a1a2_countries <- c("COLOMBIA", "PANAMA", "PERU")
 
-od_adm0$country_year = paste0(od_adm0$adm_0_name, "_", od_adm0$Year)
-od_adm1$country_year = paste0(od_adm1$adm_0_name, "_", od_adm1$Year)
-od_adm2$country_year = paste0(od_adm2$adm_0_name, "_", od_adm2$Year)
+# (country, Year, T_res, UUID) groups that report BOTH Admin1 and Admin2 in one source
+mixed_a1a2 <- od %>%
+  filter(S_res %in% c("Admin1", "Admin2")) %>%
+  distinct(adm_0_name, Year, T_res, UUID, S_res) %>%
+  count(adm_0_name, Year, T_res, UUID, name = "n_levels") %>%
+  filter(n_levels > 1)
+
+# SANITY CHECK: catch NEW countries with this mixed Admin1+Admin2 pattern in future data
+# updates, so they are reviewed (sum vs. don't-sum) instead of being silently mishandled.
+new_mixed <- setdiff(
+  unique(mixed_a1a2$adm_0_name),
+  c(combine_a1a2_countries, "PHILIPPINES")
+)
+if (length(new_mixed) > 0) {
+  warning(
+    "New country(ies) report mixed Admin1+Admin2 within one source: ",
+    paste(new_mixed, collapse = ", "),
+    ". Review whether Admin1 is complementary (unknown sub-geography -> add to ",
+    "combine_a1a2_countries) or a rollup/duplicate (leave as-is)."
+  )
+}
+
+# relabel Admin2 -> Admin1 for the confirmed countries' mixed groups
+combine_key_str <- mixed_a1a2 %>%
+  filter(adm_0_name %in% combine_a1a2_countries) %>%
+  mutate(k = paste(adm_0_name, Year, T_res, UUID)) %>%
+  pull(k)
+n_relabelled <- sum(od$S_res == "Admin2" &
+  paste(od$adm_0_name, od$Year, od$T_res, od$UUID) %in% combine_key_str)
+# This relabel (Admin2 -> Admin1 for the confirmed countries) is used to BUILD all three
+# extracts below, so the builder logic treats the geocoded-Admin2 records as Admin1. For
+# Peru (MOH-PER-2007-W01-52 & MOH-PER-2008-W01-52) those records use "Direccion de Salud"
+# units that do NOT align with the municipality-level Admin2 of other Peru sources, so
+# building them at Admin1 prevents a spurious cross-source unit mismatch in the spatial /
+# temporal extracts. The ORIGINAL level is kept in `S_res_orig` and RESTORED in the spatial
+# (02) and temporal (03) outputs, so those extracts still report the true geocoded level.
+# (Colombia and Panama are single-UUID, so it makes no difference for them.)
+od$S_res_orig <- od$S_res
+od <- od %>%
+  mutate(S_res = if_else(
+    S_res == "Admin2" &
+      paste(adm_0_name, Year, T_res, UUID) %in% combine_key_str,
+    "Admin1", S_res
+  ))
+message(sprintf(
+  "Combined Admin1+Admin2: relabelled %d Admin2 rows to Admin1 (%s).",
+  n_relabelled, paste(intersect(combine_a1a2_countries, mixed_a1a2$adm_0_name), collapse = ", ")
+))
+
+# split by admin levels (national extract; drop the helper col — national aggregates to Admin0)
+od_adm0 <- od[od$S_res == "Admin0", ] %>% select(-S_res_orig)
+od_adm1 <- od[od$S_res == "Admin1", ] %>% select(-S_res_orig)
+od_adm2 <- od[od$S_res == "Admin2", ] %>% select(-S_res_orig)
+
+od_adm0$country_year <- paste0(od_adm0$adm_0_name, "_", od_adm0$Year)
+od_adm1$country_year <- paste0(od_adm1$adm_0_name, "_", od_adm1$Year)
+od_adm2$country_year <- paste0(od_adm2$adm_0_name, "_", od_adm2$Year)
 
 # check if any countries have more dengue case counts in admin1 data for any given years
 a0_sum <- od_adm0 %>%
@@ -2001,9 +2124,9 @@ a2_sum <- od_adm2 %>%
   select(adm_0_name, Year, T_res, dengue_total) %>%
   distinct()
 
-a0_sum$country_year = paste0(a0_sum$adm_0_name, "_", a0_sum$Year)
-a1_sum$country_year = paste0(a1_sum$adm_0_name, "_", a1_sum$Year)
-a2_sum$country_year = paste0(a2_sum$adm_0_name, "_", a2_sum$Year)
+a0_sum$country_year <- paste0(a0_sum$adm_0_name, "_", a0_sum$Year)
+a1_sum$country_year <- paste0(a1_sum$adm_0_name, "_", a1_sum$Year)
+a2_sum$country_year <- paste0(a2_sum$adm_0_name, "_", a2_sum$Year)
 
 names(a0_sum)[4] <- "a0_sum"
 names(a1_sum)[4] <- "a1_sum"
@@ -2090,7 +2213,8 @@ uuid_to_remove <- unique(check$UUID)[2]
 
 od_adm1_new <- od_adm1_new[
   !((od_adm1_new$UUID == uuid_to_remove) &
-    (od_adm1_new$calendar_start_date %in% unique(check$calendar_start_date))),]
+    (od_adm1_new$calendar_start_date %in% unique(check$calendar_start_date))),
+]
 
 # standardise the adm0 codes
 od_adm1_new <- merge(
@@ -2109,7 +2233,7 @@ od_adm1_new %>%
 
 od_adm1_new <- od_adm1_new %>%
   group_by(adm_0_name, calendar_start_date, calendar_end_date) %>%
-  arrange(UUID)%>%
+  arrange(UUID) %>%
   slice_head(n = 1)
 
 # same again but for adm2 data
@@ -2142,7 +2266,8 @@ uuid_to_remove <- unique(check2$UUID)[2]
 
 od_adm2_new <- od_adm2_new[
   !((od_adm2_new$UUID == uuid_to_remove) &
-    (od_adm2_new$calendar_start_date %in% unique(check2$calendar_start_date))),]
+    (od_adm2_new$calendar_start_date %in% unique(check2$calendar_start_date))),
+]
 
 
 od_adm2_new <- merge(
@@ -2160,17 +2285,17 @@ od_adm2_new %>%
   filter(n() > 1)
 
 od_adm2_new <- od_adm2_new %>%
-  group_by(adm_0_name, calendar_start_date, calendar_end_date)%>%
-  arrange(UUID)%>%
+  group_by(adm_0_name, calendar_start_date, calendar_end_date) %>%
+  arrange(UUID) %>%
   slice_head(n = 1)
 
 # merge everything
 national_extract <- rbind(od_adm0_new, od_adm1_new)
 national_extract <- rbind(national_extract, od_adm2_new)
-national_extract <- od_adm0_new %>% select(-country_year)
+national_extract <- national_extract %>% select(-country_year)
 
 # now just re-sort by country name and date again and rename
-national_extract = national_extract[
+national_extract <- national_extract[
   order(national_extract$adm_0_name, national_extract$calendar_start_date),
 ]
 
@@ -2181,13 +2306,14 @@ national_extract <- national_extract %>%
 
 national_extract %>%
   group_by(adm_0_name, calendar_start_date, calendar_end_date) %>%
-  filter(n()>1)
+  filter(n() > 1)
 
 # save national extract
 
 write.csv(
   national_extract,
-  paste0(git_path, "data/releases/V1.3/National_extract_V1_3.csv"),
+  # paste0(git_path, "data/releases/V1.3/National_extract_V1_3.csv"),
+  paste0(git_path, "data/releases/V1.3/National_extract_V1_3_", today, ".csv"),
   row.names = F
 )
 
@@ -2195,6 +2321,9 @@ write.csv(
 ##############################################
 ##### 02 spatially preserved extract  ########
 ##############################################
+
+# NOTE: built with the relabelled S_res (S_res_orig carried through); the original level
+# is restored in `spatial_extract` just before it is written out (see below).
 
 # split into admin 0 and admin1
 od_adm0 <- od[od$S_res == "Admin0", ]
@@ -2204,14 +2333,14 @@ od_adm2 <- od[od$S_res == "Admin2", ]
 # starting with admin2 look for records in admin1 that do NOT overlap then add to adm2.
 
 # quick add for all the countries that are in admin1 but not in Admin2 at all
-adm1_only = !(od_adm1$adm_0_name %in% od_adm2$adm_0_name)
-toadd_adm1_only = od_adm1[adm1_only, ]
+adm1_only <- !(od_adm1$adm_0_name %in% od_adm2$adm_0_name)
+toadd_adm1_only <- od_adm1[adm1_only, ]
 # delete to be added records for more efficient processing in next step
-od_adm1 = od_adm1[!adm1_only, ]
+od_adm1 <- od_adm1[!adm1_only, ]
 
 # template for collection
-toadd_mix = od_adm1[1, ]
-toadd_mix = toadd_mix[-1, ]
+toadd_mix <- od_adm1[1, ]
+toadd_mix <- toadd_mix[-1, ]
 
 # # loop through admin1 records and see which ones need to be added
 # for(i in 1:nrow(od_adm1)){
@@ -2227,27 +2356,16 @@ toadd_mix = toadd_mix[-1, ]
 # f_od_adm2 = 9060
 # toadd_mix = 10610
 
-# list of countries that are in adm1 and adm2
-ctr = unique(od_adm2$adm_0_name[od_adm2$adm_0_name %in% od_adm1$adm_0_name])
-
-
-for (c in 1:length(ctr)) {
-  f_od_adm1 = od_adm1[od_adm1$adm_0_name %in% ctr[c], ]
-  f_od_adm2 = od_adm2[od_adm2$adm_0_name %in% ctr[c], ]
-
-  for (i in 1:nrow(f_od_adm1)) {
-    # Check if the current record's date range (start and end) is missing in f_od_adm2
-    date_not_matched <- !any(
-      f_od_adm2$calendar_start_date == f_od_adm1$calendar_start_date[i] &
-        f_od_adm2$calendar_end_date == f_od_adm1$calendar_end_date[i]
-    )
-
-    # If the date range is not matched, add this record to the toadd_mix data frame
-    if (date_not_matched) {
-      toadd_mix <- rbind(toadd_mix, f_od_adm1[i, ])
-    }
-  }
-}
+# Vectorised replacement for the per-country nested loop below (the old
+# rbind-in-loop grew toadd_mix one row at a time -> O(n^2), which hangs on the
+# full dataset). Keep adm1 records whose (country, start, end) date range is NOT
+# present in the same country's adm2 records. od_adm1 has already had countries
+# absent from adm2 removed above, so an anti-join on these keys is equivalent.
+toadd_mix <- dplyr::anti_join(
+  od_adm1,
+  od_adm2,
+  by = c("adm_0_name", "calendar_start_date", "calendar_end_date")
+)
 
 
 nrow(toadd_adm1_only)
@@ -2255,59 +2373,52 @@ nrow(toadd_mix)
 
 # combine and sort
 od_adm2 <- rbind(od_adm2, toadd_adm1_only, toadd_mix)
-od_adm2 = od_adm2[order(od_adm2$adm_0_name, od_adm2$calendar_start_date), ]
+od_adm2 <- od_adm2[order(od_adm2$adm_0_name, od_adm2$calendar_start_date), ]
 
 
 ### now repeat at adm0 level
 
 # quick add for all the countries that are not in Admin1 at all
-national_only = !(od_adm0$adm_0_name %in% od_adm2$adm_0_name)
-toadd_national_only = od_adm0[national_only, ]
+national_only <- !(od_adm0$adm_0_name %in% od_adm2$adm_0_name)
+toadd_national_only <- od_adm0[national_only, ]
 # delete to be added records for more efficient processing in next step
-od_adm0 = od_adm0[!national_only, ]
+od_adm0 <- od_adm0[!national_only, ]
 
 # template for collection
-toadd_mix = od_adm0[1, ]
-toadd_mix = toadd_mix[-1, ]
+toadd_mix <- od_adm0[1, ]
+toadd_mix <- toadd_mix[-1, ]
 
-ctr = unique(od_adm2$adm_0_name[od_adm2$adm_0_name %in% od_adm0$adm_0_name])
-length(ctr)
-
-for (c in 1:length(ctr)) {
-  f_od_adm0 = od_adm0[od_adm0$adm_0_name %in% ctr[c], ]
-  f_od_adm2 = od_adm2[od_adm2$adm_0_name %in% ctr[c], ]
-
-  # loop through admin0 records and see which ones need to be added
-  for (i in 1:nrow(f_od_adm0)) {
-    # Check if the current record's date range (start and end) is missing in f_od_adm2
-    date_not_matched <- !any(
-      f_od_adm2$calendar_start_date == f_od_adm0$calendar_start_date[i] &
-        f_od_adm2$calendar_end_date == f_od_adm0$calendar_end_date[i]
-    )
-
-    # If the date range is not matched, add this record to the toadd_mix data frame
-    if (date_not_matched) {
-      toadd_mix <- rbind(toadd_mix, f_od_adm0[i, ])
-    }
-  }
-}
+# Vectorised replacement for the per-country nested loop below (same O(n^2)
+# rbind-in-loop issue). Keep adm0 records whose (country, start, end) date range
+# is NOT present in the same country's adm2 records.
+toadd_mix <- dplyr::anti_join(
+  od_adm0,
+  od_adm2,
+  by = c("adm_0_name", "calendar_start_date", "calendar_end_date")
+)
 
 nrow(toadd_mix) # 14151
 nrow(toadd_national_only) # 22726
 
 # combine and sort
 spatial_extract <- rbind(od_adm2, toadd_national_only, toadd_mix)
-spatial_extract = spatial_extract[
+spatial_extract <- spatial_extract[
   order(spatial_extract$adm_0_name, spatial_extract$calendar_start_date),
 ]
 
+# restore the ORIGINAL spatial resolution in the output (undo the build-time relabel):
+# records relabelled Admin2 -> Admin1 for the combine are shown at their true geocoded level.
+spatial_extract$S_res <- spatial_extract$S_res_orig
+spatial_extract$S_res_orig <- NULL
+
 spatial_extract %>%
-  group_by(full_name, calendar_start_date, calendar_end_date)%>%
-  filter(n()>1)
+  group_by(full_name, calendar_start_date, calendar_end_date) %>%
+  filter(n() > 1)
 
 write.csv(
   spatial_extract,
-  paste0(git_path, "data/releases/V1.3/Spatial_extract_V1_3.csv"),
+  # paste0(git_path, "data/releases/V1.3/Spatial_extract_V1_3.csv"),
+  paste0(git_path, "data/releases/V1.3/Spatial_extract_V1_3_", today, ".csv"),
   row.names = F
 )
 
@@ -2332,12 +2443,12 @@ ind_Month <- !(od_Month$full_name %in% od_Week$full_name)
 ind_Year <- !(od_Year$full_name %in% od_Week$full_name)
 
 toadd1 <- od_Month[ind_Month, ]
-od_Month = od_Month[!ind_Month, ]
+od_Month <- od_Month[!ind_Month, ]
 toadd2 <- od_Year[ind_Year, ]
-od_Year = od_Year[!ind_Year, ]
+od_Year <- od_Year[!ind_Year, ]
 
 # now compare spatially overlapping records
-f_name = unique(od_Week$full_name[od_Week$full_name %in% od_Month$full_name])
+f_name <- unique(od_Week$full_name[od_Week$full_name %in% od_Month$full_name])
 
 # filter od_Week and od_Month data frames based on common full_name values
 f_Week <- od_Week %>% filter(full_name %in% f_name)
@@ -2345,12 +2456,12 @@ f_Month <- od_Month %>% filter(full_name %in% f_name)
 
 # find records in f_Month that do not have a corresponding calendar_start_date and full_name in f_Week
 toadd_mix1 <- f_Month %>%
-  anti_join(f_Week, by = c("full_name", "calendar_start_date"))
+  anti_join(f_Week, by = c("full_name", "calendar_start_date", "calendar_end_date"))
 
 # add monthly datasets to weekly records then repeat with annual data
-od_Week = rbind(od_Week, toadd_mix1)
+od_Week <- rbind(od_Week, toadd_mix1)
 
-f_name2 = unique(od_Week$full_name[od_Week$full_name %in% od_Year$full_name])
+f_name2 <- unique(od_Week$full_name[od_Week$full_name %in% od_Year$full_name])
 
 # filter od_Week and od_Year data frames based on common full_name
 f_Week <- od_Week %>% filter(full_name %in% f_name2)
@@ -2358,7 +2469,7 @@ f_Year <- od_Year %>% filter(full_name %in% f_name2)
 
 # find records in f_Year that don't have matching calendar_start_date in f_Week
 toadd_mix2 <- f_Year %>%
-  anti_join(f_Week, by = c("full_name", "calendar_start_date"))
+  anti_join(f_Week, by = c("full_name", "calendar_start_date", "calendar_end_date"))
 
 # merge everything
 temporal_extract <- rbind(od_Week, toadd1, toadd2, toadd_mix2)
@@ -2381,12 +2492,12 @@ ind_Month <- !(bra_Month$full_name %in% bra_Week$full_name)
 ind_Year <- !(bra_Year$full_name %in% bra_Week$full_name)
 
 btoadd1 <- bra_Month[ind_Month, ]
-bra_Month = bra_Month[!ind_Month, ]
+bra_Month <- bra_Month[!ind_Month, ]
 btoadd2 <- bra_Year[ind_Year, ]
-bra_Year = bra_Year[!ind_Year, ]
+bra_Year <- bra_Year[!ind_Year, ]
 
 # find records that both spatially and temporally overlap
-f_name = unique(bra_Week$full_name[bra_Week$full_name %in% bra_Month$full_name])
+f_name <- unique(bra_Week$full_name[bra_Week$full_name %in% bra_Month$full_name])
 
 num_w <- bra_Week %>%
   filter(full_name %in% f_name) %>%
@@ -2428,13 +2539,13 @@ num <- merge(num_w, num_m, by = c("full_name", "Year"), all = T) %>%
 #
 # }
 #
-bra_Week = rbind(bra_Week, bra_Month)
+bra_Week <- rbind(bra_Week, bra_Month)
 
 
 # repeat with annual data
 # find records that both spatially and temporally overlap
 
-f_name2 = unique(bra_Week$full_name[bra_Week$full_name %in% bra_Year$full_name])
+f_name2 <- unique(bra_Week$full_name[bra_Week$full_name %in% bra_Year$full_name])
 
 num_w <- bra_Week %>%
   filter(full_name %in% f_name2) %>%
@@ -2451,7 +2562,7 @@ num_y <- bra_Year %>%
 num2 <- merge(num_w, num_y, by = c("full_name", "Year"), all = T) %>%
   filter(!is.na(week_n) & !is.na(year_n))
 
-#subset records to loop through (records for 2014-2024 overlap in Week and Year)
+# subset records to loop through (records for 2014-2024 overlap in Week and Year)
 # s_bra_Year = bra_Year[bra_Year$full_name %in% num2$full_name & bra_Year$Year != 2013, ]
 # f_bra_Week = bra_Week[bra_Week$full_name %in% num2$full_name & bra_Week$Year != 2013, ]
 #
@@ -2475,17 +2586,22 @@ bra_extract <- rbind(bra_Week, btoadd1, btoadd2, bra_Year)
 
 # combine and sort
 temporal_extract <- rbind(temporal_extract, bra_extract)
-temporal_extract = temporal_extract[
+temporal_extract <- temporal_extract[
   order(temporal_extract$adm_0_name, temporal_extract$calendar_start_date),
 ]
 
+# restore the ORIGINAL spatial resolution in the output (undo the build-time relabel)
+temporal_extract$S_res <- temporal_extract$S_res_orig
+temporal_extract$S_res_orig <- NULL
+
 temporal_extract %>%
-  group_by(full_name, calendar_start_date, calendar_end_date)%>%
-  filter(n()>1)
+  group_by(full_name, calendar_start_date, calendar_end_date) %>%
+  filter(n() > 1)
 
 write.csv(
   temporal_extract,
-  paste0(git_path, "data/releases/V1.3/Temporal_extract_V1_3.csv"),
+  # paste0(git_path, "data/releases/V1.3/Temporal_extract_V1_3.csv"),
+  paste0(git_path, "data/releases/V1.3/Temporal_extract_V1_3_", today, ".csv"),
   row.names = F
 )
 
@@ -2494,8 +2610,8 @@ max(as.Date(unique(spatial_extract$calendar_end_date)))
 max(as.Date(unique(temporal_extract$calendar_end_date)))
 
 # number of countries with subnational data
-spatial_extract%>%
-  filter(S_res %in% c("Admin1", "Admin2"))%>%
+spatial_extract %>%
+  filter(S_res %in% c("Admin1", "Admin2")) %>%
   distinct(adm_0_name)
 
 ### extract comparison metrics
