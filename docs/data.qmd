@@ -119,7 +119,7 @@ require(downloadthis)
 # download button
 
 download_link(
-  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.3/National_extract_V1_3.zip",
+  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.3.1/National_extract_V1_3_1.zip",
   button_label = "Download global national data",
   button_type = "info",
   has_icon = TRUE,
@@ -128,7 +128,7 @@ download_link(
 )
 
 download_link(
-  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.3/Spatial_extract_V1_3.zip",
+  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.3.1/Spatial_extract_V1_3_1.zip",
   button_label = "Download global highest spatial resolution data",
   button_type = "info",
   has_icon = TRUE,
@@ -137,7 +137,7 @@ download_link(
 )
 
 download_link(
-  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.3/Temporal_extract_V1_3.zip",
+  link = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.3.1/Temporal_extract_V1_3_1.zip",
   button_label = "Download global highest temporal resolution data",
   button_type = "info",
   has_icon = TRUE,
@@ -164,7 +164,7 @@ The preferred citation for OpenDengue is the citation of our [research paper](ht
 ### Data definitions
 The OpenDengue dataset contains reported total case counts with each row corresponds to a unique location and time.
 
-Where reported, we include dengue cases at all levels of severity (dengue, dengue with/without warning signs, severe dengue, dengue haemorhaggic fever, dengue shock syndrome, dengue deaths) and methods of confirmation (suspected, probable, clinically confirmed, laboratory confirmed) in the variable `dengue_total`. The specific case definition used for a particular data point will depend on the original data source and can be identified by looking up the record  `case_definition_original` in the `sourcedata_V1.3.csv` file which can be found in the [OpenDengue Github repo](https://github.com/OpenDengue/master-repo/data/raw_data). This will include a URL reference to the original public data source. Future versions of the OpenDengue data set will dissaggregate data by severity and method of confirmation where reported.
+Where reported, we include dengue cases at all levels of severity (dengue, dengue with/without warning signs, severe dengue, dengue haemorhaggic fever, dengue shock syndrome, dengue deaths) and methods of confirmation (suspected, probable, clinically confirmed, laboratory confirmed) in the variable `dengue_total`. The specific case definition used for a particular data point will depend on the original data source and can be identified by looking up the record  `case_definition_original` in the `sourcedata_V1.3.1.csv` file which can be found in the [OpenDengue Github repo](https://github.com/OpenDengue/master-repo/data/raw_data). This will include a URL reference to the original public data source. Future versions of the OpenDengue data set will dissaggregate data by severity and method of confirmation where reported.
 
 Location is encoded by text name at national (`adm_0_name`) and sub-national (`adm_1_name` and `adm_2_name`) level. Records are matched to Global Administrative Unit Layers (GAUL, see [UN FAO website](https://data.apps.fao.org/catalog/dataset/gaul-codes)) codes (`FAO_GAUL_code`, Admin0-2) and [Natural Earth](https://www.naturalearthdata.com) shapefiles (downloadable via the `rnaturalearth` [R package](https://github.com/ropensci/rnaturalearth)) using [ISO alpha-3](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes) (admin0) and [ISO 3166-2](https://en.wikipedia.org/wiki/ISO_3166-2) (admin1) standards.
 

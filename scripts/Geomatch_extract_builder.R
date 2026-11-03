@@ -9,10 +9,13 @@ dev_path <- "C:/Users/AhyoungLim/Dropbox/WORK/OpenDengue/OpenDengue-Dev/"
 # different calendar days keeps ALL files on the SAME date (previously
 # `today` was recomputed from Sys.Date() each run, scattering filenames
 # across dates). Leave run_date = "" to fall back to the current system date.
-run_date <- "2026_07_29" # must match the masterDB_<run_date>.csv on disk
+run_date <- "" # must match the masterDB_<run_date>.csv on disk (used only when release = FALSE)
 today <- if (nzchar(run_date)) run_date else gsub("-", "_", Sys.Date())
-version <- "V1.3"
-release <- FALSE
+version <- "V1.3.1"
+release <- TRUE
+
+# extract filenames: <type>_extract_V1_3_1.csv for a release, with the run date appended otherwise
+extract_suffix <- paste0(gsub(".", "_", version, fixed = TRUE), if (release) "" else paste0("_", today))
 
 if (release) {
   filename_fd <- paste0(
@@ -2313,7 +2316,7 @@ national_extract %>%
 write.csv(
   national_extract,
   # paste0(git_path, "data/releases/V1.3/National_extract_V1_3.csv"),
-  paste0(git_path, "data/releases/V1.3/National_extract_V1_3_", today, ".csv"),
+  paste0(git_path, "data/releases/", version, "/National_extract_", extract_suffix, ".csv"),
   row.names = F
 )
 
@@ -2418,7 +2421,7 @@ spatial_extract %>%
 write.csv(
   spatial_extract,
   # paste0(git_path, "data/releases/V1.3/Spatial_extract_V1_3.csv"),
-  paste0(git_path, "data/releases/V1.3/Spatial_extract_V1_3_", today, ".csv"),
+  paste0(git_path, "data/releases/", version, "/Spatial_extract_", extract_suffix, ".csv"),
   row.names = F
 )
 
@@ -2601,7 +2604,7 @@ temporal_extract %>%
 write.csv(
   temporal_extract,
   # paste0(git_path, "data/releases/V1.3/Temporal_extract_V1_3.csv"),
-  paste0(git_path, "data/releases/V1.3/Temporal_extract_V1_3_", today, ".csv"),
+  paste0(git_path, "data/releases/", version, "/Temporal_extract_", extract_suffix, ".csv"),
   row.names = F
 )
 

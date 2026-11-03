@@ -16,6 +16,9 @@ data/releases/V1.2.2/Temporal_extract_V1_2_2.csv
 data/releases/V1.3/National_extract_V1_3.csv
 data/releases/V1.3/Spatial_extract_V1_3.csv
 data/releases/V1.3/Temporal_extract_V1_3.csv
+data/releases/V1.3.1/National_extract_V1_3_1.csv
+data/releases/V1.3.1/Spatial_extract_V1_3_1.csv
+data/releases/V1.3.1/Temporal_extract_V1_3_1.csv
 docs/assets/National_extract_AFRO_V1_3.csv
 docs/assets/National_extract_EMRO_V1_3.csv
 docs/assets/National_extract_EURO_V1_3.csv
